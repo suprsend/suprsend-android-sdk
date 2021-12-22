@@ -1,0 +1,3 @@
+rootProject.name = "SSAar"
+include ':library'
+include ':androidApp'
