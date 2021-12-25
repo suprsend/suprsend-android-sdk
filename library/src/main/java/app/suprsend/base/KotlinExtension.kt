@@ -2,6 +2,7 @@ package app.suprsend.base
 
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.Locale
 
 internal inline fun <reified T : Enum<T>> String?.mapToEnum(defaultValue: T): T {
     return mapToEnum<T>() ?: defaultValue
@@ -26,7 +27,7 @@ internal fun String?.toKotlinJsonObject(): JSONObject {
 internal fun JSONObject.filterSSReservedKeys(): JSONObject {
     val filteredJson = JSONObject()
     keys().forEach { key ->
-        if (key.contains("$") || key.contains("ss_")) {
+        if (key.contains("$") || key.toLowerCase(Locale.ENGLISH).contains("ss_")) {
             Logger.e("validation","Key should not contain $ & ss_ : $key")
         }else{
             filteredJson.put(key, get(key))
