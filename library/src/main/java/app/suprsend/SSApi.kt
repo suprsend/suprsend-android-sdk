@@ -10,9 +10,12 @@ import app.suprsend.base.SdkAndroidCreator
 import app.suprsend.base.executorService
 import app.suprsend.base.uuid
 import app.suprsend.config.ConfigHelper
+import app.suprsend.oppo.DataMessagePushMessageService
 import app.suprsend.user.UserLocalDatasource
 import app.suprsend.user.api.UserApiInternalContract
 import app.suprsend.xiaomi.SSXiaomiReceiver
+import com.heytap.msp.push.HeytapPushManager
+import com.heytap.msp.push.callback.ICallBackResultService
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
 import com.xiaomi.mipush.sdk.Logger
 import com.xiaomi.mipush.sdk.MiPushClient
@@ -156,6 +159,48 @@ private constructor(
                 })
             } catch (e: Exception) {
                 app.suprsend.base.Logger.e(SSXiaomiReceiver.TAG, "initXiaomi", e)
+            }
+        }
+
+        fun initOppo(context: Context, appKey: String, appSecret: String) {
+            try {
+                HeytapPushManager.init(context, true)
+                if (!HeytapPushManager.isSupportPush()) {
+                    app.suprsend.base.Logger.i(DataMessagePushMessageService.TAG, "OPPO Push is not supported")
+                    return
+                }
+                HeytapPushManager.register(context, appKey, appSecret, object : ICallBackResultService {
+                    override fun onRegister(code: Int, registerId: String?) {
+                        try {
+                            app.suprsend.base.Logger.i(DataMessagePushMessageService.TAG, "onRegister : $registerId")
+                            registerId ?: return
+                            val instance = getInstanceFromCachedApiKey()
+                            instance?.getUser()?.setAndroidOppoPush(registerId)
+                        } catch (e: Exception) {
+                            app.suprsend.base.Logger.e(DataMessagePushMessageService.TAG, "onRegister", e)
+                        }
+                    }
+
+                    override fun onUnRegister(code: Int) {
+                        app.suprsend.base.Logger.i(DataMessagePushMessageService.TAG, "onUnRegister : $code")
+                    }
+
+                    override fun onSetPushTime(code: Int, result: String?) {
+                        app.suprsend.base.Logger.i(DataMessagePushMessageService.TAG, "onSetPushTime : $code $result")
+                    }
+
+                    override fun onGetPushStatus(code: Int, status: Int) {
+                        app.suprsend.base.Logger.i(DataMessagePushMessageService.TAG, "onGetPushStatus : $code $status")
+                    }
+
+                    override fun onGetNotificationStatus(code: Int, status: Int) {
+                        app.suprsend.base.Logger.i(DataMessagePushMessageService.TAG, "onGetNotificationStatus : $code $status")
+                    }
+
+                })
+                HeytapPushManager.requestNotificationPermission()
+            } catch (e: Exception) {
+                app.suprsend.base.Logger.e(DataMessagePushMessageService.TAG, "initOppo", e)
             }
         }
 

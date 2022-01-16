@@ -41,6 +41,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.3.72")
     implementation("com.google.firebase:firebase-messaging:20.2.4")
     implementation(files("libs/MiPush_SDK_Client_4_8_3.jar"))
+    implementation(files("libs/com.heytap.msp-push-2.1.0.aar"))
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.38")
 
     testImplementation("junit:junit:4.+")

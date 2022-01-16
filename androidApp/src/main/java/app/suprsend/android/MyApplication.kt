@@ -11,7 +11,8 @@ class MyApplication : Application() {
 
         super.onCreate()
 
-        SSApi.initXiaomi(context = this, appId = BuildConfig.XIAOMI_APP_ID, apiKey = BuildConfig.XIAOMI_APP_KEY)
+        SSApi.initXiaomi(context = this.applicationContext, appId = BuildConfig.XIAOMI_APP_ID, apiKey = BuildConfig.XIAOMI_APP_KEY)
+        SSApi.initOppo(context = this.applicationContext, appKey = BuildConfig.OPPO_APP_KEY ,appSecret = BuildConfig.OPPO_APP_SECRET)
 
         initializeSdk()
     }

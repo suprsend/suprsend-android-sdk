@@ -28,6 +28,7 @@ import app.suprsend.config.ConfigHelper
 import app.suprsend.fcm.SSFirebaseMessagingService
 import app.suprsend.xiaomi.SSXiaomiReceiver
 import com.google.firebase.messaging.RemoteMessage
+import com.heytap.msp.push.mode.DataMessage
 import com.xiaomi.mipush.sdk.ErrorCode
 import com.xiaomi.mipush.sdk.MiPushClient
 import com.xiaomi.mipush.sdk.MiPushCommandMessage
@@ -55,6 +56,19 @@ object SSNotificationHelper {
                 Logger.i(SSXiaomiReceiver.TAG, "Message Id : ${miPushMessage.messageId}")
                 if (miPushMessage.isSuprSendPush()) {
                     showRawNotification(context = context.applicationContext, rawNotification = miPushMessage.getRawNotification())
+                }
+            }
+        } catch (e: Exception) {
+            Logger.e(SSXiaomiReceiver.TAG, "Message data payload exception ", e)
+        }
+    }
+
+    fun showOppoNotification(context: Context, dataMessage: DataMessage) {
+        try {
+            appExecutorService.execute {
+                Logger.i(SSXiaomiReceiver.TAG, "Message Id : ${dataMessage.messageID}")
+                if (dataMessage.isSuprSendPush()) {
+                    showRawNotification(context = context.applicationContext, rawNotification = dataMessage.getRawNotification())
                 }
             }
         } catch (e: Exception) {
@@ -511,6 +525,14 @@ private fun getActions(notificationPayloadJO: JSONObject): List<NotificationActi
         )
     }
     return actionsList
+}
+
+fun DataMessage.isSuprSendPush(): Boolean {
+    return content.toKotlinJsonObject().has(SSConstants.NOTIFICATION_PAYLOAD)
+}
+
+fun DataMessage.getRawNotification(): RawNotification {
+    return content.toKotlinJsonObject().getString(SSConstants.NOTIFICATION_PAYLOAD).getRawNotification()
 }
 
 fun MiPushMessage.isSuprSendPush(): Boolean {
