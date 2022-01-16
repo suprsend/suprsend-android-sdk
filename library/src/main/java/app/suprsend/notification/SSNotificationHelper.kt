@@ -39,7 +39,7 @@ object SSNotificationHelper {
     fun showFCMNotification(context: Context, remoteMessage: RemoteMessage) {
         try {
             appExecutorService.execute {
-                Logger.i(SSFirebaseMessagingService.TAG, "Message data payload: ${remoteMessage.messageId}")
+                Logger.i(SSFirebaseMessagingService.TAG, "Message Id : ${remoteMessage.messageId}")
                 if (remoteMessage.isSuprSendRemoteMessage()) {
                     showRawNotification(context = context.applicationContext, rawNotification = remoteMessage.getRawNotification())
                 }
@@ -52,7 +52,7 @@ object SSNotificationHelper {
     fun showXiaomiNotification(context: Context, miPushMessage: MiPushMessage) {
         try {
             appExecutorService.execute {
-                Logger.i(SSXiaomiReceiver.TAG, "Message data payload: ${miPushMessage.messageId}")
+                Logger.i(SSXiaomiReceiver.TAG, "Message Id : ${miPushMessage.messageId}")
                 if (miPushMessage.isSuprSendPush()) {
                     showRawNotification(context = context.applicationContext, rawNotification = miPushMessage.getRawNotification())
                 }

@@ -139,20 +139,24 @@ private constructor(
         }
 
         fun initXiaomi(context: Context, appId: String, apiKey: String) {
-            MiPushClient.registerPush(context, appId, apiKey)
-            Logger.setLogger(context, object : LoggerInterface {
-                override fun setTag(tag: String?) {
-                    app.suprsend.base.Logger.i(SSXiaomiReceiver.TAG, "set Tag : $tag")
-                }
+            try {
+                MiPushClient.registerPush(context, appId, apiKey)
+                Logger.setLogger(context, object : LoggerInterface {
+                    override fun setTag(tag: String?) {
+                        app.suprsend.base.Logger.i(SSXiaomiReceiver.TAG, "set Tag : $tag")
+                    }
 
-                override fun log(message: String?) {
-                    app.suprsend.base.Logger.i(SSXiaomiReceiver.TAG, "Log : $message")
-                }
+                    override fun log(message: String?) {
+                        app.suprsend.base.Logger.i(SSXiaomiReceiver.TAG, "$message")
+                    }
 
-                override fun log(message: String?, throwable: Throwable?) {
-                    app.suprsend.base.Logger.e(SSXiaomiReceiver.TAG, "Loge : $message", throwable)
-                }
-            })
+                    override fun log(message: String?, throwable: Throwable?) {
+                        app.suprsend.base.Logger.e(SSXiaomiReceiver.TAG, "$message", throwable)
+                    }
+                })
+            } catch (e: Exception) {
+                app.suprsend.base.Logger.e(SSXiaomiReceiver.TAG, "initXiaomi", e)
+            }
         }
 
         fun getInstance(apiKey: String, apiSecret: String, apiBaseUrl: String? = null): SSApi {
