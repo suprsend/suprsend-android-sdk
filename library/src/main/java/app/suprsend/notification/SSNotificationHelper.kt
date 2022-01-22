@@ -36,6 +36,18 @@ import org.json.JSONObject
 
 object SSNotificationHelper {
 
+    fun showSuprSendNotification(context: Context, payload: String) {
+        try {
+            if (payload.isBlank())
+                return
+            appExecutorService.execute {
+                showRawNotification(context = context.applicationContext, rawNotification = payload.getRawNotification())
+            }
+        } catch (e: Exception) {
+            Logger.e(SSFirebaseMessagingService.TAG, "Message data payload exception ", e)
+        }
+    }
+
     fun showFCMNotification(context: Context, remoteMessage: RemoteMessage) {
         try {
             appExecutorService.execute {
