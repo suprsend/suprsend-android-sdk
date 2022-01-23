@@ -62,6 +62,7 @@
 
         <activity android:name=".LoginActivity" />
 
+        <!--FCM Start-->
         <service
             android:name="app.suprsend.fcm.SSFirebaseMessagingService"
             android:enabled="true"
@@ -70,8 +71,23 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <!--FCM End-->
 
-        <!--Xiaomi Starts-->
+        <!--Xiaomi Start-->
+        <receiver
+            android:name="app.suprsend.xiaomi.SSXiaomiReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.xiaomi.mipush.MESSAGE_ARRIVED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.xiaomi.mipush.ERROR" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name="com.xiaomi.push.service.XMJobService"
             android:enabled="true"
@@ -93,19 +109,6 @@
             android:enabled="true" />
 
         <receiver
-            android:name="app.suprsend.xiaomi.SSXiaomiReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.xiaomi.mipush.MESSAGE_ARRIVED" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.xiaomi.mipush.ERROR" />
-            </intent-filter>
-        </receiver>
-        <receiver
             android:name="com.xiaomi.push.service.receivers.NetworkStatusReceiver"
             android:exported="true">
             <intent-filter>
@@ -122,7 +125,8 @@
                 <action android:name="com.xiaomi.push.PING_TIMER" />
             </intent-filter>
         </receiver>
-        <!--Xiaomi Ends-->
+        <!--Xiaomi End-->
+
     </application>
 
 </manifest>

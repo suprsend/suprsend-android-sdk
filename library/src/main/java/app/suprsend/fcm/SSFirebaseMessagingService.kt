@@ -9,14 +9,21 @@ import com.google.firebase.messaging.RemoteMessage
 class SSFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Logger.i(TAG, "FCM From : ${remoteMessage.from}")
-        SSNotificationHelper.showFCMNotification(applicationContext, remoteMessage)
+        try {
+            SSNotificationHelper.showFCMNotification(applicationContext, remoteMessage)
+        } catch (e: Exception) {
+            Logger.e(TAG, "onMessageReceived", e)
+        }
     }
 
     override fun onNewToken(token: String) {
-        Logger.i(TAG, "FCM Token : $token")
-        val instance = SSApi.getInstanceFromCachedApiKey()
-        instance?.getUser()?.setAndroidFcmPush(token)
+        try {
+            Logger.i(TAG, "FCM Token : $token")
+            val instance = SSApi.getInstanceFromCachedApiKey()
+            instance?.getUser()?.setAndroidFcmPush(token)
+        } catch (e: Exception) {
+            Logger.e(TAG, "onNewToken", e)
+        }
     }
 
     companion object {

@@ -13,7 +13,6 @@ class SSXiaomiReceiver : PushMessageReceiver() {
 
     override fun onNotificationMessageArrived(context: Context?, miPushMessage: MiPushMessage?) {
         try {
-            Logger.i(TAG, "Xiaomi NM From : ${miPushMessage?.messageId}")
             context ?: return
             miPushMessage ?: return
             SSNotificationHelper.showXiaomiNotification(context, miPushMessage)
@@ -24,7 +23,6 @@ class SSXiaomiReceiver : PushMessageReceiver() {
 
     override fun onReceivePassThroughMessage(context: Context?, miPushMessage: MiPushMessage?) {
         try {
-            Logger.i(TAG, "Xiaomi PM From : ${miPushMessage?.messageId}")
             context ?: return
             miPushMessage ?: return
             SSNotificationHelper.showXiaomiNotification(context, miPushMessage)
