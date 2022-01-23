@@ -4,7 +4,6 @@ plugins {
     kotlin("kapt")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
-    id("kotlin-android")
 }
 apply {
     from("$rootDir/ktlint.gradle")
@@ -111,7 +110,7 @@ dependencies {
     implementation("com.mixpanel.android:mixpanel-android:5.9.1")
 
     implementation("com.github.bumptech.glide:glide:4.12.0")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
+    kapt("com.github.bumptech.glide:compiler:4.12.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

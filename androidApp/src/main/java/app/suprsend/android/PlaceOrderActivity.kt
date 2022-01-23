@@ -16,7 +16,7 @@ class PlaceOrderActivity : AppCompatActivity() {
         binding = ActivityPlaceOrderBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val productId =  intent?.getStringExtra("productId")?:"P1"
+        val productId = intent?.getStringExtra("productId") ?: "P1"
         val productVo: ProductVo = AppCreator.homeItemsList.find { item -> item.getItemId() == productId } as ProductVo
 
         binding.paymentModeSp.adapter = getSpinnerAdapter(

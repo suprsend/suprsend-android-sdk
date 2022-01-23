@@ -1,10 +1,8 @@
 package app.suprsend.android
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.android.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
@@ -64,7 +62,6 @@ class SettingsActivity : AppCompatActivity() {
             AppCreator.setEmail(this, "")
         }
     }
-
 
     private fun getValue(key: String): String {
         return defaultSharedPreferences.getString(key, "") ?: ""
