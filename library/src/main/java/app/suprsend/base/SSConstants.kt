@@ -19,7 +19,7 @@ internal object SSConstants {
     const val CONFIG_IS_APP_LAUNCHED = "is_app_launched"
     const val CONFIG_FCM_PUSH_TOKEN = "fcm_push_token"
     const val CONFIG_XIAOMI_PUSH_TOKEN = "xiaomi_push_token"
-    const val CONFIG_IOS_PUSH_TOKEN = "ios_push_token"
+    const val CONFIG_OPPO_PUSH_REGISTER_ID = "oppo_push_register_id"
     const val CONFIG_DEVICE_ID = "device_id"
     const val CONFIG_NOTIFICATION_GROUP_SHOWN = "notification_group_shown_%s"
 
@@ -47,7 +47,7 @@ internal object SSConstants {
     const val PUSH_VENDOR = "\$pushvendor"
     const val PUSH_VENDOR_FCM = "fcm"
     const val PUSH_VENDOR_XIAOMI = "xiaomi"
-    const val PUSH_VENDOR_APNS = "apns"
+    const val PUSH_VENDOR_OPPO = "oppo"
     const val DEVICE_ID = "\$device_id"
     const val SET = "\$set"
     const val SET_ONCE = "\$set_once"

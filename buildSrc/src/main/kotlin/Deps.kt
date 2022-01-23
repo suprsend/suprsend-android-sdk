@@ -17,6 +17,9 @@ object Deps {
     const val XIAOMI_APP_ID="XXXX"
     const val XIAOMI_APP_KEY="XXXX"
 
+    const val OPPO_APP_KEY = "XXXX"
+    const val OPPO_APP_SECRET = "XXXX"
+
     const val MX_TOKEN="XXXX"
     const val JITPACK_TOKEN="XXXX"
 

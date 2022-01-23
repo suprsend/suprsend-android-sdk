@@ -184,6 +184,14 @@ internal object SSApiInternal {
         return ConfigHelper.get(SSConstants.CONFIG_XIAOMI_PUSH_TOKEN) ?: ""
     }
 
+    fun setOppoRegisterId(registerId: String) {
+        ConfigHelper.addOrUpdate(SSConstants.CONFIG_OPPO_PUSH_REGISTER_ID, registerId)
+    }
+
+    fun getOppoRegisterId(): String {
+        return ConfigHelper.get(SSConstants.CONFIG_OPPO_PUSH_REGISTER_ID) ?: ""
+    }
+
     fun setAppLaunched() {
         ConfigHelper.addOrUpdate(SSConstants.CONFIG_IS_APP_LAUNCHED, true)
     }

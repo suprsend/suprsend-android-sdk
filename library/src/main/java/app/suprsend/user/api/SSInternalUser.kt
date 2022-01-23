@@ -205,6 +205,32 @@ internal object SSInternalUser {
         )
     }
 
+    fun setAndroidOppoPush(registerId: String) {
+        val oldRegisterId = SSApiInternal.getOppoRegisterId()
+        if (oldRegisterId != registerId) {
+            SSApiInternal.setOppoRegisterId(registerId)
+        }
+        val jsonObject = JSONObject()
+        jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, registerId)
+        jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_OPPO)
+        jsonObject.put(SSConstants.DEVICE_ID, SSApiInternal.getDeviceID())
+        storeOperatorPayload(
+            properties = jsonObject,
+            operator = SSConstants.APPEND
+        )
+    }
+
+    fun unSetAndroidOppoPush(registerId: String) {
+        val jsonObject = JSONObject()
+        jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, registerId)
+        jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_OPPO)
+        jsonObject.put(SSConstants.DEVICE_ID, SSApiInternal.getDeviceID())
+        storeOperatorPayload(
+            properties = jsonObject,
+            operator = SSConstants.REMOVE
+        )
+    }
+
     fun setAndroidXiaomiPush(newToken: String) {
         val oldToken = SSApiInternal.getXiaomiToken()
         if (oldToken != newToken) {

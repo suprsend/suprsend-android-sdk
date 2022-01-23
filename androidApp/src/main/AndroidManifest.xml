@@ -17,10 +17,15 @@
     <uses-permission android:name="app.suprsend.android.permission.MIPUSH_RECEIVE" />
     <!--Xiaomi Ends-->
 
+    <!--Oppo Start-->
+    <uses-permission android:name="com.coloros.mcs.permission.RECIEVE_MCS_MESSAGE" />
+    <uses-permission android:name="com.heytap.mcs.permission.RECIEVE_MCS_MESSAGE"/>
+    <!--Oppo End-->
+
 
     <application
         android:name=".MyApplication"
-        android:allowBackup="false"
+
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -126,6 +131,23 @@
             </intent-filter>
         </receiver>
         <!--Xiaomi End-->
+
+        <!--Oppo Start-->
+        <service
+            android:name="app.suprsend.oppo.CompatiblePushMessageService"
+            android:permission="com.coloros.mcs.permission.SEND_MCS_MESSAGE">
+            <intent-filter>
+                <action android:name="com.coloros.mcs.action.RECEIVE_MCS_MESSAGE" />
+            </intent-filter>
+        </service>
+        <service android:name="app.suprsend.oppo.DataMessagePushMessageService"
+            android:permission="com.heytap.mcs.permission.SEND_PUSH_MESSAGE">
+            <intent-filter>
+                <action android:name="com.heytap.mcs.action.RECEIVE_MCS_MESSAGE"/>
+                <action android:name="com.heytap.msp.push.RECEIVE_MCS_MESSAGE" />
+            </intent-filter>
+        </service>
+        <!--Oppo End-->
 
     </application>
 

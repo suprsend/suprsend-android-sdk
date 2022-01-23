@@ -129,6 +129,20 @@ class SSUserApi : UserApiInternalContract {
         }
     }
 
+    override fun setAndroidOppoPush(registerID: String) {
+        executorService.execute {
+            SSInternalUser.setAndroidOppoPush(registerID)
+            SSApiInternal.flush()
+        }
+    }
+
+    override fun unSetAndroidOppoPush(registerID: String) {
+        executorService.execute {
+            SSInternalUser.unSetAndroidOppoPush(registerID)
+            SSApiInternal.flush()
+        }
+    }
+
     override fun setAndroidXiaomiPush(token: String) {
         executorService.execute {
             SSInternalUser.setAndroidXiaomiPush(token)
