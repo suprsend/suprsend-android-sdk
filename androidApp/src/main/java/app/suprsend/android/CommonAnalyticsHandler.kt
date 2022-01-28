@@ -68,7 +68,6 @@ object CommonAnalyticsHandler {
         mixpanelAPI.people.remove(key, value)
     }
 
-
     fun setEmail(email: String) {
         ssApi.getUser().setEmail(email)
     }
