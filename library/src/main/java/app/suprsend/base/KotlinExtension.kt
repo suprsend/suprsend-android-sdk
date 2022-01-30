@@ -1,5 +1,13 @@
 package app.suprsend.base
 
+import android.content.Context
+import android.content.Intent
+import android.content.res.Resources
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Parcel
+import androidx.core.content.res.ResourcesCompat
+import app.suprsend.R
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Locale
@@ -27,9 +35,9 @@ internal fun String?.toKotlinJsonObject(): JSONObject {
 internal fun JSONObject.filterSSReservedKeys(): JSONObject {
     val filteredJson = JSONObject()
     keys().forEach { key ->
-        if (key.contains("$") || key.toLowerCase(Locale.ENGLISH).contains("ss_")) {
-            Logger.e("validation","Key should not contain $ & ss_ : $key")
-        }else{
+        if (key.isInValidKey()) {
+            Logger.e("validation", "Key should not contain $ & ss_ : $key")
+        } else {
             filteredJson.put(key, get(key))
         }
     }
@@ -99,4 +107,36 @@ internal fun getRandomString(length: Int): String {
     return (1..length)
         .map { allowedChars.random() }
         .joinToString("")
+}
+
+internal fun safeDrawable(resources: Resources, drawableId: Int, theme: Resources.Theme? = null): Drawable? {
+    try {
+        return ResourcesCompat.getDrawable(resources, drawableId, theme)
+    } catch (e: Exception) {
+
+    }
+    return null
+}
+
+internal fun Context.getDrawableIdFromName(drawableName: String?): Int? {
+    drawableName ?: return null
+    return try {
+        resources.getIdentifier(drawableName, "drawable", packageName)
+    } catch (e: Exception) {
+        null
+    }
+}
+
+internal fun Context.safeIntent(link: String? = null, defaultLauncherIntent: Boolean = true): Intent? {
+    return if (!link.isNullOrBlank()) {
+        Intent(Intent.ACTION_VIEW, Uri.parse(link))
+    } else {
+        if (defaultLauncherIntent)
+            packageManager.getLaunchIntentForPackage(packageName)
+        else null
+    }
+}
+
+internal fun Parcel.safeString(): String {
+    return readString() ?: ""
 }

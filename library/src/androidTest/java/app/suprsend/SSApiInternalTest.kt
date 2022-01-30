@@ -25,7 +25,6 @@ class SSApiInternalTest : BaseTest() {
 
     @Test
     fun testIdentityWithFCMPush() {
-
         SSApiInternal.setDeviceId("DEV1")
         SSApiInternal.setXiaomiToken("XIAOMI_TOKEN")
         SSApiInternal.identify("U1")
@@ -83,8 +82,6 @@ class SSApiInternalTest : BaseTest() {
 
     @Test
     fun testSetSuperPropertiesJson() {
-
-
         SSApiInternal.setSuperProperties(JSONObject().apply {
             put("Product Name 1", "Cycle 1")
             put("Product Name 2", "Cycle 2")
@@ -122,8 +119,6 @@ class SSApiInternalTest : BaseTest() {
 
     @Test
     fun testTrackEvent() {
-
-
         SSApiInternal.track("ABC")
 
         val eventsList = EventLocalDatasource().getEvents(10)
@@ -132,8 +127,23 @@ class SSApiInternalTest : BaseTest() {
     }
 
     @Test
-    fun testTrackEventWithReservedKeys() {
+    fun testTrackEventWithDollar() {
+        SSApiInternal.track("\$some_event_name")
 
+        val eventsList = EventLocalDatasource().getEvents(10)
+        Assert.assertEquals(0, eventsList.size)
+    }
+
+    @Test
+    fun testTrackEventWithPrefixSS() {
+        SSApiInternal.track("ss_some_event_name")
+
+        val eventsList = EventLocalDatasource().getEvents(10)
+        Assert.assertEquals(0, eventsList.size)
+    }
+
+    @Test
+    fun testTrackEventWithReservedKeys() {
         SSApiInternal.track("ABC", properties = JSONObject().apply {
             put("Product ID", 1)
             put("Product Name", "Abc Title")
@@ -158,7 +168,6 @@ class SSApiInternalTest : BaseTest() {
 
     @Test
     fun testTrackEventWithProperties() {
-
         SSApiInternal.track("ABC", properties = JSONObject().apply {
             put("Product ID", 1)
             put("Product Name", "Abc Title")
@@ -180,7 +189,6 @@ class SSApiInternalTest : BaseTest() {
 
     @Test
     fun testPurchaseMadeProperties() {
-
         SSApiInternal.purchaseMade(properties = JSONObject().apply {
             put("Product ID", 1)
             put("Product Name", "Abc Title")

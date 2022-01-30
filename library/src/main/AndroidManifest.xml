@@ -7,5 +7,6 @@
 
     <application>
         <activity android:name=".notification.NotificationRedirectionActivity" />
+        <activity android:name=".inbox.SSInboxActivity" />
     </application>
 </manifest>

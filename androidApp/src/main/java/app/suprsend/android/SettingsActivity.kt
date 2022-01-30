@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.android.databinding.ActivitySettingsBinding
+import app.suprsend.inbox.SSInboxActivity
+import app.suprsend.inbox.SSInboxConfig
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -27,6 +29,12 @@ class SettingsActivity : AppCompatActivity() {
             binding.emailEt.setText("")
         }
 
+
+        binding.notificationTv.setOnClickListener {
+            val intent = Intent(this, SSInboxActivity::class.java)
+            intent.putExtra("config",SSInboxConfig(toolbarTitle = "Yep it worked"))
+            startActivity(intent)
+        }
         binding.smsEt.setText(getValue("sms"))
         binding.smsTv.setOnClickListener {
             val sms = binding.smsEt.text.toString()

@@ -18,6 +18,7 @@ import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
 import app.suprsend.base.UrlUtils
 import app.suprsend.base.appExecutorService
+import app.suprsend.base.getDrawableIdFromName
 import app.suprsend.base.mapToEnum
 import app.suprsend.base.safeBoolean
 import app.suprsend.base.safeJsonArray
@@ -429,15 +430,6 @@ object SSNotificationHelper {
         }
 
         builder.setStyle(inboxStyle)
-    }
-}
-
-private fun Context.getDrawableIdFromName(drawableName: String?): Int? {
-    drawableName ?: return null
-    return try {
-        resources.getIdentifier(drawableName, "drawable", packageName)
-    } catch (e: Exception) {
-        null
     }
 }
 

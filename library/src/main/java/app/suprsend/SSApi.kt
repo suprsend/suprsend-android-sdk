@@ -4,17 +4,18 @@ import android.app.Application
 import android.content.Context
 import app.suprsend.base.BasicDetails
 import app.suprsend.base.LogLevel
+import app.suprsend.base.Logger
 import app.suprsend.base.PeriodicFlush
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
 import app.suprsend.base.executorService
+import app.suprsend.base.isInValidKey
 import app.suprsend.base.uuid
 import app.suprsend.config.ConfigHelper
 import app.suprsend.user.UserLocalDatasource
 import app.suprsend.user.api.UserApiInternalContract
 import app.suprsend.xiaomi.SSXiaomiReceiver
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
-import com.xiaomi.mipush.sdk.Logger
 import com.xiaomi.mipush.sdk.MiPushClient
 import org.json.JSONObject
 
@@ -119,7 +120,7 @@ private constructor(
     }
 
     fun setLogLevel(level: LogLevel) {
-        app.suprsend.base.Logger.logLevel = level
+        Logger.logLevel = level
     }
 
     companion object {
@@ -141,21 +142,21 @@ private constructor(
         fun initXiaomi(context: Context, appId: String, apiKey: String) {
             try {
                 MiPushClient.registerPush(context, appId, apiKey)
-                Logger.setLogger(context, object : LoggerInterface {
+                com.xiaomi.mipush.sdk.Logger.setLogger(context, object : LoggerInterface {
                     override fun setTag(tag: String?) {
-                        app.suprsend.base.Logger.i(SSXiaomiReceiver.TAG, "set Tag : $tag")
+                        Logger.i(SSXiaomiReceiver.TAG, "set Tag : $tag")
                     }
 
                     override fun log(message: String?) {
-                        app.suprsend.base.Logger.i(SSXiaomiReceiver.TAG, "$message")
+                        Logger.i(SSXiaomiReceiver.TAG, "$message")
                     }
 
                     override fun log(message: String?, throwable: Throwable?) {
-                        app.suprsend.base.Logger.e(SSXiaomiReceiver.TAG, "$message", throwable)
+                        Logger.e(SSXiaomiReceiver.TAG, "$message", throwable)
                     }
                 })
             } catch (e: Exception) {
-                app.suprsend.base.Logger.e(SSXiaomiReceiver.TAG, "initXiaomi", e)
+                Logger.e(SSXiaomiReceiver.TAG, "initXiaomi", e)
             }
         }
 
