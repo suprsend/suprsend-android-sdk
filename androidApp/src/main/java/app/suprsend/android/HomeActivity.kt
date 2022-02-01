@@ -14,6 +14,7 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         val layoutManager = GridLayoutManager(this, 2)
 
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {

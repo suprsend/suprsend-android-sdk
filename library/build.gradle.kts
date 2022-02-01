@@ -43,6 +43,15 @@ dependencies {
     implementation(files("libs/MiPush_SDK_Client_4_8_3.jar"))
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.38")
 
+
+    implementation("androidx.core:core:1.3.0")
+    implementation("androidx.viewpager:viewpager:1.0.0")
+    implementation("androidx.appcompat:appcompat:1.2.0")
+    implementation("androidx.fragment:fragment:1.1.0")
+    implementation("androidx.recyclerview:recyclerview:1.1.0")
+    implementation("com.google.android.material:material:1.2.1")
+    implementation("com.github.bumptech.glide:glide:4.11.0")
+
     testImplementation("junit:junit:4.13.2")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
