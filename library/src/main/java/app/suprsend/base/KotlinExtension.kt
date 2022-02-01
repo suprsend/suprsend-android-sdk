@@ -27,9 +27,9 @@ internal fun String?.toKotlinJsonObject(): JSONObject {
 internal fun JSONObject.filterSSReservedKeys(): JSONObject {
     val filteredJson = JSONObject()
     keys().forEach { key ->
-        if (key.contains("$") || key.toLowerCase(Locale.ENGLISH).contains("ss_")) {
-            Logger.e("validation","Key should not contain $ & ss_ : $key")
-        }else{
+        if (key.isInValidKey()) {
+            Logger.e("validation", "Key should not contain $ & ss_ : $key")
+        } else {
             filteredJson.put(key, get(key))
         }
     }
@@ -37,7 +37,7 @@ internal fun JSONObject.filterSSReservedKeys(): JSONObject {
 }
 
 internal fun String.isInValidKey(): Boolean {
-    return contains("$") || contains("ss_")
+    return contains("$") || startsWith("ss_")
 }
 
 internal fun JSONObject.addUpdateJsoObject(updateJsonObject: JSONObject?): JSONObject {
