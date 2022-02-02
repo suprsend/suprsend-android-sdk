@@ -2,7 +2,7 @@ package app.suprsend.notification
 
 import java.io.Serializable
 
-data class RawNotification(
+internal data class RawNotification(
     val id: String,
     val notificationGroupId: String,
 
@@ -121,7 +121,7 @@ data class RawNotification(
     }
 }
 
-data class NotificationVo(
+internal data class NotificationVo(
     val id: String,
     val notificationChannelVo: NotificationChannelVo,
     val notificationBasicVo: NotificationBasicVo,
@@ -139,7 +139,7 @@ data class NotificationVo(
     }
 }
 
-data class NotificationActionVo(
+internal data class NotificationActionVo(
     val id: String?,
     val title: String? = null,
     val link: String? = null,
@@ -148,11 +148,11 @@ data class NotificationActionVo(
     val notificationActionType: NotificationActionType? = null
 ) : Serializable
 
-enum class NotificationActionType {
+internal enum class NotificationActionType {
     BODY, BUTTON
 }
 
-data class NotificationChannelVo(
+internal data class NotificationChannelVo(
     val id: String,
     val name: String,
     val description: String,
@@ -161,19 +161,19 @@ data class NotificationChannelVo(
     val channelImportance: NotificationChannelImportance = NotificationChannelImportance.HIGH
 )
 
-enum class NotificationChannelVisibility {
+internal enum class NotificationChannelVisibility {
     PUBLIC, PRIVATE, SECRET
 }
 
-enum class NotificationChannelImportance {
+internal enum class NotificationChannelImportance {
     HIGH, LOW, MAX, MIN, DEFAULT
 }
 
-enum class NotificationPriority {
+internal enum class NotificationPriority {
     HIGH, LOW, MAX, MIN, DEFAULT
 }
 
-data class NotificationBasicVo(
+internal data class NotificationBasicVo(
     val priority: NotificationPriority,
     val smallIconDrawableName: String? = null,
     // #000000
@@ -203,7 +203,7 @@ data class NotificationBasicVo(
 
 )
 
-data class BigTextVo(
+internal data class BigTextVo(
     val title: String? = null,
     val contentText: String? = null,
     val summaryText: String? = null,
@@ -211,14 +211,14 @@ data class BigTextVo(
     val bigText: String? = null
 )
 
-data class BigPictureVo(
+internal data class BigPictureVo(
     val bigContentTitle: String? = null,
     val summaryText: String? = null,
     val bigPictureUrl: String? = null,
     val largeIconUrl: String? = null
 )
 
-data class InBoxStyleVo(
+internal data class InBoxStyleVo(
     val bigContentTitle: String? = null,
     val summaryText: String? = null,
     val lines: List<String>? = null

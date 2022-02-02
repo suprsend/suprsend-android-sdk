@@ -109,7 +109,7 @@ class NotificationRedirectionActivity : Activity() {
         private const val FLOW_NAME = "flow_name"
         private const val FLOW_PAYLOAD = "flow_payload"
 
-        fun getIntent(context: Context, notificationActionVo: NotificationActionVo? = null): Intent? {
+        internal fun getIntent(context: Context, notificationActionVo: NotificationActionVo? = null): Intent? {
             if (notificationActionVo?.link == null) {
                 return context.packageManager.getLaunchIntentForPackage(context.packageName)
             }
@@ -122,7 +122,7 @@ class NotificationRedirectionActivity : Activity() {
                 .putExtras(bundle)
         }
 
-        fun notificationDismissIntent(context: Context, notificationDismissVo: NotificationDismissVo): Intent {
+        internal fun notificationDismissIntent(context: Context, notificationDismissVo: NotificationDismissVo): Intent {
             val bundle = Bundle()
             bundle.putString(FLOW_NAME, NotificationRedirection.NOTIFICATION_DISMISS.name)
             bundle.putSerializable(FLOW_PAYLOAD, notificationDismissVo)
@@ -133,10 +133,10 @@ class NotificationRedirectionActivity : Activity() {
     }
 }
 
-enum class NotificationRedirection {
+internal enum class NotificationRedirection {
     NOTIFICATION_ACTION_CLICKED, NOTIFICATION_DISMISS
 }
 
-data class NotificationDismissVo(
+internal data class NotificationDismissVo(
     val notificationId: String
 ) : Serializable

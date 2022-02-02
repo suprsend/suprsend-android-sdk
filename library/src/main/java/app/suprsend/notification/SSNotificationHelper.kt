@@ -437,7 +437,7 @@ fun RemoteMessage.isSuprSendRemoteMessage(): Boolean {
     return data.containsKey(SSConstants.NOTIFICATION_PAYLOAD)
 }
 
-fun RemoteMessage.getRawNotification(): RawNotification {
+internal fun RemoteMessage.getRawNotification(): RawNotification {
     val notificationPayload = (data[SSConstants.NOTIFICATION_PAYLOAD] ?: "")
     return notificationPayload.getRawNotification()
 }
@@ -521,7 +521,7 @@ fun MiPushMessage.isSuprSendPush(): Boolean {
     return content.toKotlinJsonObject().has(SSConstants.NOTIFICATION_PAYLOAD)
 }
 
-fun MiPushMessage.getRawNotification(): RawNotification {
+internal fun MiPushMessage.getRawNotification(): RawNotification {
     return content.toKotlinJsonObject().getString(SSConstants.NOTIFICATION_PAYLOAD).getRawNotification()
 }
 

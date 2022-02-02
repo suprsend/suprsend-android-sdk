@@ -8,6 +8,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import androidx.annotation.RestrictTo;
+
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class SQLDataHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "suprsend.db";
     private static final int DATABASE_VERSION = 1;

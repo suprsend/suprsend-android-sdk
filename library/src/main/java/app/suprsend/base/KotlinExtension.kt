@@ -147,7 +147,7 @@ internal fun Parcel.safeString(): String {
     return readString() ?: ""
 }
 
-fun makeHttpPost(urL: String, authorization: String, date: String, body: String): HttPResponse {
+internal fun makeHttpPost(urL: String, authorization: String, date: String, body: String): HttPResponse {
 
     var connection: HttpURLConnection? = null
     var inputStream: InputStream? = null

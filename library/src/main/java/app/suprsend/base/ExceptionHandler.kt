@@ -4,7 +4,7 @@ import android.os.Process
 import app.suprsend.SSApi
 import kotlin.system.exitProcess
 
-class ExceptionHandler(
+internal class ExceptionHandler(
     private val suprSendApi: SSApi
 ) {
     fun track() {
