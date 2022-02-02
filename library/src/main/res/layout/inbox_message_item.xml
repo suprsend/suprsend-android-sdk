@@ -39,7 +39,7 @@
             android:minHeight="200dp"
             android:padding="4dp"
             tools:background="#EFD8D8"
-            tools:text="Seen Message -Individual coin ownership records are stored in a digital ledger, which is a computerized database using strong cryptography to secure transaction records, to control the creation of additional coins, and to verify the transfer of coin ownership.[1][2][3] Despite their name, cryptocurrencies are not necessarily considered to be currencies in the traditional sense and while varying categorical treatments have been applied to them, including classification as commodities, securities, as well as currencies, cryptocurrencies are generally viewed as a distinct asset class in practice.[4][5][6] Some crypto schemes use validators to maintain the cryptocurrency. In a proof-of-stake model, owners put up their tokens as collateral. In return, they get authority over the token in proportion to the amount they stake. Generally, these token stakers get additional ownership in the token over time via network fees, newly minted tokens or other such reward mechanisms" />
+            tools:text="Seen Message -Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message Seen Message " />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/buttonText"
