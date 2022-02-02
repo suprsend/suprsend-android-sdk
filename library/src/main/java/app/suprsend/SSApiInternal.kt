@@ -5,6 +5,7 @@ import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
 import app.suprsend.base.filterSSReservedKeys
 import app.suprsend.base.flushExecutorService
+import app.suprsend.base.isInValidKey
 import app.suprsend.base.size
 
 import app.suprsend.base.uuid
@@ -57,6 +58,10 @@ internal object SSApiInternal {
     }
 
     fun track(eventName: String, properties: JSONObject? = null) {
+        if (eventName.isInValidKey()) {
+            Logger.e("validation", "Event name should not contain $ & ss_ : $eventName")
+            return
+        }
         val filteredJson = properties?.filterSSReservedKeys() ?: properties
         if (properties != null && filteredJson.size() == 0) {
             return
