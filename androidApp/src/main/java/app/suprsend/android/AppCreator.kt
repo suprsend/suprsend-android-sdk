@@ -8,6 +8,13 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.lang.StringBuilder
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 object AppCreator {
 
@@ -91,4 +98,24 @@ inline fun SharedPreferences.Edit(func: SharedPreferences.Editor.() -> Unit) {
     val editor = edit()
     editor.func()
     editor.apply()
+}
+internal val demoAppExecutorService: ExecutorService by lazy { Executors.newFixedThreadPool(1) }
+
+internal fun makeGetCall(urlStr: String): String {
+    val url = URL(urlStr)
+    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+
+    var response = ""
+    try {
+        val br = BufferedReader(InputStreamReader(connection.inputStream))
+        val sb = StringBuilder()
+        var line: String?
+        while (br.readLine().also { line = it } != null) {
+            sb.append(line).append('\n')
+        }
+        response = sb.toString()
+    } finally {
+        connection.disconnect()
+    }
+    return response
 }

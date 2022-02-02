@@ -6,10 +6,13 @@ import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.android.databinding.ActivitySettingsBinding
 import app.suprsend.inbox.SSInboxActivity
 import app.suprsend.inbox.SSInboxConfig
+import org.json.JSONObject
 
 class SettingsActivity : AppCompatActivity() {
 
     lateinit var binding: ActivitySettingsBinding
+
+    var ssInboxConfig: SSInboxConfig? = SSInboxConfig()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +32,6 @@ class SettingsActivity : AppCompatActivity() {
             binding.emailEt.setText("")
         }
 
-
-        binding.notificationTv.setOnClickListener {
-            val intent = Intent(this, SSInboxActivity::class.java)
-            intent.putExtra("config",SSInboxConfig(toolbarTitle = "Yep it worked"))
-            startActivity(intent)
-        }
         binding.smsEt.setText(getValue("sms"))
         binding.smsTv.setOnClickListener {
             val sms = binding.smsEt.text.toString()
@@ -68,6 +65,37 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(Intent(this, WelcomeActivity::class.java))
             finishAffinity()
             AppCreator.setEmail(this, "")
+        }
+
+        binding.notificationTv.setOnClickListener {
+            val intent = Intent(this, SSInboxActivity::class.java)
+            if (ssInboxConfig != null)
+                intent.putExtra("config", ssInboxConfig)
+            startActivity(intent)
+        }
+        demoAppExecutorService.execute {
+            // Todo : Testing url
+            val responseStr = makeGetCall("https://abc.in/http/uploads/inbox_screen_theme.json")
+            if (responseStr.isBlank()) {
+                ssInboxConfig = null
+                return@execute
+            }
+
+            val response = JSONObject(responseStr)
+            ssInboxConfig = SSInboxConfig(
+                statusBarColor = response.optString("statusBarColor"),
+                navigationBarColor = response.optString("navigationBarColor"),
+                toolbarBgColor = response.optString("toolbarBgColor"),
+                toolbarTitle = response.optString("toolbarTitle"),
+                toolbarTitleColor = response.optString("toolbarTitleColor"),
+                screenBgColor = response.optString("screenBgColor"),
+                backButtonColor = response.optString("backButtonColor"),
+                emptyScreenMessage = response.optString("emptyScreenMessage"),
+                emptyScreenMessageTextColor = response.optString("emptyScreenMessageTextColor"),
+                messageTextColor = response.optString("messageTextColor"),
+                messageActionBgColor = response.optString("messageActionBgColor"),
+                messageActionTextColor = response.optString("messageActionTextColor")
+            )
         }
     }
 

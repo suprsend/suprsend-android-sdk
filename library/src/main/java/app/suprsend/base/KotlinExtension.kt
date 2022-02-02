@@ -7,10 +7,16 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Parcel
 import androidx.core.content.res.ResourcesCompat
-import app.suprsend.R
+import app.suprsend.event.EventFlushHandler
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.Locale
+import java.io.BufferedReader
+import java.io.DataOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 internal inline fun <reified T : Enum<T>> String?.mapToEnum(defaultValue: T): T {
     return mapToEnum<T>() ?: defaultValue
@@ -139,4 +145,71 @@ internal fun Context.safeIntent(link: String? = null, defaultLauncherIntent: Boo
 
 internal fun Parcel.safeString(): String {
     return readString() ?: ""
+}
+
+fun makeHttpPost(urL: String, authorization: String, date: String, body: String): HttPResponse {
+
+    var connection: HttpURLConnection? = null
+    var inputStream: InputStream? = null
+    try {
+        val url = URL(urL)
+        connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "POST"
+        connection.setRequestProperty("Content-Type", "application/json")
+        connection.addRequestProperty("Authorization", authorization)
+        connection.addRequestProperty("Date", date)
+        connection.useCaches = false
+        connection.doOutput = true
+        connection.doInput = true
+
+        //Send request
+        val wr = DataOutputStream(connection.outputStream)
+        wr.writeBytes(body)
+        wr.close()
+
+        //Get Response
+        try {
+            inputStream = connection.inputStream
+        } catch (ioe: IOException) {
+
+            val statusCode = connection.responseCode
+            if (statusCode >= 400) {
+                inputStream = connection.errorStream
+            }
+        }
+        val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+        val response = StringBuilder()
+        var line: String?
+        while (bufferedReader.readLine().also { line = it } != null) {
+            response.append(line)
+            response.append('\r')
+        }
+        bufferedReader.close()
+
+        return HttPResponse(connection.responseCode, response.toString())
+    } catch (e: Exception) {
+        Logger.e(EventFlushHandler.TAG, "", e)
+    } finally {
+        connection?.disconnect()
+    }
+    return HttPResponse(400)
+}
+
+internal fun makeGetCall(urlStr:String): String {
+    val url = URL(urlStr)
+    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+
+    var response = ""
+    try {
+        val br = BufferedReader(InputStreamReader(connection.inputStream))
+        val sb = StringBuilder()
+        var line: String?
+        while (br.readLine().also { line = it } != null) {
+            sb.append(line).append('\n')
+        }
+        response = sb.toString()
+    } finally {
+        connection.disconnect()
+    }
+    return response
 }

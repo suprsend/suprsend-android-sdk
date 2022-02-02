@@ -3,40 +3,56 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    tools:background="#E48F8F">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:background="@drawable/inbox_message_item_bg">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/imageLL"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minHeight="200dp"
-            tools:background="#E17676" />
+            android:layout_alignTop="@id/descriptionText"
+            android:layout_alignBottom="@id/descriptionText">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imageView"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="2dp"
+                android:minHeight="200dp"
+                tools:background="#EFD2D2" />
+        </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/descriptionText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/imageView"
-            android:maxLines="4"
-            tools:background="#DF6B6B"
-            tools:text="Abcde" />
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toEndOf="@id/imageLL"
+            android:minHeight="200dp"
+            android:padding="4dp"
+            tools:background="#EFD8D8"
+            tools:text="Seen Message -Individual coin ownership records are stored in a digital ledger, which is a computerized database using strong cryptography to secure transaction records, to control the creation of additional coins, and to verify the transfer of coin ownership.[1][2][3] Despite their name, cryptocurrencies are not necessarily considered to be currencies in the traditional sense and while varying categorical treatments have been applied to them, including classification as commodities, securities, as well as currencies, cryptocurrencies are generally viewed as a distinct asset class in practice.[4][5][6] Some crypto schemes use validators to maintain the cryptocurrency. In a proof-of-stake model, owners put up their tokens as collateral. In return, they get authority over the token in proportion to the amount they stake. Generally, these token stakers get additional ownership in the token over time via network fees, newly minted tokens or other such reward mechanisms" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/buttonText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/descriptionText"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/inbox_message_item_action_bg"
+            android:gravity="center"
+            android:padding="16dp"
+            android:textColor="#FFFFFF"
+            tools:text="Click Me" />
     </RelativeLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/buttonText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="16dp"
-        tools:text="Click Me" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="10dp" />
 
 </LinearLayout>

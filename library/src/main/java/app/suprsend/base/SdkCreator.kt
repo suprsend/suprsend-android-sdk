@@ -7,6 +7,8 @@ import app.suprsend.event.EventLocalDatasource
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+internal object SdkCreator
+
 @SuppressLint("StaticFieldLeak")
 internal lateinit var context: Context
 
