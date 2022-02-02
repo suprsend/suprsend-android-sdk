@@ -45,7 +45,7 @@ internal fun JSONObject.filterSSReservedKeys(): JSONObject {
 }
 
 internal fun String.isInValidKey(): Boolean {
-    return contains("$") || contains("ss_")
+    return contains("$") || startsWith("ss_")
 }
 
 internal fun JSONObject.addUpdateJsoObject(updateJsonObject: JSONObject?): JSONObject {

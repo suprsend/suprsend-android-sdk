@@ -141,7 +141,13 @@ class SSApiInternalTest : BaseTest() {
         val eventsList = EventLocalDatasource().getEvents(10)
         Assert.assertEquals(0, eventsList.size)
     }
+    @Test
+    fun testTrackEventWithPrefixSSInBetweenText() {
+        SSApiInternal.track("business_event")
 
+        val eventsList = EventLocalDatasource().getEvents(10)
+        Assert.assertEquals(1, eventsList.size)
+    }
     @Test
     fun testTrackEventWithReservedKeys() {
         SSApiInternal.track("ABC", properties = JSONObject().apply {
