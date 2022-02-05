@@ -47,12 +47,12 @@ private constructor(
 
         if (!SSApiInternal.isAppInstalled()) {
             // App Launched
-            track(SSConstants.S_EVENT_APP_INSTALLED)
+            SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_INSTALLED)
             SSApiInternal.setAppLaunched()
         }
 
         if (!isFromCache)
-            track(SSConstants.S_EVENT_APP_LAUNCHED)
+            SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_LAUNCHED)
 
         val application = SdkAndroidCreator.context.applicationContext as Application
 
