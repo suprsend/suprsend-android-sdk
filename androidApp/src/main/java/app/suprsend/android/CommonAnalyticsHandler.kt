@@ -17,7 +17,7 @@ object CommonAnalyticsHandler {
     fun initialize(context: Context) {
         if (this::ssApi.isInitialized)
             return
-        ssApi = SSApi.getInstance(BuildConfig.SS_TOKEN, BuildConfig.SS_SECRET, BuildConfig.SS_API_BASE_URL)
+        ssApi = SSApi.getInstance()
         ssApi.setLogLevel(LogLevel.VERBOSE)
         mixpanelAPI = MixpanelAPI.getInstance(context, BuildConfig.MX_TOKEN)
     }
