@@ -28,7 +28,7 @@ class SSApiInternalTest : BaseTest() {
         //Initially identify got called
         SSApiInternal.identify("U1")
         Assert.assertEquals("U1", UserLocalDatasource().getIdentity())
-        val eventLocalDatasource=EventLocalDatasource()
+        val eventLocalDatasource = EventLocalDatasource()
 
         //Cleaning just to fake like event got flush
         deleteAllEvents()
@@ -37,6 +37,7 @@ class SSApiInternalTest : BaseTest() {
         SSApiInternal.identify("U1")
         Assert.assertEquals("U1", UserLocalDatasource().getIdentity())
         val eventsList = eventLocalDatasource.getEvents(10)
+        //Verify no events are generated as identify is ignored
         Assert.assertEquals(0, eventsList.size)
     }
 
