@@ -24,6 +24,23 @@ class SSApiInternalTest : BaseTest() {
     }
 
     @Test
+    fun testIgnoreIdentifyIfAlreadyIdentified() {
+        //Initially identify got called
+        SSApiInternal.identify("U1")
+        Assert.assertEquals("U1", UserLocalDatasource().getIdentity())
+        val eventLocalDatasource=EventLocalDatasource()
+
+        //Cleaning just to fake like event got flush
+        deleteAllEvents()
+
+        //Again identify is called with same user id
+        SSApiInternal.identify("U1")
+        Assert.assertEquals("U1", UserLocalDatasource().getIdentity())
+        val eventsList = eventLocalDatasource.getEvents(10)
+        Assert.assertEquals(0, eventsList.size)
+    }
+
+    @Test
     fun testIdentityWithFCMPush() {
 
         SSApiInternal.setDeviceId("DEV1")

@@ -22,8 +22,12 @@ open class BaseTest {
     }
 
     protected fun clean() {
-        sqlDataHelper.deleteAllEvents()
+        deleteAllEvents()
         sqlDataHelper.deleteAllConfigs()
+    }
+
+    fun deleteAllEvents() {
+        sqlDataHelper.deleteAllEvents()
     }
 
     protected fun getTestProductData(): MutableMap<String, Any> {
