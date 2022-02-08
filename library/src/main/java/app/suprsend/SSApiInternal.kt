@@ -24,6 +24,9 @@ internal object SSApiInternal {
     val userLocalDatasource = UserLocalDatasource()
 
     fun identify(uniqueId: String) {
+        if (userLocalDatasource.getIdentity() == uniqueId) {
+            return
+        }
         SdkAndroidCreator
             .eventLocalDatasource
             .track(

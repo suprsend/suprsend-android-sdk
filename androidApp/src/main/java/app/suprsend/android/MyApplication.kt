@@ -7,7 +7,7 @@ class MyApplication : Application() {
 
     override fun onCreate() {
 
-        SSApi.init(context = this)
+        SSApi.init(context = this, apiKey = BuildConfig.SS_TOKEN, apiSecret = BuildConfig.SS_SECRET, apiBaseUrl = BuildConfig.SS_API_BASE_URL)
 
         super.onCreate()
 

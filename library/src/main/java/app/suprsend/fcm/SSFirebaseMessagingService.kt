@@ -20,7 +20,7 @@ class SSFirebaseMessagingService : FirebaseMessagingService() {
         try {
             Logger.i(TAG, "FCM Token : $token")
             val instance = SSApi.getInstanceFromCachedApiKey()
-            instance?.getUser()?.setAndroidFcmPush(token)
+            instance.getUser().setAndroidFcmPush(token)
         } catch (e: Exception) {
             Logger.e(TAG, "onNewToken", e)
         }

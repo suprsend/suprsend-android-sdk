@@ -20,20 +20,14 @@ import org.json.JSONObject
 
 class SSApi
 private constructor(
-    apiKey: String,
-    apiSecret: String,
-    apiBaseUrl: String? = null, // If null data will be directed to prod server
     isFromCache: Boolean = false
 ) {
 
-    private val basicDetails: BasicDetails = BasicDetails(apiKey, apiSecret, apiBaseUrl)
+
     private val ssUserApi: SSUserApi = SSUserApi()
 
     init {
 
-        ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, basicDetails.getApiBaseUrl())
-        ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, basicDetails.apiKey)
-        ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_SECRET, basicDetails.apiSecret)
 
         // Anonymous user id generation
         val userLocalDatasource = UserLocalDatasource()
@@ -129,12 +123,18 @@ private constructor(
         /**
          * Should be called before Application super.onCreate()
          */
-        fun init(context: Context) {
+        fun init(context: Context, apiKey: String, apiSecret: String, apiBaseUrl: String? = null) {
 
             // Setting android context to user everywhere
             if (!SdkAndroidCreator.isContextInitialized()) {
                 SdkAndroidCreator.context = context.applicationContext
             }
+
+            val basicDetails: BasicDetails = BasicDetails(apiKey, apiSecret, apiBaseUrl)
+
+            ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, basicDetails.getApiBaseUrl())
+            ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, basicDetails.apiKey)
+            ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_SECRET, basicDetails.apiSecret)
 
         }
 
@@ -159,23 +159,20 @@ private constructor(
             }
         }
 
-        fun getInstance(apiKey: String, apiSecret: String, apiBaseUrl: String? = null): SSApi {
-            return getInstanceInternal(apiKey = apiKey, apiSecret = apiSecret, apiBaseUrl = apiBaseUrl)
+        fun getInstance(): SSApi {
+            return getInstanceInternal()
         }
 
-        internal fun getInstanceFromCachedApiKey(): SSApi? {
-            val apiKey = ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: return null
-            val secret = ConfigHelper.get(SSConstants.CONFIG_API_SECRET) ?: return null
-            val apiBaseUrl = ConfigHelper.get(SSConstants.CONFIG_API_BASE_URL) ?: return null
-            return getInstanceInternal(apiKey = apiKey, apiSecret = secret, apiBaseUrl = apiBaseUrl, isFromCache = true)
+        internal fun getInstanceFromCachedApiKey(): SSApi {
+            return getInstanceInternal(isFromCache = true)
         }
 
-        private fun getInstanceInternal(apiKey: String, apiSecret: String, apiBaseUrl: String? = null, isFromCache: Boolean = false): SSApi {
-            val uniqueId = "$apiKey-$apiSecret"
+        private fun getInstanceInternal(isFromCache: Boolean = false): SSApi {
+            val uniqueId = "only_one_instance_support"
             if (instancesMap.containsKey(uniqueId)) {
                 return instancesMap[uniqueId]!!
             }
-            val instance = SSApi(apiKey, apiSecret, apiBaseUrl, isFromCache)
+            val instance = SSApi(isFromCache)
             instancesMap[uniqueId] = instance
             return instance
         }
