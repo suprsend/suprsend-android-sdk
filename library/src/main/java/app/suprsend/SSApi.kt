@@ -123,6 +123,13 @@ private constructor(
         /**
          * Should be called before Application super.onCreate()
          */
+        fun init(context: Context, apiKey: String, apiSecret: String) {
+            init(context, apiKey, apiSecret, null)
+        }
+
+        /**
+         * Should be called before Application super.onCreate()
+         */
         fun init(context: Context, apiKey: String, apiSecret: String, apiBaseUrl: String? = null) {
 
             // Setting android context to user everywhere
