@@ -7,5 +7,6 @@
 
     <application>
         <activity android:name=".notification.NotificationRedirectionActivity" />
+        <receiver android:name=".notification.SSNotificationDismissBroadcastReceiver"/>
     </application>
 </manifest>
