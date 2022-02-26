@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
+import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import app.suprsend.BuildConfig
 import app.suprsend.R
@@ -228,9 +229,9 @@ object SSNotificationHelper {
         }
 
         // Set the handler in the event that the notification is dismissed.
-        val notificationDeleteIntent = NotificationRedirectionActivity.notificationDismissIntent(context, NotificationDismissVo(notificationId = notificationVo.id))
+        val notificationDeleteIntent = SSNotificationDismissBroadcastReceiver.notificationDismissIntent(context, NotificationDismissVo(notificationId = notificationVo.id))
         notificationDeleteIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val notificationDeletePI = PendingIntent.getActivity(context, System.currentTimeMillis().toInt(), notificationDeleteIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val notificationDeletePI = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), notificationDeleteIntent, PendingIntent.FLAG_UPDATE_CURRENT)
         notificationBuilder.setDeleteIntent(notificationDeletePI)
 
         // The category of the notification which allows android to prioritize the notification as required.
