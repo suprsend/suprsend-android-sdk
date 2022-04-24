@@ -8,6 +8,7 @@ import app.suprsend.base.PeriodicFlush
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
 import app.suprsend.base.executorService
+import app.suprsend.base.filterSSReservedKeys
 import app.suprsend.base.uuid
 import app.suprsend.config.ConfigHelper
 import app.suprsend.user.UserLocalDatasource
@@ -27,7 +28,6 @@ private constructor(
     private val ssUserApi: SSUserApi = SSUserApi()
 
     init {
-
 
         // Anonymous user id generation
         val userLocalDatasource = UserLocalDatasource()
@@ -75,7 +75,7 @@ private constructor(
 
     fun setSuperProperties(properties: JSONObject) {
         executorService.execute {
-            SSApiInternal.setSuperProperties(properties = properties)
+            SSApiInternal.setSuperProperties(properties = properties.filterSSReservedKeys())
         }
     }
 
@@ -137,7 +137,7 @@ private constructor(
                 SdkAndroidCreator.context = context.applicationContext
             }
 
-            val basicDetails: BasicDetails = BasicDetails(apiKey, apiSecret, apiBaseUrl)
+            val basicDetails = BasicDetails(apiKey, apiSecret, apiBaseUrl)
 
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, basicDetails.getApiBaseUrl())
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, basicDetails.apiKey)

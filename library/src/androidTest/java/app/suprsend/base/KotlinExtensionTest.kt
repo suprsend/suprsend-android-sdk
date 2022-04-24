@@ -76,7 +76,8 @@ class KotlinExtensionTest {
                 "jO": { "someKeyString": "Product Title 1" },
                 "ja": [{ "someKeyString": "Product Title 1"}],
                 "${key}someKey": 51,
-                "ss_someKey": 341.45
+                "ss_someKey": 341.45,
+                "SS_someKey2": 341.45
             }
         """.trimIndent().toKotlinJsonObject().filterSSReservedKeys()
         assertEquals(6, sampleJson.size())

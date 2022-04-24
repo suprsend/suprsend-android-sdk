@@ -49,6 +49,9 @@ internal object SSApiInternal {
     }
 
     fun setSuperProperties(properties: JSONObject) {
+        if(properties.size()==0){
+            return
+        }
         Logger.i(TAG, "Setting super properties $properties")
         val superPropertiesRepository = SuperPropertiesLocalDataSource()
         superPropertiesRepository.add(properties)
@@ -103,7 +106,11 @@ internal object SSApiInternal {
 
         flushExecutorService.execute {
             Logger.i(EventFlushHandler.TAG, "Flush event started")
-            EventFlushHandler.flushEvents()
+            try {
+                EventFlushHandler.flushEvents()
+            }catch (e:Exception){
+                Logger.e(EventFlushHandler.TAG, "Error occurred while flushing",e)
+            }
             isFlushing = false
             Logger.i(EventFlushHandler.TAG, "Flush event completed")
         }
