@@ -62,7 +62,7 @@ afterEvaluate {
             }
             repositories {
                 maven {
-                    url = uri("https://jitpack.io")
+                    setUrl("https://jitpack.io")
                     credentials {
                         username = Deps.JITPACK_TOKEN
                     }

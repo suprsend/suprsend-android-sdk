@@ -13,7 +13,6 @@ import org.junit.Test
 
 class SSInternalUserTest : BaseTest() {
 
-
     @Test
     fun testSetOperator() {
 
