@@ -1,0 +1,9 @@
+jdk:
+  - openjdk9
+#before_install:
+#  - ./custom_setup.sh
+install:
+  - echo "Running a custom install command"
+  - ./gradlew -Pgroup=com.github.suprsend -Pversion=0.1Beta9 publishToMavenLocal
+#env:
+#  MYVAR: "custom environment variable"
