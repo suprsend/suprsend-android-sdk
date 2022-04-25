@@ -47,7 +47,7 @@ object Deps {
     object Publication {
         const val ARTIFACT_ID = "suprsend-kmm-sdk"
         const val GROUP = "com.github.suprsend"
-        const val VERSION = "$MAJOR_VERSION.${MINOR_VERSION}Beta$SDK_BETA"
+        const val VERSION = SDK_VERSION_NAME
     }
 
     object JetBrains {
