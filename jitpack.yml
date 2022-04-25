@@ -7,6 +7,8 @@ install:
   - ./gradlew -Pgroup=com.github.suprsend -Pversion=0.1Beta9 publishToMavenLocal
   - sdkmanager --list
   - sdkmanager "build-tools;32.0.0"
+  - pwd
+  - ls -l
   - cd /opt/android-sdk-linux/build-tools/32.0.0 && mv d8 dx && cd lib && mv d8.jar dx.jar
   - ./gradlew -Pgroup=com.github.suprsend -Pversion=0.1Beta9 publishToMavenLocal
 #env:
