@@ -45,8 +45,8 @@ object Deps {
     }
 
     object Publication {
-        const val ARTIFACT_ID = "suprsend-android-sdk"
-        const val GROUP = "com.github.suprsend"
+        const val ARTIFACT_ID = "android"
+        const val GROUP = "com.suprsend"
         const val VERSION = SDK_VERSION_NAME
     }
 
