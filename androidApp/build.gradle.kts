@@ -100,7 +100,7 @@ dependencies {
         println("Using shared library")
     }else{
         implementation("${Deps.Publication.GROUP}:${Deps.Publication.ARTIFACT_ID}:${Deps.Publication.VERSION}")
-        println("Using remote library")
+        println("Using remote library - " + "${Deps.Publication.GROUP}:${Deps.Publication.ARTIFACT_ID}:${Deps.Publication.VERSION}")
     }
 
 //    implementation(files("libs/library-debug.aar"))

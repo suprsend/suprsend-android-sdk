@@ -135,6 +135,7 @@ class SSApiInternalTest : BaseTest() {
         val eventPayload = eventsList[0].value.toKotlinJsonObject()
         Assert.assertEquals("ABC", eventPayload.getString(SSConstants.EVENT))
         Assert.assertEquals(false, eventPayload.getJSONObject(SSConstants.PROPERTIES).has("Product Name 1"))
+        Assert.assertEquals(true, eventPayload.getJSONObject(SSConstants.PROPERTIES).has("Product Name 2"))
 
     }
 
