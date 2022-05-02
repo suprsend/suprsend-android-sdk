@@ -5,7 +5,7 @@ object Deps {
 
     //Sdk Details
     const val SDK_PACKAGE_NAME = "app.suprsend"
-    const val SDK_VERSION_CODE = 9
+    const val SDK_VERSION_CODE = 10
     const val SDK_BETA = 10
     const val SDK_VERSION_NAME = "$MAJOR_VERSION.${MINOR_VERSION}Beta$SDK_BETA"
 
@@ -45,9 +45,9 @@ object Deps {
     }
 
     object Publication {
-        const val ARTIFACT_ID = "suprsend-kmm-sdk"
-        const val GROUP = "com.github.suprsend"
-        const val VERSION = "$MAJOR_VERSION.${MINOR_VERSION}Beta$SDK_BETA"
+        const val ARTIFACT_ID = "android"
+        const val GROUP = "com.suprsend"
+        const val VERSION = SDK_VERSION_NAME
     }
 
     object JetBrains {

@@ -13,4 +13,5 @@ https://github.com/suprsend/suprsend-android-sdk/pull/7/files
 https://github.com/suprsend/suprsend-android-sdk/pull/8
 0.1Beta9 - Created separate method to init url for react native sdk
 0.1Beta10 - Notification dismissed not getting tracked when app is in background
+f97f43acb68ab458cc46df3d06b6730330cd0251 - com.suprsend:android0.1Beta10 published on mavenCenteral()
 ```

@@ -23,7 +23,7 @@ android {
 
     buildTypes {
         getByName("release") {
-            minifyEnabled(false)
+            isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -50,24 +50,29 @@ dependencies {
 
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            create<MavenPublication>("release") {
-                // Configure the publication here
-                artifactId = Deps.Publication.ARTIFACT_ID
-                group = Deps.Publication.GROUP
-                version = Deps.Publication.VERSION
-                from(components["release"])
-            }
-            repositories {
-                maven {
-                    setUrl("https://jitpack.io")
-                    credentials {
-                        username = Deps.JITPACK_TOKEN
-                    }
-                }
-            }
-        }
-    }
+//afterEvaluate {
+//    publishing {
+//        publications {
+//            create<MavenPublication>("release") {
+//                // Configure the publication here
+//                artifactId = Deps.Publication.ARTIFACT_ID
+//                group = Deps.Publication.GROUP
+//                version = Deps.Publication.VERSION
+//                from(components["release"])
+//            }
+//            repositories {
+//                maven {
+//                    setUrl("https://jitpack.io")
+//                    credentials {
+//                        username = Deps.JITPACK_TOKEN
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
+
+apply {
+    from("$rootDir/publish.gradle")
 }
+
