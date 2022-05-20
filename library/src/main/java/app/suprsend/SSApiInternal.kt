@@ -121,6 +121,7 @@ internal object SSApiInternal {
         val userId = userLocalDatasource.getIdentity()
         Logger.i(TAG, "reset : Current : $userId New : $newID")
         saveTrackEventPayload(SSConstants.S_EVENT_USER_LOGOUT)
+        SuperPropertiesLocalDataSource().removeAll()
         userLocalDatasource.identify(newID)
         appendNotificationToken()
     }

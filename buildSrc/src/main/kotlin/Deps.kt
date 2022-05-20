@@ -2,12 +2,18 @@ object Deps {
 
     const val MAJOR_VERSION = 0
     const val MINOR_VERSION = 1
+    const val PATCH_VERSION = 1
 
     //Sdk Details
     const val SDK_PACKAGE_NAME = "app.suprsend"
-    const val SDK_VERSION_CODE = 10
-    const val SDK_BETA = 10
-    const val SDK_VERSION_NAME = "$MAJOR_VERSION.${MINOR_VERSION}Beta$SDK_BETA"
+    const val SDK_VERSION_CODE = 11
+
+    private val BUILD_TYPE = BuildType.NATIVE
+    var SDK_VERSION_NAME = when(BUILD_TYPE){
+        BuildType.NATIVE -> "android-native/$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}"
+        BuildType.REACT_NATIVE -> "android-rn/$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}"
+        BuildType.FLUTTER -> "android-flutter/$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}"
+    }
 
     //App Details
     const val APP_BETA = 13
@@ -47,7 +53,7 @@ object Deps {
     object Publication {
         const val ARTIFACT_ID = "android"
         const val GROUP = "com.suprsend"
-        const val VERSION = SDK_VERSION_NAME
+        var VERSION = SDK_VERSION_NAME
     }
 
     object JetBrains {
@@ -55,4 +61,7 @@ object Deps {
             const val VERSION = "1.3.72"
         }
     }
+}
+private enum class BuildType{
+    NATIVE,REACT_NATIVE,FLUTTER
 }
