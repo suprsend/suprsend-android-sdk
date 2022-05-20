@@ -8,4 +8,5 @@ internal interface SuperPropertiesRepositoryContract {
     fun add(properties: JSONObject)
     fun remove(key: String)
     fun getAll(): JSONObject
+    fun removeAll()
 }
