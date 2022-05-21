@@ -53,10 +53,17 @@ class SettingsActivity : AppCompatActivity() {
             binding.whatsAppEt.setText("")
         }
 
+        binding.setSuprProperty.setOnClickListener {
+            CommonAnalyticsHandler.setSuperProperties(binding.setSuprPropertyKey.text.toString(), binding.setSuprPropertyValue.text.toString())
+        }
+
+        binding.unSetSuprProperty.setOnClickListener {
+            CommonAnalyticsHandler.unSetSuperProperties(binding.setSuprPropertyKey.text.toString())
+        }
+
         binding.logoutTv.setOnClickListener {
             CommonAnalyticsHandler.unset("choices")
             CommonAnalyticsHandler.reset()
-            CommonAnalyticsHandler.unSetSuperProperties("user_type")
             startActivity(Intent(this, WelcomeActivity::class.java))
             finishAffinity()
             AppCreator.setEmail(this, "")
