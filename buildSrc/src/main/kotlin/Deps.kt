@@ -17,8 +17,8 @@ object Deps {
         "$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}"
 
     //App Details
-    const val APP_BETA = 13
-    const val APP_VERSION_CODE = 13
+    const val APP_BETA = 14
+    const val APP_VERSION_CODE = APP_BETA
     const val ISPROD = false
     const val RUN_LIB = true
 
