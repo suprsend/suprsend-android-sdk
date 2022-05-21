@@ -6,7 +6,6 @@ buildscript {
         google()
         mavenCentral()
         maven(url = "https://kotlin.bintray.com/kotlinx")
-        maven(url = "https://jitpack.io")
         maven(url = "https://maven.google.com")
     }
     dependencies {
@@ -23,7 +22,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven(url = "https://jitpack.io")
         jcenter() // Warning: this repository is going to shut down soon
     }
 }
