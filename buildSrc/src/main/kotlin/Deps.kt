@@ -7,8 +7,8 @@ object Deps {
     const val MAJOR_VERSION = 0
     const val MINOR_VERSION = 1
     const val PATCH_VERSION = 2
-    val BUILD_TYPE = BuildType.ANDROID
-    val isSnapshot = true
+    val BUILD_TYPE = BuildType.NATIVE
+    val isSnapshot = false
 
     const val SDK_VERSION_CODE = MAJOR_VERSION * 1000 + (MINOR_VERSION * 100) + PATCH_VERSION
     var SDK_VERSION_NAME = if (isSnapshot)
