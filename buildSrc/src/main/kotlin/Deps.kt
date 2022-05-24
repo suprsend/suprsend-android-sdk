@@ -6,7 +6,7 @@ object Deps {
     const val SDK_PACKAGE_NAME = "app.suprsend"
     const val MAJOR_VERSION = 0
     const val MINOR_VERSION = 1
-    const val PATCH_VERSION = 2
+    const val PATCH_VERSION = 3
     val BUILD_TYPE = BuildType.NATIVE
     val isSnapshot = false
 
@@ -52,12 +52,11 @@ object Deps {
     }
 
     object Publication {
-        var ARTIFACT_ID = BUILD_TYPE.name.toLowerCase(Locale.getDefault())
         const val GROUP = "com.suprsend"
         var VERSION = SDK_VERSION_NAME
 
         const val PUBLISH_GROUP_ID = "com.suprsend"
-        const val PUBLISH_ARTIFACT_ID = "android"
+        var PUBLISH_ARTIFACT_ID = BUILD_TYPE.name.toLowerCase(Locale.getDefault())
         var PUBLISH_ARTIFACT_VERSION = SDK_VERSION_NAME
         const val POM_NAME = "android"
         const val POM_DESCRIPTION = "Suprsend Android SDK"

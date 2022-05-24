@@ -17,6 +17,7 @@ class WelcomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        CommonAnalyticsHandler.initialize(applicationContext)
         val email = AppCreator.getEmail(this)
         if (email.isNotBlank()) {
             startActivity(Intent(this, HomeActivity::class.java))

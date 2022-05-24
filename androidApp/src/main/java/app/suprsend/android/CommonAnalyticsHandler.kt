@@ -33,7 +33,7 @@ object CommonAnalyticsHandler {
         mixpanelAPI.track(eventName)
     }
 
-    fun track(eventName: String, properties: JSONObject? = null) {
+    fun track(eventName: String, properties: JSONObject) {
         ssApi.track(eventName, properties)
         mixpanelAPI.track(eventName, properties)
     }

@@ -59,7 +59,7 @@ internal object EventFlushHandler {
                 date = date
             )
             if(httpResponse.statusCode!=202 || BuildConfig.DEBUG) {
-                Logger.i(TAG, "${httpResponse.statusCode} $requestJson ${httpResponse.response}")
+                Logger.i(TAG, "${httpResponse.statusCode} \n$requestJson \n${httpResponse.response}")
             }else{
                 Logger.i(TAG, "statusCode:${httpResponse.statusCode}")
             }

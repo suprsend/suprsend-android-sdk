@@ -99,7 +99,7 @@ dependencies {
         implementation(project(":library"))
         println("Using shared library")
     }else{
-        val dependency = "${Deps.Publication.GROUP}:${Deps.Publication.ARTIFACT_ID}:${Deps.Publication.VERSION}"
+        val dependency = "${Deps.Publication.GROUP}:${Deps.Publication.PUBLISH_ARTIFACT_ID}:${Deps.Publication.VERSION}"
         implementation(dependency)
         println("Using remote library - $dependency")
     }
