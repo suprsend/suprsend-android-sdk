@@ -1,4 +1,5 @@
 import java.util.Locale
+import org.codehaus.groovy.runtime.ProcessGroovyMethods
 
 object Deps {
 
@@ -59,7 +60,7 @@ object Deps {
         var PUBLISH_ARTIFACT_ID = BUILD_TYPE.name.toLowerCase(Locale.getDefault())
         var PUBLISH_ARTIFACT_VERSION = SDK_VERSION_NAME
         const val POM_NAME = "android"
-        const val POM_DESCRIPTION = "Suprsend Android SDK"
+        var POM_DESCRIPTION = "Suprsend Android SDK release from commit id : ${"git rev-parse HEAD".execute().text().trim()}"
         const val POM_URL = "https://github.com/suprsend/suprsend-android-sdk"
         const val POM_LICENCE_NAME = "The Apache Software License, Version 2.0"
         const val POM_LICENCE_URL = "http://www.apache.org/licenses/LICENSE-2.0.txt"
@@ -81,3 +82,5 @@ object Deps {
     }
 }
 
+fun String.execute(): Process = ProcessGroovyMethods.execute(this)
+fun Process.text(): String = ProcessGroovyMethods.getText(this)
