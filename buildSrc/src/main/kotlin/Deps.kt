@@ -59,7 +59,7 @@ object Deps {
         const val PUBLISH_GROUP_ID = "com.suprsend"
         var PUBLISH_ARTIFACT_ID = BUILD_TYPE.name.toLowerCase(Locale.getDefault())
         var PUBLISH_ARTIFACT_VERSION = SDK_VERSION_NAME
-        const val POM_NAME = "android"
+        const val POM_NAME = "suprsend"
         var POM_DESCRIPTION = "Suprsend Android SDK release from commit id : ${"git rev-parse HEAD".execute().text().trim()}"
         const val POM_URL = "https://github.com/suprsend/suprsend-android-sdk"
         const val POM_LICENCE_NAME = "The Apache Software License, Version 2.0"
