@@ -22,13 +22,11 @@ import org.json.JSONObject
 
 class SSApi
 private constructor(
-    isFromCache: Boolean = false
 ) {
 
     private val ssUserApi: SSUserApi = SSUserApi()
 
     init {
-
         // Anonymous user id generation
         val userLocalDatasource = UserLocalDatasource()
         val userId = userLocalDatasource.getIdentity()
@@ -38,15 +36,6 @@ private constructor(
 
         // Device Properties
         SSApiInternal.setDeviceId(SdkAndroidCreator.deviceInfo.getDeviceId())
-
-        if (!SSApiInternal.isAppInstalled()) {
-            // App Launched
-            SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_INSTALLED)
-            SSApiInternal.setAppInstalled()
-        }
-
-        if (!isFromCache)
-            SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_LAUNCHED)
 
         val application = SdkAndroidCreator.context.applicationContext as Application
 
@@ -139,15 +128,33 @@ private constructor(
         fun init(context: Context, apiKey: String, apiSecret: String, apiBaseUrl: String? = null) {
 
             // Setting android context to user everywhere
-            if (!SdkAndroidCreator.isContextInitialized()) {
-                SdkAndroidCreator.context = context.applicationContext
+            if (SdkAndroidCreator.isContextInitialized()) {
+                return
             }
-
+            SdkAndroidCreator.context = context.applicationContext
             val basicDetails = BasicDetails(apiKey, apiSecret, apiBaseUrl)
 
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, basicDetails.getApiBaseUrl())
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, basicDetails.apiKey)
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_SECRET, basicDetails.apiSecret)
+
+            if (!SSApiInternal.isAppInstalled()) {
+                // App Launched
+                SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_INSTALLED)
+                SSApiInternal.setAppInstalled()
+            }
+
+            /**
+             * Due to xiaomi integration on non xiaomi device application create is getting called twice so i have to add
+             * this below check to ignore app launch time if time is less than 1000ms
+             * manifest - android:process=":pushservice" - This is leading to creation of MyApplication twice on non xiaomi device
+             */
+            val currentTime = System.currentTimeMillis()
+            val isLaunched = (currentTime - SSApiInternal.getAppLaunchTime()) > 1000
+            if (isLaunched) {
+                SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_LAUNCHED)
+                SSApiInternal.setAppLaunchTime(currentTime)
+            }
 
         }
 
@@ -177,15 +184,15 @@ private constructor(
         }
 
         internal fun getInstanceFromCachedApiKey(): SSApi {
-            return getInstanceInternal(isFromCache = true)
+            return getInstanceInternal()
         }
 
-        private fun getInstanceInternal(isFromCache: Boolean = false): SSApi {
+        private fun getInstanceInternal(): SSApi {
             val uniqueId = "only_one_instance_support"
             if (instancesMap.containsKey(uniqueId)) {
                 return instancesMap[uniqueId]!!
             }
-            val instance = SSApi(isFromCache)
+            val instance = SSApi()
             instancesMap[uniqueId] = instance
             return instance
         }
