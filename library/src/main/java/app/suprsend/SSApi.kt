@@ -42,7 +42,7 @@ private constructor(
         if (!SSApiInternal.isAppInstalled()) {
             // App Launched
             SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_INSTALLED)
-            SSApiInternal.setAppLaunched()
+            SSApiInternal.setAppInstalled()
         }
 
         if (!isFromCache)

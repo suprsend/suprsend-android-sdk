@@ -170,7 +170,19 @@ internal object SSApiInternal {
     }
 
     fun isAppInstalled(): Boolean {
-        return ConfigHelper.getBoolean(SSConstants.CONFIG_IS_APP_LAUNCHED) ?: false
+        return ConfigHelper.getBoolean(SSConstants.CONFIG_IS_APP_INSTALLED) ?: false
+    }
+
+    fun setAppInstalled() {
+        ConfigHelper.addOrUpdate(SSConstants.CONFIG_IS_APP_INSTALLED, true)
+    }
+
+    fun getAppLaunchTime(): Long {
+        return ConfigHelper.get(SSConstants.CONFIG_APP_LAUNCH_TIME)?.toLong() ?: 1
+    }
+
+    fun setAppLaunchTime(time: Long) {
+        ConfigHelper.addOrUpdate(SSConstants.CONFIG_APP_LAUNCH_TIME, time.toString())
     }
 
     /**
@@ -200,9 +212,7 @@ internal object SSApiInternal {
         return ConfigHelper.get(SSConstants.CONFIG_XIAOMI_PUSH_TOKEN) ?: ""
     }
 
-    fun setAppLaunched() {
-        ConfigHelper.addOrUpdate(SSConstants.CONFIG_IS_APP_LAUNCHED, true)
-    }
+
 
     fun getCachedApiKey(): String {
         return ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""

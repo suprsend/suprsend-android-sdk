@@ -18,6 +18,8 @@ class WelcomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        initializeSdk()
+
         val email = AppCreator.getEmail(this)
         if (email.isNotBlank()) {
             startActivity(Intent(this, HomeActivity::class.java))
@@ -82,5 +84,9 @@ class WelcomeActivity : AppCompatActivity() {
                 Log.d("firebase", msg)
                 Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun initializeSdk() {
+        CommonAnalyticsHandler.initialize(applicationContext)
     }
 }
