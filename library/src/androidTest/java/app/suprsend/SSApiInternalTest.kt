@@ -24,6 +24,24 @@ class SSApiInternalTest : BaseTest() {
     }
 
     @Test
+    fun testIgnoreIdentifyIfAlreadyIdentified() {
+        //Initially identify got called
+        SSApiInternal.identify("U1")
+        Assert.assertEquals("U1", UserLocalDatasource().getIdentity())
+        val eventLocalDatasource = EventLocalDatasource()
+
+        //Cleaning just to fake like event got flush
+        deleteAllEvents()
+
+        //Again identify is called with same user id
+        SSApiInternal.identify("U1")
+        Assert.assertEquals("U1", UserLocalDatasource().getIdentity())
+        val eventsList = eventLocalDatasource.getEvents(10)
+        //Verify no events are generated as identify is ignored
+        Assert.assertEquals(0, eventsList.size)
+    }
+
+    @Test
     fun testIdentityWithFCMPush() {
         SSApiInternal.setDeviceId("DEV1")
         SSApiInternal.setXiaomiToken("XIAOMI_TOKEN")
@@ -114,6 +132,7 @@ class SSApiInternalTest : BaseTest() {
         val eventPayload = eventsList[0].value.toKotlinJsonObject()
         Assert.assertEquals("ABC", eventPayload.getString(SSConstants.EVENT))
         Assert.assertEquals(false, eventPayload.getJSONObject(SSConstants.PROPERTIES).has("Product Name 1"))
+        Assert.assertEquals(true, eventPayload.getJSONObject(SSConstants.PROPERTIES).has("Product Name 2"))
 
     }
 

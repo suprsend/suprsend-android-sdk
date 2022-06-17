@@ -99,8 +99,9 @@ dependencies {
         implementation(project(":library"))
         println("Using shared library")
     }else{
-        implementation("com.github.suprsend:suprsend-kmm-sdk:${Deps.Publication.VERSION}")
-        println("Using remote library")
+        val dependency = "${Deps.Publication.GROUP}:${Deps.Publication.PUBLISH_ARTIFACT_ID}:${Deps.Publication.VERSION}"
+        implementation(dependency)
+        println("Using remote library - $dependency")
     }
 
 //    implementation(files("libs/library-debug.aar"))

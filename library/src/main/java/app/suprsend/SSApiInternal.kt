@@ -24,6 +24,9 @@ internal object SSApiInternal {
     val userLocalDatasource = UserLocalDatasource()
 
     fun identify(uniqueId: String) {
+        if (userLocalDatasource.getIdentity() == uniqueId) {
+            return
+        }
         SdkAndroidCreator
             .eventLocalDatasource
             .track(
@@ -46,6 +49,9 @@ internal object SSApiInternal {
     }
 
     fun setSuperProperties(properties: JSONObject) {
+        if(properties.size()==0){
+            return
+        }
         Logger.i(TAG, "Setting super properties $properties")
         val superPropertiesRepository = SuperPropertiesLocalDataSource()
         superPropertiesRepository.add(properties)
@@ -100,7 +106,11 @@ internal object SSApiInternal {
 
         flushExecutorService.execute {
             Logger.i(EventFlushHandler.TAG, "Flush event started")
-            EventFlushHandler.flushEvents()
+            try {
+                EventFlushHandler.flushEvents()
+            }catch (e:Exception){
+                Logger.e(EventFlushHandler.TAG, "Error occurred while flushing",e)
+            }
             isFlushing = false
             Logger.i(EventFlushHandler.TAG, "Flush event completed")
         }
@@ -111,6 +121,7 @@ internal object SSApiInternal {
         val userId = userLocalDatasource.getIdentity()
         Logger.i(TAG, "reset : Current : $userId New : $newID")
         saveTrackEventPayload(SSConstants.S_EVENT_USER_LOGOUT)
+        SuperPropertiesLocalDataSource().removeAll()
         userLocalDatasource.identify(newID)
         appendNotificationToken()
     }
@@ -159,7 +170,19 @@ internal object SSApiInternal {
     }
 
     fun isAppInstalled(): Boolean {
-        return ConfigHelper.getBoolean(SSConstants.CONFIG_IS_APP_LAUNCHED) ?: false
+        return ConfigHelper.getBoolean(SSConstants.CONFIG_IS_APP_INSTALLED) ?: false
+    }
+
+    fun setAppInstalled() {
+        ConfigHelper.addOrUpdate(SSConstants.CONFIG_IS_APP_INSTALLED, true)
+    }
+
+    fun getAppLaunchTime(): Long {
+        return ConfigHelper.get(SSConstants.CONFIG_APP_LAUNCH_TIME)?.toLong() ?: 1
+    }
+
+    fun setAppLaunchTime(time: Long) {
+        ConfigHelper.addOrUpdate(SSConstants.CONFIG_APP_LAUNCH_TIME, time.toString())
     }
 
     /**
@@ -189,9 +212,7 @@ internal object SSApiInternal {
         return ConfigHelper.get(SSConstants.CONFIG_XIAOMI_PUSH_TOKEN) ?: ""
     }
 
-    fun setAppLaunched() {
-        ConfigHelper.addOrUpdate(SSConstants.CONFIG_IS_APP_LAUNCHED, true)
-    }
+
 
     fun getCachedApiKey(): String {
         return ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""

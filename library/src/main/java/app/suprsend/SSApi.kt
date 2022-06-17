@@ -10,32 +10,24 @@ import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
 import app.suprsend.base.executorService
 import app.suprsend.base.isInValidKey
+import app.suprsend.base.filterSSReservedKeys
 import app.suprsend.base.uuid
 import app.suprsend.config.ConfigHelper
 import app.suprsend.user.UserLocalDatasource
 import app.suprsend.user.api.UserApiInternalContract
 import app.suprsend.xiaomi.SSXiaomiReceiver
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
+import com.xiaomi.mipush.sdk.Logger as XiaomiLogger
 import com.xiaomi.mipush.sdk.MiPushClient
 import org.json.JSONObject
 
 class SSApi
 private constructor(
-    apiKey: String,
-    apiSecret: String,
-    apiBaseUrl: String? = null, // If null data will be directed to prod server
-    isFromCache: Boolean = false
 ) {
 
-    private val basicDetails: BasicDetails = BasicDetails(apiKey, apiSecret, apiBaseUrl)
     private val ssUserApi: SSUserApi = SSUserApi()
 
     init {
-
-        ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, basicDetails.getApiBaseUrl())
-        ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, basicDetails.apiKey)
-        ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_SECRET, basicDetails.apiSecret)
-
         // Anonymous user id generation
         val userLocalDatasource = UserLocalDatasource()
         val userId = userLocalDatasource.getIdentity()
@@ -45,15 +37,6 @@ private constructor(
 
         // Device Properties
         SSApiInternal.setDeviceId(SdkAndroidCreator.deviceInfo.getDeviceId())
-
-        if (!SSApiInternal.isAppInstalled()) {
-            // App Launched
-            track(SSConstants.S_EVENT_APP_INSTALLED)
-            SSApiInternal.setAppLaunched()
-        }
-
-        if (!isFromCache)
-            track(SSConstants.S_EVENT_APP_LAUNCHED)
 
         val application = SdkAndroidCreator.context.applicationContext as Application
 
@@ -82,7 +65,7 @@ private constructor(
 
     fun setSuperProperties(properties: JSONObject) {
         executorService.execute {
-            SSApiInternal.setSuperProperties(properties = properties)
+            SSApiInternal.setSuperProperties(properties = properties.filterSSReservedKeys())
         }
     }
 
@@ -92,9 +75,15 @@ private constructor(
         }
     }
 
-    fun track(eventName: String, properties: JSONObject? = null) {
+    fun track(eventName: String, properties: JSONObject) {
         executorService.execute {
             SSApiInternal.track(eventName = eventName, properties = properties)
+        }
+    }
+
+    fun track(eventName: String) {
+        executorService.execute {
+            SSApiInternal.track(eventName = eventName, properties = null)
         }
     }
 
@@ -130,11 +119,42 @@ private constructor(
         /**
          * Should be called before Application super.onCreate()
          */
-        fun init(context: Context) {
+        fun init(context: Context, apiKey: String, apiSecret: String) {
+            init(context, apiKey, apiSecret, null)
+        }
+
+        /**
+         * Should be called before Application super.onCreate()
+         */
+        fun init(context: Context, apiKey: String, apiSecret: String, apiBaseUrl: String? = null) {
 
             // Setting android context to user everywhere
-            if (!SdkAndroidCreator.isContextInitialized()) {
-                SdkAndroidCreator.context = context.applicationContext
+            if (SdkAndroidCreator.isContextInitialized()) {
+                return
+            }
+            SdkAndroidCreator.context = context.applicationContext
+            val basicDetails = BasicDetails(apiKey, apiSecret, apiBaseUrl)
+
+            ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, basicDetails.getApiBaseUrl())
+            ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, basicDetails.apiKey)
+            ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_SECRET, basicDetails.apiSecret)
+
+            if (!SSApiInternal.isAppInstalled()) {
+                // App Launched
+                SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_INSTALLED)
+                SSApiInternal.setAppInstalled()
+            }
+
+            /**
+             * Due to xiaomi integration on non xiaomi device application create is getting called twice so i have to add
+             * this below check to ignore app launch time if time is less than 1000ms
+             * manifest - android:process=":pushservice" - This is leading to creation of MyApplication twice on non xiaomi device
+             */
+            val currentTime = System.currentTimeMillis()
+            val isLaunched = (currentTime - SSApiInternal.getAppLaunchTime()) > 1000
+            if (isLaunched) {
+                SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_LAUNCHED)
+                SSApiInternal.setAppLaunchTime(currentTime)
             }
 
         }
@@ -142,7 +162,7 @@ private constructor(
         fun initXiaomi(context: Context, appId: String, apiKey: String) {
             try {
                 MiPushClient.registerPush(context, appId, apiKey)
-                com.xiaomi.mipush.sdk.Logger.setLogger(context, object : LoggerInterface {
+                XiaomiLogger.setLogger(context, object : LoggerInterface {
                     override fun setTag(tag: String?) {
                         Logger.i(SSXiaomiReceiver.TAG, "set Tag : $tag")
                     }
@@ -160,23 +180,20 @@ private constructor(
             }
         }
 
-        fun getInstance(apiKey: String, apiSecret: String, apiBaseUrl: String? = null): SSApi {
-            return getInstanceInternal(apiKey = apiKey, apiSecret = apiSecret, apiBaseUrl = apiBaseUrl)
+        fun getInstance(): SSApi {
+            return getInstanceInternal()
         }
 
-        internal fun getInstanceFromCachedApiKey(): SSApi? {
-            val apiKey = ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: return null
-            val secret = ConfigHelper.get(SSConstants.CONFIG_API_SECRET) ?: return null
-            val apiBaseUrl = ConfigHelper.get(SSConstants.CONFIG_API_BASE_URL) ?: return null
-            return getInstanceInternal(apiKey = apiKey, apiSecret = secret, apiBaseUrl = apiBaseUrl, isFromCache = true)
+        internal fun getInstanceFromCachedApiKey(): SSApi {
+            return getInstanceInternal()
         }
 
-        private fun getInstanceInternal(apiKey: String, apiSecret: String, apiBaseUrl: String? = null, isFromCache: Boolean = false): SSApi {
-            val uniqueId = "$apiKey-$apiSecret"
+        private fun getInstanceInternal(): SSApi {
+            val uniqueId = "only_one_instance_support"
             if (instancesMap.containsKey(uniqueId)) {
                 return instancesMap[uniqueId]!!
             }
-            val instance = SSApi(apiKey, apiSecret, apiBaseUrl, isFromCache)
+            val instance = SSApi()
             instancesMap[uniqueId] = instance
             return instance
         }

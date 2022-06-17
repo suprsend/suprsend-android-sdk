@@ -1,6 +1,5 @@
 package app.suprsend.user.api
 
-import android.util.Patterns
 import app.suprsend.SSApiInternal
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants

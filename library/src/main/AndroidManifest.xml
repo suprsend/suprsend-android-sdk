@@ -7,6 +7,7 @@
 
     <application>
         <activity android:name=".notification.NotificationRedirectionActivity" />
+        <receiver android:name=".notification.SSNotificationDismissBroadcastReceiver"/>
         <activity android:name=".inbox.SSInboxActivity" />
     </application>
 </manifest>

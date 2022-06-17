@@ -34,13 +34,10 @@ class NotificationRedirectionActivity : Activity() {
     }
 
     private fun handleFlowPayload(activityExtras: Bundle) {
-        if (activityExtras.containsKey(FLOW_NAME)) {
-            when (activityExtras.getString(FLOW_NAME, "").mapToEnum<NotificationRedirection>()) {
+        if (activityExtras.containsKey(NotificationRedirection.FLOW_NAME)) {
+            when (activityExtras.getString(NotificationRedirection.FLOW_NAME, "").mapToEnum<NotificationRedirection>()) {
                 NotificationRedirection.NOTIFICATION_ACTION_CLICKED -> {
                     handleNotificationActionClicked(activityExtras)
-                }
-                NotificationRedirection.NOTIFICATION_DISMISS -> {
-                    handleNotificationDismissClicked(activityExtras)
                 }
                 else -> {
                     // do nothing
@@ -52,19 +49,6 @@ class NotificationRedirectionActivity : Activity() {
         }
     }
 
-    private fun handleNotificationDismissClicked(activityExtras: Bundle) {
-        Logger.i(TAG, "Notification dismissed")
-        val notificationDismissVo = getNotificationDismissVo(activityExtras)
-        notificationDismissVo ?: return
-        val instance = SSApi.getInstanceFromCachedApiKey()
-        SSApiInternal.saveTrackEventPayload(
-            eventName = SSConstants.S_EVENT_NOTIFICATION_DISMISS,
-            propertiesJO = JSONObject().apply {
-                put("id", notificationDismissVo.notificationId)
-            }
-        )
-        instance?.flush()
-    }
 
     private fun handleNotificationActionClicked(activityExtras: Bundle) {
         Logger.i(TAG, "Notification Action Clicked")
@@ -81,7 +65,7 @@ class NotificationRedirectionActivity : Activity() {
                 }
             }
         )
-        instance?.flush()
+        instance.flush()
 
         // Remove notification
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as? NotificationManager
@@ -97,35 +81,21 @@ class NotificationRedirectionActivity : Activity() {
     }
 
     private fun getNotificationActionVo(activityExtras: Bundle): NotificationActionVo? {
-        return activityExtras.get(FLOW_PAYLOAD) as? NotificationActionVo
+        return activityExtras.get(NotificationRedirection.FLOW_PAYLOAD) as? NotificationActionVo
     }
 
-    private fun getNotificationDismissVo(activityExtras: Bundle): NotificationDismissVo? {
-        return activityExtras.get(FLOW_PAYLOAD) as? NotificationDismissVo
-    }
 
     companion object {
-        private const val TAG = "NRA"
-        private const val FLOW_NAME = "flow_name"
-        private const val FLOW_PAYLOAD = "flow_payload"
+        const val TAG = "NRA"
 
         internal fun getIntent(context: Context, notificationActionVo: NotificationActionVo? = null): Intent? {
             if (notificationActionVo?.link == null) {
                 return context.packageManager.getLaunchIntentForPackage(context.packageName)
             }
             val bundle = Bundle()
-            bundle.putString(FLOW_NAME, NotificationRedirection.NOTIFICATION_ACTION_CLICKED.name)
-            bundle.putSerializable(FLOW_PAYLOAD, notificationActionVo)
+            bundle.putString(NotificationRedirection.FLOW_NAME, NotificationRedirection.NOTIFICATION_ACTION_CLICKED.name)
+            bundle.putSerializable(NotificationRedirection.FLOW_PAYLOAD, notificationActionVo)
 
-            return Intent()
-                .setClass(context, NotificationRedirectionActivity::class.java)
-                .putExtras(bundle)
-        }
-
-        internal fun notificationDismissIntent(context: Context, notificationDismissVo: NotificationDismissVo): Intent {
-            val bundle = Bundle()
-            bundle.putString(FLOW_NAME, NotificationRedirection.NOTIFICATION_DISMISS.name)
-            bundle.putSerializable(FLOW_PAYLOAD, notificationDismissVo)
             return Intent()
                 .setClass(context, NotificationRedirectionActivity::class.java)
                 .putExtras(bundle)
@@ -133,8 +103,13 @@ class NotificationRedirectionActivity : Activity() {
     }
 }
 
-internal enum class NotificationRedirection {
-    NOTIFICATION_ACTION_CLICKED, NOTIFICATION_DISMISS
+enum class NotificationRedirection {
+    NOTIFICATION_ACTION_CLICKED, NOTIFICATION_DISMISS;
+
+    companion object {
+        const val FLOW_NAME = "flow_name"
+        const val FLOW_PAYLOAD = "flow_payload"
+    }
 }
 
 internal data class NotificationDismissVo(
