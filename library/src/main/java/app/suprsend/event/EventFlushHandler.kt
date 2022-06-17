@@ -1,5 +1,6 @@
 package app.suprsend.event
 
+import app.suprsend.BuildConfig
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
@@ -57,7 +58,11 @@ internal object EventFlushHandler {
                 body = requestJson,
                 date = date
             )
-
+            if(httpResponse.statusCode!=202 || BuildConfig.DEBUG) {
+                Logger.i(TAG, "${httpResponse.statusCode} \n$requestJson \n${httpResponse.response}")
+            }else{
+                Logger.i(TAG, "statusCode:${httpResponse.statusCode}")
+            }
             if (httpResponse.statusCode == 202) {
                 eventLocalDatasource.delete(eventModelList.map { event -> event.id!! }.joinToString())
                 eventModelList = eventLocalDatasource.getEvents(SSConstants.FLUSH_EVENT_PAYLOAD_SIZE)

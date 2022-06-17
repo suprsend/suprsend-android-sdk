@@ -13,10 +13,6 @@ class MyApplication : Application() {
 
         SSApi.initXiaomi(context = this, appId = BuildConfig.XIAOMI_APP_ID, apiKey = BuildConfig.XIAOMI_APP_KEY)
 
-        initializeSdk()
     }
 
-    private fun initializeSdk() {
-        CommonAnalyticsHandler.initialize(applicationContext)
-    }
 }

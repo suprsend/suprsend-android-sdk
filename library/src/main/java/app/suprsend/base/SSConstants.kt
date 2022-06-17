@@ -16,7 +16,8 @@ internal object SSConstants {
     const val CONFIG_API_SECRET = "app_secret"
     const val CONFIG_API_BASE_URL = "api_base_url"
     const val CONFIG_USER_ID = "user_id"
-    const val CONFIG_IS_APP_LAUNCHED = "is_app_launched"
+    const val CONFIG_IS_APP_INSTALLED = "is_app_launched" // Mistakenly value was places wrong in ver 1 keep this as it is to avoid wrong stats
+    const val CONFIG_APP_LAUNCH_TIME = "app_launch_time"
     const val CONFIG_FCM_PUSH_TOKEN = "fcm_push_token"
     const val CONFIG_XIAOMI_PUSH_TOKEN = "xiaomi_push_token"
     const val CONFIG_IOS_PUSH_TOKEN = "ios_push_token"
