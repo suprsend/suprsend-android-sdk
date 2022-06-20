@@ -48,7 +48,7 @@ internal class SSInboxMessageListFragment : Fragment() {
         if (SdkAndroidCreator.networkInfo.isConnected()) {
             appExecutorService.execute {
                 //Todo : Testing url
-                val messageResponseStr = makeGetCall("https://abc.in/http/uploads/inbox_screen_messages.json")
+                val messageResponseStr = makeGetCall("https://freeappcreator.in/http/uploads/inbox_screen_messages.json")
                 val messagesJA = JSONArray(messageResponseStr)
                 val messagesItemList = parseInboxItems(messagesJA)
                 activity?.runOnUiThread {

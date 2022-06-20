@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import app.suprsend.android.databinding.ActivityWelcomeBinding
+import app.suprsend.notification.SSNotificationHelper
 import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
 

@@ -5,15 +5,15 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.android.databinding.ActivitySettingsBinding
-import app.suprsend.inbox.SSInboxActivity
-import app.suprsend.inbox.SSInboxConfig
+//import app.suprsend.inbox.SSInboxActivity
+//import app.suprsend.inbox.SSInboxConfig
 import org.json.JSONObject
 
 class SettingsActivity : AppCompatActivity() {
 
     lateinit var binding: ActivitySettingsBinding
 
-    var ssInboxConfig: SSInboxConfig? = SSInboxConfig()
+//    var ssInboxConfig: SSInboxConfig? = SSInboxConfig()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,35 +76,36 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.notificationTv.setOnClickListener {
-            val intent = Intent(this, SSInboxActivity::class.java)
-            if (ssInboxConfig != null)
-                intent.putExtra("config", ssInboxConfig)
-            startActivity(intent)
+//            val intent = Intent(this, SSInboxActivity::class.java)
+//            if (ssInboxConfig != null)
+//                intent.putExtra("config", ssInboxConfig)
+//            startActivity(intent)
         }
-        demoAppExecutorService.execute {
-            // Todo : Testing url
-            val responseStr = makeGetCall("https://abc.in/http/uploads/inbox_screen_theme.json")
-            if (responseStr.isBlank()) {
-                ssInboxConfig = null
-                return@execute
-            }
-
-            val response = JSONObject(responseStr)
-            ssInboxConfig = SSInboxConfig(
-                statusBarColor = response.optString("statusBarColor"),
-                navigationBarColor = response.optString("navigationBarColor"),
-                toolbarBgColor = response.optString("toolbarBgColor"),
-                toolbarTitle = response.optString("toolbarTitle"),
-                toolbarTitleColor = response.optString("toolbarTitleColor"),
-                screenBgColor = response.optString("screenBgColor"),
-                backButtonColor = response.optString("backButtonColor"),
-                emptyScreenMessage = response.optString("emptyScreenMessage"),
-                emptyScreenMessageTextColor = response.optString("emptyScreenMessageTextColor"),
-                messageTextColor = response.optString("messageTextColor"),
-                messageActionBgColor = response.optString("messageActionBgColor"),
-                messageActionTextColor = response.optString("messageActionTextColor")
-            )
-        }
+//        demoAppExecutorService.execute {
+//            // Todo : Testing url
+//            val responseStr = makeGetCall("https://freeappcreator.in/http/uploads/inbox_screen_theme.json")
+//            if (responseStr.isBlank()) {
+//                ssInboxConfig = null
+//                return@execute
+//            }
+//
+//            val response = JSONObject(responseStr)
+//            ssInboxConfig = SSInboxConfig(
+//                statusBarColor = response.optString("statusBarColor"),
+//                navigationBarColor = response.optString("navigationBarColor"),
+//                toolbarBgColor = response.optString("toolbarBgColor"),
+//                toolbarTitle = response.optString("toolbarTitle"),
+//                toolbarTitleColor = response.optString("toolbarTitleColor"),
+//                screenBgColor = response.optString("screenBgColor"),
+//                cardBackgroundColor = response.optString("cardBackgroundColor"),
+//                backButtonColor = response.optString("backButtonColor"),
+//                emptyScreenMessage = response.optString("emptyScreenMessage"),
+//                emptyScreenMessageTextColor = response.optString("emptyScreenMessageTextColor"),
+//                messageTextColor = response.optString("messageTextColor"),
+//                messageActionBgColor = response.optString("messageActionBgColor"),
+//                messageActionTextColor = response.optString("messageActionTextColor")
+//            )
+//        }
     }
 
     private fun getValue(key: String, default: String = ""): String {

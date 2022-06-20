@@ -12,6 +12,7 @@ data class SSInboxConfig(
     val toolbarTitle: String = "Inbox",
     val toolbarTitleColor: String = "#000000",
     val screenBgColor: String = "#FFFFFF",
+    val cardBackgroundColor: String = "#000000",
     val backButtonColor: String = "#000000",
     val emptyScreenMessage: String = "No data available",
     val emptyScreenMessageTextColor: String = "#000000",
@@ -27,6 +28,7 @@ data class SSInboxConfig(
         toolbarTitle = parcel.safeString(),
         toolbarTitleColor = parcel.safeString(),
         screenBgColor = parcel.safeString(),
+        cardBackgroundColor = parcel.safeString(),
         backButtonColor = parcel.safeString(),
         emptyScreenMessage = parcel.safeString(),
         emptyScreenMessageTextColor = parcel.safeString(),
@@ -42,6 +44,7 @@ data class SSInboxConfig(
         parcel?.writeString(toolbarTitle)
         parcel?.writeString(toolbarTitleColor)
         parcel?.writeString(screenBgColor)
+        parcel?.writeString(cardBackgroundColor)
         parcel?.writeString(backButtonColor)
         parcel?.writeString(emptyScreenMessage)
         parcel?.writeString(emptyScreenMessageTextColor)

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import app.suprsend.R
@@ -55,14 +56,21 @@ constructor(
         private val ssInboxConfig: SSInboxConfig
     ) : RecyclerView.ViewHolder(view) {
         private val context: Context = view.context
+        private val itemContainer: LinearLayout = view.findViewById(R.id.itemContainer)
         private val imageView: ImageView = view.findViewById(R.id.imageView)
         private val descriptionTv: TextView = view.findViewById(R.id.descriptionText)
         private val button: TextView = view.findViewById(R.id.buttonText)
 
         fun bind(holder: InboxItemViewHolder, ssInboxItemVo: SSInboxItemVo) {
+
+            val itemContainerDrawable = holder.itemContainer.background
+            itemContainerDrawable?.setColorFilter(Color.parseColor(ssInboxConfig.cardBackgroundColor), PorterDuff.Mode.SRC_IN)
+            holder.itemContainer.background = itemContainerDrawable
+
             val imageUrl = ssInboxItemVo.imageUrl
             val url = ssInboxItemVo.url
-            if (imageUrl != null) {
+            if (!imageUrl.isNullOrBlank()) {
+                holder.imageView.visibility = View.VISIBLE
                 Glide.with(holder.context)
                     .load(imageUrl)
                     .apply(
@@ -76,6 +84,8 @@ constructor(
                 holder.imageView.setOnClickListener {
                     launchUrl(holder, url)
                 }
+            }else{
+                holder.imageView.visibility = View.GONE
             }
 
             val text = ssInboxItemVo.text
