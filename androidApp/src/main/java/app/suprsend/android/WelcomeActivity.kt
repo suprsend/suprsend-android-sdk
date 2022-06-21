@@ -24,6 +24,7 @@ class WelcomeActivity : AppCompatActivity() {
         if (email.isNotBlank()) {
             startActivity(Intent(this, HomeActivity::class.java))
             finish()
+            return
         }
         binding = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
