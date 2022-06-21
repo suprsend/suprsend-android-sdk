@@ -26,29 +26,6 @@ private constructor(
 
     private val ssUserApi: SSUserApi = SSUserApi()
 
-    init {
-        // Anonymous user id generation
-        val userLocalDatasource = UserLocalDatasource()
-        val userId = userLocalDatasource.getIdentity()
-        if (userId.isBlank()) {
-            userLocalDatasource.identify(uuid())
-        }
-
-        // Device Properties
-        SSApiInternal.setDeviceId(SdkAndroidCreator.deviceInfo.getDeviceId())
-
-        val application = SdkAndroidCreator.context.applicationContext as Application
-
-        // Flush periodically
-        PeriodicFlush.start()
-
-        // Flush on activity lifecycle
-        application.registerActivityLifecycleCallbacks(ActivityLifecycleCallbackHandler(this))
-
-        // Flush on Exception
-        // ExceptionHandler(newInstance).track()
-    }
-
     fun identify(uniqueId: String) {
         executorService.execute {
             SSApiInternal.identify(uniqueId)
@@ -131,12 +108,24 @@ private constructor(
             if (SdkAndroidCreator.isContextInitialized()) {
                 return
             }
-            SdkAndroidCreator.context = context.applicationContext
-            val basicDetails = BasicDetails(apiKey, apiSecret, apiBaseUrl)
 
+            SdkAndroidCreator.context = context.applicationContext
+
+            val basicDetails = BasicDetails(apiKey, apiSecret, apiBaseUrl)
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, basicDetails.getApiBaseUrl())
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, basicDetails.apiKey)
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_SECRET, basicDetails.apiSecret)
+
+            // Anonymous user id generation
+            val userLocalDatasource = UserLocalDatasource()
+            val userId = userLocalDatasource.getIdentity()
+            if (userId.isBlank()) {
+                userLocalDatasource.identify(uuid())
+            }
+
+            // Device Properties
+            SSApiInternal.setDeviceId(SdkAndroidCreator.deviceInfo.getDeviceId())
+
 
             if (!SSApiInternal.isAppInstalled()) {
                 // App Launched
@@ -155,6 +144,16 @@ private constructor(
                 SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_LAUNCHED)
                 SSApiInternal.setAppLaunchTime(currentTime)
             }
+
+            // Flush periodically
+            PeriodicFlush.start()
+
+            // Flush on activity lifecycle
+            val application = context.applicationContext as Application
+            application.registerActivityLifecycleCallbacks(ActivityLifecycleCallbackHandler())
+
+            // Flush on Exception
+            // ExceptionHandler(newInstance).track()
 
         }
 
