@@ -8,7 +8,7 @@ object Deps {
     const val MAJOR_VERSION = 0
     const val MINOR_VERSION = 1
     const val PATCH_VERSION = 5
-    val SNAPSHOT = 1
+    val SNAPSHOT = -1
     val BUILD_TYPE = BuildType.NATIVE
 
 
