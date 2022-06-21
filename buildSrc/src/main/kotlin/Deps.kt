@@ -19,15 +19,14 @@ object Deps {
         "$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}"
 
     //App Details
-    const val APP_BETA = 16
-    const val APP_VERSION_CODE = APP_BETA
+     var APP_VERSION_CODE = (10000* MAJOR_VERSION) +(1000* MINOR_VERSION)+(100* PATCH_VERSION)+ SNAPSHOT
     const val ISPROD = false
     const val RUN_LIB = true
 
     var APP_VERSION_NAME = if (ISPROD) {
-        "$SDK_VERSION_NAME Prod B$APP_BETA"
+        "$SDK_VERSION_NAME Prod"
     } else {
-        "$SDK_VERSION_NAME Stag B$APP_BETA"
+        "$SDK_VERSION_NAME Stag"
     }
 
     //Prod
