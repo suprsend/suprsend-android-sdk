@@ -51,10 +51,11 @@ object SSNotificationHelper {
 
     fun showFCMNotification(context: Context, remoteMessage: RemoteMessage) {
         try {
+            Logger.i("notification","showFCMNotification")
             appExecutorService.execute {
                 Logger.i(SSFirebaseMessagingService.TAG, "Message Id : ${remoteMessage.messageId}")
                 if (remoteMessage.isSuprSendRemoteMessage()) {
-                    showRawNotification(context = context.applicationContext, rawNotification = remoteMessage.getRawNotification())
+                    showRawNotification(context = context.applicationContext, rawNotification = remoteMessage.getRawNotification(), pushVendor = SSConstants.PUSH_VENDOR_FCM)
                 }
             }
         } catch (e: Exception) {
@@ -67,7 +68,7 @@ object SSNotificationHelper {
             appExecutorService.execute {
                 Logger.i(SSXiaomiReceiver.TAG, "Message Id : ${miPushMessage.messageId}")
                 if (miPushMessage.isSuprSendPush()) {
-                    showRawNotification(context = context.applicationContext, rawNotification = miPushMessage.getRawNotification())
+                    showRawNotification(context = context.applicationContext, rawNotification = miPushMessage.getRawNotification(), pushVendor = SSConstants.PUSH_VENDOR_XIAOMI)
                 }
             }
         } catch (e: Exception) {
@@ -75,29 +76,34 @@ object SSNotificationHelper {
         }
     }
 
-    private fun showRawNotification(context: Context, rawNotification: RawNotification) {
+    private fun showRawNotification(context: Context, rawNotification: RawNotification, pushVendor: String? = null) {
         try {
+            Logger.i("notification","showRawNotification $rawNotification")
             // Notification Delivered
             val instance = SSApi.getInstanceFromCachedApiKey()
             SSApiInternal.saveTrackEventPayload(
                 eventName = SSConstants.S_EVENT_NOTIFICATION_DELIVERED,
                 propertiesJO = JSONObject().apply {
                     put("id", rawNotification.id)
+                    if (pushVendor != null)
+                        put(SSConstants.PUSH_VENDOR, pushVendor)
                 }
             )
             instance?.flush()
 
             val showNotificationId = String.format(SSConstants.CONFIG_NOTIFICATION_GROUP_SHOWN, rawNotification.notificationGroupId)
             val isShown = ConfigHelper.getBoolean(showNotificationId)
+            Logger.i("notification","Notification isShown : ${rawNotification.notificationGroupId} $isShown")
             if (isShown == true)
                 return
 
             ConfigHelper.addOrUpdate(showNotificationId, true)
 
+            Logger.i("notification","showNotificationInternal")
             showNotificationInternal(context, rawNotification.getNotificationVo())
 
         } catch (e: Exception) {
-            Logger.e("nh", "showRawNotification", e)
+            Logger.e("notification", "showRawNotification", e)
         }
     }
 
@@ -105,18 +111,21 @@ object SSNotificationHelper {
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+        Logger.i("notification","setChannel")
         setChannel(notificationManager, notificationVo.notificationChannelVo)
 
         val notificationBuilder = NotificationCompat.Builder(context, notificationVo.notificationChannelVo.id)
 
+        Logger.i("notification","setBasicVo")
         setBasicVo(context, notificationBuilder, notificationVo)
 
+        Logger.i("notification","setStyle")
         setStyle(notificationBuilder, notificationVo)
 
+        Logger.i("notification","setNotificationAction")
         setNotificationAction(context, notificationBuilder, notificationVo)
 
-        notificationBuilder.build()
-
+        Logger.i("notification","notify")
         notificationManager.notify(notificationVo.id.hashCode(), notificationBuilder.build())
     }
 
@@ -138,12 +147,12 @@ object SSNotificationHelper {
                         context,
                         (System.currentTimeMillis() + index).toInt(),
                         actionIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        getPendingIntentFlag()
                     )
                 )
             }
         } catch (e: Exception) {
-            Logger.e("nh", "setNotificationAction", e)
+            Logger.e("notification", "setNotificationAction", e)
         }
     }
 
@@ -231,7 +240,7 @@ object SSNotificationHelper {
         // Set the handler in the event that the notification is dismissed.
         val notificationDeleteIntent = SSNotificationDismissBroadcastReceiver.notificationDismissIntent(context, NotificationDismissVo(notificationId = notificationVo.id))
         notificationDeleteIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val notificationDeletePI = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), notificationDeleteIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val notificationDeletePI = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), notificationDeleteIntent, getPendingIntentFlag())
         notificationBuilder.setDeleteIntent(notificationDeletePI)
 
         // The category of the notification which allows android to prioritize the notification as required.
@@ -274,11 +283,15 @@ object SSNotificationHelper {
             val notificationActionVo = notificationVo.getDeeplinkNotificationActionVo()
             val contentIntent = NotificationRedirectionActivity.getIntent(context, notificationActionVo)
             contentIntent?.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            val contentPI = PendingIntent.getActivity(context, System.currentTimeMillis().toInt(), contentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val contentPI = PendingIntent.getActivity(context, System.currentTimeMillis().toInt(), contentIntent, getPendingIntentFlag())
             notificationBuilder.setContentIntent(contentPI)
         } catch (e: Exception) {
-            Logger.e("nh", "setBasicVo", e)
+            Logger.e("notification", "setBasicVo", e)
         }
+    }
+
+    private fun getPendingIntentFlag(): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
     }
 
     private fun setChannel(notificationManager: NotificationManager, notificationChannelVo: NotificationChannelVo): Boolean {

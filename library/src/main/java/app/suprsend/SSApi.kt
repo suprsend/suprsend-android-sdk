@@ -27,15 +27,6 @@ private constructor(
     private val ssUserApi: SSUserApi = SSUserApi()
 
     init {
-        // Anonymous user id generation
-        val userLocalDatasource = UserLocalDatasource()
-        val userId = userLocalDatasource.getIdentity()
-        if (userId.isBlank()) {
-            userLocalDatasource.identify(uuid())
-        }
-
-        // Device Properties
-        SSApiInternal.setDeviceId(SdkAndroidCreator.deviceInfo.getDeviceId())
 
         val application = SdkAndroidCreator.context.applicationContext as Application
 
@@ -43,7 +34,7 @@ private constructor(
         PeriodicFlush.start()
 
         // Flush on activity lifecycle
-        application.registerActivityLifecycleCallbacks(ActivityLifecycleCallbackHandler(this))
+        application.registerActivityLifecycleCallbacks(ActivityLifecycleCallbackHandler())
 
         // Flush on Exception
         // ExceptionHandler(newInstance).track()
@@ -137,6 +128,17 @@ private constructor(
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, basicDetails.getApiBaseUrl())
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, basicDetails.apiKey)
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_SECRET, basicDetails.apiSecret)
+
+            // Anonymous user id generation
+            val userLocalDatasource = UserLocalDatasource()
+            val userId = userLocalDatasource.getIdentity()
+            if (userId.isBlank()) {
+                userLocalDatasource.identify(uuid())
+            }
+
+            // Device Properties
+            SSApiInternal.setDeviceId(SdkAndroidCreator.deviceInfo.getDeviceId())
+
 
             if (!SSApiInternal.isAppInstalled()) {
                 // App Launched

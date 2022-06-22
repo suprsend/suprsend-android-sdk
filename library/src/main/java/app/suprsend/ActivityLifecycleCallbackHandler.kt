@@ -6,7 +6,6 @@ import android.os.Bundle
 import app.suprsend.base.Logger
 
 internal class ActivityLifecycleCallbackHandler(
-    private val suprSendApi: SSApi
 ) : Application.ActivityLifecycleCallbacks {
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
     }
@@ -19,7 +18,7 @@ internal class ActivityLifecycleCallbackHandler(
 
     override fun onActivityPaused(activity: Activity) {
         Logger.i("flush", "Lifecycle flush")
-        suprSendApi.flush()
+        SSApiInternal.flush()
     }
 
     override fun onActivityStopped(activity: Activity) {

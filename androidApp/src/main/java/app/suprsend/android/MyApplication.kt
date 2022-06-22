@@ -12,7 +12,5 @@ class MyApplication : Application() {
         super.onCreate()
 
         SSApi.initXiaomi(context = this, appId = BuildConfig.XIAOMI_APP_ID, apiKey = BuildConfig.XIAOMI_APP_KEY)
-
     }
-
 }

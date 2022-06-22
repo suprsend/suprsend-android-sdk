@@ -99,7 +99,7 @@ afterEvaluate {
         repositories {
             maven {
                 name = "mavencentral"
-                if(Deps.isSnapshot){
+                if(Deps.SNAPSHOT != -1){
                     setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
                 }else{
                     setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
