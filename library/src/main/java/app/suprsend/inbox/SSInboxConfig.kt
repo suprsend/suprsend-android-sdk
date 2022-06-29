@@ -16,9 +16,7 @@ data class SSInboxConfig(
     val backButtonColor: String = "#000000",
     val emptyScreenMessage: String = "No data available",
     val emptyScreenMessageTextColor: String = "#000000",
-    val messageTextColor: String = "#000000",
-    val messageActionBgColor: String = "#CCC9C9",
-    val messageActionTextColor: String = "#000000"
+    val messageTextColor: String = "#000000"
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
@@ -32,9 +30,7 @@ data class SSInboxConfig(
         backButtonColor = parcel.safeString(),
         emptyScreenMessage = parcel.safeString(),
         emptyScreenMessageTextColor = parcel.safeString(),
-        messageTextColor = parcel.safeString(),
-        messageActionBgColor = parcel.safeString(),
-        messageActionTextColor = parcel.safeString()
+        messageTextColor = parcel.safeString()
     )
 
     override fun writeToParcel(parcel: Parcel?, flag: Int) {
@@ -49,8 +45,6 @@ data class SSInboxConfig(
         parcel?.writeString(emptyScreenMessage)
         parcel?.writeString(emptyScreenMessageTextColor)
         parcel?.writeString(messageTextColor)
-        parcel?.writeString(messageActionBgColor)
-        parcel?.writeString(messageActionTextColor)
     }
 
     override fun describeContents(): Int {

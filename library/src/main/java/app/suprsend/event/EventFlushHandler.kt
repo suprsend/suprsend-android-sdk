@@ -4,18 +4,12 @@ import app.suprsend.BuildConfig
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
-import app.suprsend.base.makeHttpPost
+import app.suprsend.base.generateSignature
+import app.suprsend.base.makeHttpRequest
 import app.suprsend.base.toKotlinJsonObject
 import app.suprsend.config.ConfigHelper
 import app.suprsend.database.Event_Model
 import org.json.JSONArray
-import java.io.BufferedReader
-import java.io.DataOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
 import java.security.MessageDigest
 import java.util.Date
 
@@ -36,32 +30,22 @@ internal object EventFlushHandler {
             eventModelList.forEach { eventModel ->
                 jsonArray.put(eventModel.value.toKotlinJsonObject())
             }
-            val requestJson = jsonArray.toString()
-            val httpVerb = "POST"
-            val contentMd5 = requestJson.toMD5()
-            val contentType = "application/json"
-            val date = Date().toString()
-            val requestURI = "/event/"
+            val route = "/event/"
             val envKey = ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""
-            val secret = ConfigHelper.get(SSConstants.CONFIG_API_SECRET) ?: ""
+            val body = jsonArray.toString()
+            val date = Date().toString()
+            val signature = generateSignature(body = body, method = "POST", route = route, date = date)
 
-            val stringToSign = httpVerb + "\n" +
-                contentMd5 + "\n" +
-                contentType + "\n" +
-                date + "\n" +
-                requestURI
-
-            val signature = Algo.base64(Algo.generateHashWithHmac256(secret, stringToSign))
-
-            val httpResponse = makeHttpPost(
-                urL = "$baseUrl$requestURI",
+            val httpResponse = makeHttpRequest(
+                method = "POST",
+                urL = "$baseUrl$route",
                 authorization = "$envKey:$signature",
-                body = requestJson,
+                body = body,
                 date = date
             )
-            if(httpResponse.statusCode!=202 || BuildConfig.DEBUG) {
-                Logger.i(TAG, "${httpResponse.statusCode} \n$requestJson \n${httpResponse.response}")
-            }else{
+            if (httpResponse.statusCode != 202 || BuildConfig.DEBUG) {
+                Logger.i(TAG, "${httpResponse.statusCode} \n$body \n${httpResponse.response}")
+            } else {
                 Logger.i(TAG, "statusCode:${httpResponse.statusCode}")
             }
             if (httpResponse.statusCode == 202) {
@@ -74,9 +58,7 @@ internal object EventFlushHandler {
         }
     }
 
-
 }
-
 
 
 internal fun String.toMD5(): String {

@@ -1,23 +1,26 @@
 package app.suprsend.inbox
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import app.suprsend.R
+import app.suprsend.SSApiInternal
 import app.suprsend.base.getDrawableIdFromName
 import app.suprsend.base.safeIntent
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import java.lang.IllegalStateException
+import java.text.SimpleDateFormat
 
 internal class SSInboxMessageAdapter
 constructor(
@@ -56,66 +59,90 @@ constructor(
         private val ssInboxConfig: SSInboxConfig
     ) : RecyclerView.ViewHolder(view) {
         private val context: Context = view.context
-        private val itemContainer: LinearLayout = view.findViewById(R.id.itemContainer)
+        private val itemContainer: RelativeLayout = view.findViewById(R.id.itemContainer)
         private val imageView: ImageView = view.findViewById(R.id.imageView)
         private val descriptionTv: TextView = view.findViewById(R.id.descriptionText)
-        private val button: TextView = view.findViewById(R.id.buttonText)
+        private val readStatusIv: ImageView = view.findViewById(R.id.readStatusIv)
+        private val headerTv: TextView = view.findViewById(R.id.headerTv)
+        private val timeTv: TextView = view.findViewById(R.id.timeTv)
 
+        @SuppressLint("SetTextI18n", "SimpleDateFormat")
         fun bind(holder: InboxItemViewHolder, ssInboxItemVo: SSInboxItemVo) {
 
-            val itemContainerDrawable = holder.itemContainer.background
-            itemContainerDrawable?.setColorFilter(Color.parseColor(ssInboxConfig.cardBackgroundColor), PorterDuff.Mode.SRC_IN)
-            holder.itemContainer.background = itemContainerDrawable
+            try {
+                val itemContainerDrawable = holder.itemContainer.background
+                itemContainerDrawable?.setColorFilter(Color.parseColor(ssInboxConfig.cardBackgroundColor), PorterDuff.Mode.SRC_IN)
+                holder.itemContainer.background = itemContainerDrawable
 
-            val imageUrl = ssInboxItemVo.imageUrl
-            val url = ssInboxItemVo.url
-            if (!imageUrl.isNullOrBlank()) {
-                holder.imageView.visibility = View.VISIBLE
-                Glide.with(holder.context)
-                    .load(imageUrl)
-                    .apply(
-                        RequestOptions()
-                            .transform(RoundedCorners(context.resources.getDimension(R.dimen.margin_10).toInt()))
-                            .placeholder(holder.context.getDrawableIdFromName("ic_ss_image") ?: -1)
-                            .error(holder.context.getDrawableIdFromName("ic_ss_image") ?: -1)
-                    )
-                    .into(holder.imageView)
+                val imageUrl = ssInboxItemVo.imageUrl
+                val url = ssInboxItemVo.url
+                if (!imageUrl.isNullOrBlank()) {
+                    holder.imageView.visibility = View.VISIBLE
+                    Glide.with(holder.context)
+                        .load(imageUrl)
+                        .apply(
+                            RequestOptions()
+                                .transform(RoundedCorners(context.resources.getDimension(R.dimen.margin_10).toInt()))
+                                .placeholder(holder.context.getDrawableIdFromName("ic_ss_image") ?: -1)
+                                .error(holder.context.getDrawableIdFromName("ic_ss_image") ?: -1)
+                        )
+                        .into(holder.imageView)
 
-                holder.imageView.setOnClickListener {
-                    launchUrl(holder, url)
-                }
-            }else{
-                holder.imageView.visibility = View.GONE
-            }
-
-            val text = ssInboxItemVo.text
-            if (!text.isNullOrBlank()) {
-                holder.descriptionTv.setTextColor(Color.parseColor(ssInboxConfig.messageTextColor))
-                holder.descriptionTv.text = text
-                holder.descriptionTv.visibility = View.VISIBLE
-            } else {
-                holder.descriptionTv.visibility = View.GONE
-            }
-
-            val button = ssInboxItemVo.button
-
-            if (!button.isNullOrBlank()) {
-                val buttonDrawable = holder.button.background
-                buttonDrawable?.setColorFilter(Color.parseColor(ssInboxConfig.messageActionBgColor), PorterDuff.Mode.SRC_IN)
-                holder.button.background = buttonDrawable
-                holder.button.setTextColor(Color.parseColor(ssInboxConfig.messageActionTextColor))
-                holder.button.text = button
-                holder.button.visibility = View.VISIBLE
-                if (!url.isNullOrBlank()) {
-                    holder.button.setOnClickListener {
+                    holder.imageView.setOnClickListener {
                         launchUrl(holder, url)
                     }
                 } else {
-                    holder.button.setOnClickListener(null)
+                    holder.imageView.visibility = View.GONE
                 }
-            } else {
-                holder.button.visibility = View.GONE
+
+                val text = ssInboxItemVo.text
+                if (!text.isNullOrBlank()) {
+                    holder.descriptionTv.setTextColor(Color.parseColor(ssInboxConfig.messageTextColor))
+                    holder.descriptionTv.text = text
+                    holder.descriptionTv.visibility = View.VISIBLE
+                } else {
+                    holder.descriptionTv.visibility = View.GONE
+                }
+
+                if (!url.isNullOrBlank()) {
+                    holder.itemContainer.setOnClickListener {
+                        trackInboxNotificationClick(ssInboxItemVo, holder)
+                        launchUrl(holder, url)
+                    }
+                } else {
+                    holder.itemContainer.setOnClickListener(null)
+                }
+
+                holder.readStatusIv.visibility = if (ssInboxItemVo.seenOn == null) View.VISIBLE else View.GONE
+
+                val header = ssInboxItemVo.header
+                if (header.isNullOrBlank()) {
+                    holder.headerTv.visibility = View.GONE
+                } else {
+                    holder.headerTv.visibility = View.VISIBLE
+                    holder.headerTv.text = header
+                    holder.headerTv.setTextColor(Color.parseColor(ssInboxConfig.messageTextColor))
+                }
+                val createdOn = ssInboxItemVo.createdOn
+                if (createdOn == null) {
+                    holder.timeTv.visibility = View.GONE
+                } else {
+                    holder.timeTv.visibility = View.VISIBLE
+                    holder.timeTv.text = SimpleDateFormat("dd/MM/yyyy").format(createdOn) +
+                        " at " +
+                        SimpleDateFormat("hh:mm").format(createdOn)
+                    holder.timeTv.setTextColor(Color.parseColor(ssInboxConfig.messageTextColor))
+                    holder.timeTv.alpha = 0.7f
+                }
+            } catch (e: Exception) {
+                Log.e(SSInboxActivity.TAG, "", e)
             }
+        }
+
+        private fun trackInboxNotificationClick(ssInboxItemVo: SSInboxItemVo, holder: InboxItemViewHolder) {
+            SSApiInternal.inBoxNotificationClicked(ssInboxItemVo.nID)
+            ssInboxItemVo.seenOn = System.currentTimeMillis()
+            holder.readStatusIv.visibility = View.GONE
         }
 
         private fun launchUrl(holder: InboxItemViewHolder, url: String?) {

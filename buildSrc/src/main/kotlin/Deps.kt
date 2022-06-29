@@ -7,33 +7,32 @@ object Deps {
     const val SDK_PACKAGE_NAME = "app.suprsend"
     const val MAJOR_VERSION = 0
     const val MINOR_VERSION = 1
-    const val PATCH_VERSION = 5
+    const val PATCH_VERSION = 6
     val SNAPSHOT = -1
     val BUILD_TYPE = BuildType.NATIVE
-
-
-    const val SDK_VERSION_CODE = MAJOR_VERSION * 1000 + (MINOR_VERSION * 100) + PATCH_VERSION
-    var SDK_VERSION_NAME = if (SNAPSHOT != -1)
-        "$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}.${SNAPSHOT}" + "-SNAPSHOT"
-    else
-        "$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}"
-
-    //App Details
-     var APP_VERSION_CODE = (10000* MAJOR_VERSION) +(1000* MINOR_VERSION)+(100* PATCH_VERSION)+ SNAPSHOT
     const val ISPROD = false
     const val RUN_LIB = true
 
-    var APP_VERSION_NAME = if (ISPROD) {
-        "$SDK_VERSION_NAME Prod"
-    } else {
-        "$SDK_VERSION_NAME Stag"
-    }
+    const val SDK_VERSION_CODE = MAJOR_VERSION * 1000 + (MINOR_VERSION * 100) + PATCH_VERSION
+    var SDK_VERSION_NAME = if (SNAPSHOT != -1) {
+        if (RUN_LIB)
+            "$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}.${SNAPSHOT}" + "-LOCAL"
+        else
+            "$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}.${SNAPSHOT}" + "-SNAPSHOT"
+    } else
+        "$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}"
+
+    //App Details
+    var APP_VERSION_CODE = (10000 * MAJOR_VERSION) + (1000 * MINOR_VERSION) + (100 * PATCH_VERSION) + SNAPSHOT
+
+    var APP_VERSION_NAME = if (ISPROD) "$SDK_VERSION_NAME Prod" else "$SDK_VERSION_NAME Stag"
 
     //Prod
     var SS_API_BASE_URL = if (ISPROD) "https://hub.suprsend.com" else "https://collector-staging.suprsend.workers.dev"
 
     var SS_TOKEN = "XXXX"
     var SS_SECRET = "XXXX"
+    var INBOX_SECRET = "XXXX"
 
     const val XIAOMI_APP_ID = "XXXX"
     const val XIAOMI_APP_KEY = "XXXX"

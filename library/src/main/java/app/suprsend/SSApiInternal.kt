@@ -3,9 +3,11 @@ package app.suprsend
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
+import app.suprsend.base.executorService
 import app.suprsend.base.filterSSReservedKeys
 import app.suprsend.base.flushExecutorService
 import app.suprsend.base.isInValidKey
+import app.suprsend.base.safeString
 import app.suprsend.base.size
 
 import app.suprsend.base.uuid
@@ -15,6 +17,7 @@ import app.suprsend.event.PayloadCreator
 import app.suprsend.sprop.SuperPropertiesLocalDataSource
 import app.suprsend.user.UserLocalDatasource
 import app.suprsend.user.api.SSInternalUser
+import org.json.JSONArray
 import org.json.JSONObject
 
 internal object SSApiInternal {
@@ -49,7 +52,7 @@ internal object SSApiInternal {
     }
 
     fun setSuperProperties(properties: JSONObject) {
-        if(properties.size()==0){
+        if (properties.size() == 0) {
             return
         }
         Logger.i(TAG, "Setting super properties $properties")
@@ -108,8 +111,8 @@ internal object SSApiInternal {
             Logger.i(EventFlushHandler.TAG, "Flush event started")
             try {
                 EventFlushHandler.flushEvents()
-            }catch (e:Exception){
-                Logger.e(EventFlushHandler.TAG, "Error occurred while flushing",e)
+            } catch (e: Exception) {
+                Logger.e(EventFlushHandler.TAG, "Error occurred while flushing", e)
             }
             isFlushing = false
             Logger.i(EventFlushHandler.TAG, "Flush event completed")
@@ -122,6 +125,8 @@ internal object SSApiInternal {
         Logger.i(TAG, "reset : Current : $userId New : $newID")
         saveTrackEventPayload(SSConstants.S_EVENT_USER_LOGOUT)
         SuperPropertiesLocalDataSource().removeAll()
+        ConfigHelper.addOrUpdate(SSConstants.INBOX_RESPONSE, "[]")
+        ConfigHelper.addOrUpdate(SSConstants.INBOX_FETCH_TIME, "-1")
         userLocalDatasource.identify(newID)
         appendNotificationToken()
     }
@@ -213,9 +218,34 @@ internal object SSApiInternal {
     }
 
 
-
     fun getCachedApiKey(): String {
         return ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""
+    }
+
+    fun inBoxNotificationClicked(nID: String) {
+
+        executorService.execute {
+            ConfigHelper.get(SSConstants.INBOX_RESPONSE)
+            val response = ConfigHelper.get(SSConstants.INBOX_RESPONSE) ?: "[]"
+            val jsonArray = JSONArray(response)
+            for (i in 0 until jsonArray.length()) {
+                val notificationJo = jsonArray.getJSONObject(i)
+                val id = notificationJo.safeString("n_id") ?: ""
+                if (id == nID) {
+                    notificationJo.put("seen_on", System.currentTimeMillis())
+                    jsonArray.remove(i)
+                    jsonArray.put(i, notificationJo)
+                    break
+                }
+            }
+            ConfigHelper.addOrUpdate(SSConstants.INBOX_RESPONSE, jsonArray.toString())
+            saveTrackEventPayload(
+                eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
+                propertiesJO = JSONObject().apply {
+                    put("id", nID)
+                }
+            )
+        }
     }
 
     const val TAG = "ssinternal"

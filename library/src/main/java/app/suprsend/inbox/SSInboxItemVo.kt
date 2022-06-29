@@ -5,14 +5,16 @@ import app.suprsend.base.safeString
 import org.json.JSONArray
 
 internal class SSInboxItemVo(
-    val createdOn: String? = null,
-    val nCategory: String? = null,
-    val seenOn: String? = null,
-    val nId: String? = null,
+    val nID: String,
+    val createdOn: Long? = null,
+    var seenOn: Long? = null,
+
+    //Message
+
+    val header: String? = null,
     val text: String? = null,
-    val imageUrl: String? = null,
-    val button: String? = null,
-    val url: String? = null
+    val url: String? = null,
+    val imageUrl: String? = null
 )
 
 internal fun parseInboxItems(jsonArray: JSONArray?): List<SSInboxItemVo> {
@@ -21,18 +23,20 @@ internal fun parseInboxItems(jsonArray: JSONArray?): List<SSInboxItemVo> {
     for (i in 0 until jsonArray.length()) {
         val jo = jsonArray.getJSONObject(i)
         val messageJO = jo.safeJSONObject("message")
+        val id = jo.safeString("n_id") ?: ""
         inboxItems.add(
             SSInboxItemVo(
-                createdOn = jo.safeString("created_on"),
-                nCategory = jo.safeString("n_category"),
-                seenOn = jo.safeString("seen_on"),
-                nId = jo.safeString("n_id"),
+                nID = id,
+                createdOn = jo.safeString("created_on")?.toLong(),
+                seenOn = jo.safeString("seen_on")?.toLong(),
+
+                //Message
+                header = messageJO?.safeString("header"),
                 text = messageJO?.safeString("text"),
-                imageUrl = messageJO?.safeString("image"),
-                button = messageJO?.safeString("button"),
-                url = messageJO?.safeString("url")
+                url = messageJO?.safeString("url"),
+                imageUrl = messageJO?.safeString("image")
             )
         )
     }
-    return inboxItems
+    return inboxItems.sortedBy { item -> item.createdOn ?: 0 }
 }

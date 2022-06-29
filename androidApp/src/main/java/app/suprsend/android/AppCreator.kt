@@ -91,14 +91,25 @@ fun Activity.myToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
 
-val Context.defaultSharedPreferences: SharedPreferences
+internal val Context.defaultSharedPreferences: SharedPreferences
     get() = PreferenceManager.getDefaultSharedPreferences(this)
 
-inline fun SharedPreferences.Edit(func: SharedPreferences.Editor.() -> Unit) {
+internal inline fun SharedPreferences.Edit(func: SharedPreferences.Editor.() -> Unit) {
     val editor = edit()
     editor.func()
     editor.apply()
 }
+
+internal fun Activity.storeInSp(key: String, value: String) {
+    defaultSharedPreferences.Edit {
+        putString(key, value)
+    }
+}
+
+internal fun Activity.getFromSp(key: String, default: String = ""): String {
+    return defaultSharedPreferences.getString(key, default) ?: ""
+}
+
 internal val demoAppExecutorService: ExecutorService by lazy { Executors.newFixedThreadPool(1) }
 
 internal fun makeGetCall(urlStr: String): String {

@@ -121,10 +121,10 @@
                 android:id="@+id/setSuprPropertyValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Retailer"
                 android:layout_marginHorizontal="10dp"
                 android:layout_marginTop="10dp"
                 android:hint="Set Super Property Value"
+                android:text="Retailer"
                 tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -160,13 +160,14 @@
                 android:text="Notifiation"
                 android:textSize="17sp" />
 
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/logoutTv"
                 style="@style/btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="30dp"
                 android:gravity="center"
                 android:text="Logout"
                 android:textSize="17sp" />
