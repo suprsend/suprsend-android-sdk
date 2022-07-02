@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/notificationIv"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_notification"
+        android:tint="#000" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/messagesCountTv"
+        android:layout_width="13dp"
+        android:layout_height="13dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/ic_unread_circle"
+        android:gravity="center"
+        android:textColor="#FFF"
+        android:textSize="6sp"
+        tools:text="99" />
+</RelativeLayout>

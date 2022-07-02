@@ -1,6 +1,6 @@
 package app.suprsend.database
 
-class Event_Model(
+internal class Event_Model(
     var value: String? = null,
     var isDirty: Int = 0,
     var timeStamp: Long = 0,

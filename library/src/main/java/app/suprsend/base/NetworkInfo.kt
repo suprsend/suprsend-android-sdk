@@ -57,7 +57,7 @@ internal class NetworkInfo {
     }
 }
 
-enum class NetworkType(val readableName: String) {
+internal enum class NetworkType(val readableName: String) {
     WIFI("wifi"),
     G2("2G"),
     G3("3G"),

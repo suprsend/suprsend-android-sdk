@@ -11,6 +11,7 @@ import app.suprsend.SSApiInternal
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.mapToEnum
+import app.suprsend.base.safeIntent
 import org.json.JSONObject
 import java.io.Serializable
 
@@ -73,13 +74,10 @@ class NotificationRedirectionActivity : Activity() {
 
         // Target intent
         val link = notificationActionVo.link
-        val notificationActionIntent = if (!link.isNullOrBlank()) {
-            Intent(Intent.ACTION_VIEW, Uri.parse(link))
-        } else {
-            packageManager.getLaunchIntentForPackage(packageName)
-        }
+        val notificationActionIntent = safeIntent(link)
         notificationActionIntent?.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        startActivity(notificationActionIntent)
+        if (notificationActionIntent != null)
+            startActivity(notificationActionIntent)
     }
 
     private fun getNotificationActionVo(activityExtras: Bundle): NotificationActionVo? {
@@ -90,7 +88,7 @@ class NotificationRedirectionActivity : Activity() {
     companion object {
         const val TAG = "NRA"
 
-        fun getIntent(context: Context, notificationActionVo: NotificationActionVo? = null): Intent? {
+        internal fun getIntent(context: Context, notificationActionVo: NotificationActionVo? = null): Intent? {
             if (notificationActionVo?.link == null) {
                 return context.packageManager.getLaunchIntentForPackage(context.packageName)
             }
@@ -114,6 +112,6 @@ enum class NotificationRedirection {
     }
 }
 
-data class NotificationDismissVo(
+internal data class NotificationDismissVo(
     val notificationId: String
 ) : Serializable

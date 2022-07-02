@@ -1,8 +1,29 @@
 package app.suprsend.base
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.content.res.Resources
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Parcel
+import android.preference.PreferenceManager
+import androidx.core.content.res.ResourcesCompat
+import app.suprsend.config.ConfigHelper
+import app.suprsend.event.Algo
+import app.suprsend.event.EventFlushHandler
+import app.suprsend.event.toMD5
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.Locale
+import java.io.BufferedReader
+import java.io.DataOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.*
 
 internal inline fun <reified T : Enum<T>> String?.mapToEnum(defaultValue: T): T {
     return mapToEnum<T>() ?: defaultValue
@@ -99,4 +120,103 @@ internal fun getRandomString(length: Int): String {
     return (1..length)
         .map { allowedChars.random() }
         .joinToString("")
+}
+
+internal fun safeDrawable(resources: Resources, drawableId: Int, theme: Resources.Theme? = null): Drawable? {
+    try {
+        return ResourcesCompat.getDrawable(resources, drawableId, theme)
+    } catch (e: Exception) {
+
+    }
+    return null
+}
+
+internal fun Context.getDrawableIdFromName(drawableName: String?): Int? {
+    drawableName ?: return null
+    return try {
+        resources.getIdentifier(drawableName, "drawable", packageName)
+    } catch (e: Exception) {
+        null
+    }
+}
+
+internal fun Context.safeIntent(link: String? = null, defaultLauncherIntent: Boolean = true): Intent? {
+    return if (!link.isNullOrBlank()) {
+        Intent(Intent.ACTION_VIEW, Uri.parse(link))
+    } else {
+        if (defaultLauncherIntent)
+            packageManager.getLaunchIntentForPackage(packageName)
+        else null
+    }
+}
+
+internal fun Parcel.safeString(): String {
+    return readString() ?: ""
+}
+
+internal fun makeHttpRequest(method: String, urL: String, authorization: String, date: String, body: String? = null): HttPResponse {
+
+    var connection: HttpURLConnection? = null
+    var inputStream: InputStream? = null
+    try {
+        val url = URL(urL)
+        connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = method.toUpperCase(Locale.getDefault())
+        connection.setRequestProperty("Content-Type", "application/json")
+        connection.addRequestProperty("Authorization", authorization)
+        connection.addRequestProperty("Date", date)
+        connection.useCaches = false
+        connection.doOutput = method.toUpperCase(Locale.getDefault()) == "POST"
+        connection.doInput = true
+
+        //Send request
+        if (body != null) {
+            val wr = DataOutputStream(connection.outputStream)
+            wr.writeBytes(body)
+            wr.close()
+        }
+
+        //Get Response
+        try {
+            inputStream = connection.inputStream
+        } catch (ioe: IOException) {
+
+            val statusCode = connection.responseCode
+            if (statusCode >= 400) {
+                inputStream = connection.errorStream
+            }
+        }
+        val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+        val response = StringBuilder()
+        var line: String?
+        while (bufferedReader.readLine().also { line = it } != null) {
+            response.append(line)
+            response.append('\r')
+        }
+        bufferedReader.close()
+
+        return HttPResponse(connection.responseCode, response.toString())
+    } catch (e: Exception) {
+        Logger.e(EventFlushHandler.TAG, "", e)
+    } finally {
+        connection?.disconnect()
+    }
+    return HttPResponse(400)
+}
+
+internal fun generateSignature(
+    method: String,
+    route: String,
+    contentType: String = "application/json",
+    body: String = "",
+    date: String
+): String {
+    val contentMd5 = body.toMD5()
+    val secret = ConfigHelper.get(SSConstants.CONFIG_API_SECRET) ?: ""
+    val stringToSign = method + "\n" +
+        contentMd5 + "\n" +
+        contentType + "\n" +
+        date + "\n" +
+        route
+    return Algo.base64(Algo.generateHashWithHmac256(secret, stringToSign))
 }

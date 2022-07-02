@@ -78,4 +78,7 @@ internal object SSConstants {
     const val S_EVENT_PAGE_VISITED = "\$page_visited"
 
     const val TAG_VALIDATION = "validation"
+
+    const val INBOX_FETCH_TIME = "inbox_fetch_time"
+    const val INBOX_RESPONSE = "inbox_response"
 }

@@ -6,7 +6,17 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application>
-        <activity android:name=".notification.NotificationRedirectionActivity" />
-        <receiver android:name=".notification.SSNotificationDismissBroadcastReceiver"/>
+
+        <activity
+            android:name=".notification.NotificationRedirectionActivity"
+            android:exported="false" />
+
+        <receiver
+            android:name=".notification.SSNotificationDismissBroadcastReceiver"
+            android:exported="false" />
+
+        <activity
+            android:name=".inbox.SSInboxActivity"
+            android:exported="false" />
     </application>
 </manifest>

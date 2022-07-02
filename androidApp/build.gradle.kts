@@ -47,6 +47,7 @@ android {
             buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
             buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
             buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
+            buildConfigField("String", "INBOX_SECRET", "\"${Deps.INBOX_SECRET}\"")
             buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
             buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
             versionNameSuffix = "(d)"
@@ -59,6 +60,7 @@ android {
             buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
             buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
             buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
+            buildConfigField("String", "INBOX_SECRET", "\"${Deps.INBOX_SECRET}\"")
             buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
             buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
             signingConfig = signingConfigs.getByName("release")

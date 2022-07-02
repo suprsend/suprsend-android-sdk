@@ -2,12 +2,15 @@ package app.suprsend.event;
 
 import android.util.Base64;
 
+import androidx.annotation.RestrictTo;
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class Algo {
     public static byte[] generateHashWithHmac256(String key, String message) {
         try {

@@ -121,10 +121,10 @@
                 android:id="@+id/setSuprPropertyValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Retailer"
                 android:layout_marginHorizontal="10dp"
                 android:layout_marginTop="10dp"
                 android:hint="Set Super Property Value"
+                android:text="Retailer"
                 tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -149,13 +149,38 @@
                 android:text="UnSet Suprproperty"
                 android:textSize="17sp" />
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/notificationTv"
+                    style="@style/btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:gravity="center"
+                    android:text="Notifiation"
+                    android:textSize="17sp" />
+
+                <app.suprsend.inbox.InboxBellView
+                    android:id="@+id/inboxBellView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp" />
+            </RelativeLayout>
+
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/logoutTv"
                 style="@style/btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="30dp"
                 android:gravity="center"
                 android:text="Logout"
                 android:textSize="17sp" />
