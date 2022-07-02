@@ -14,4 +14,4 @@ internal lateinit var context: Context
 
 internal val executorService: ExecutorService by lazy { Executors.newFixedThreadPool(1) }
 internal val flushExecutorService: ExecutorService by lazy { Executors.newFixedThreadPool(1) }
-internal val appExecutorService: ExecutorService by lazy { Executors.newFixedThreadPool(1) }
+internal val appExecutorService: ExecutorService by lazy { Executors.newFixedThreadPool(2) }

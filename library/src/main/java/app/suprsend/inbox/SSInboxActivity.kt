@@ -11,7 +11,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import app.suprsend.R
+import app.suprsend.base.SSConstants
 import app.suprsend.base.safeDrawable
+import app.suprsend.config.ConfigHelper
+import org.json.JSONArray
 
 class SSInboxActivity : FragmentActivity() {
 
@@ -62,6 +65,7 @@ class SSInboxActivity : FragmentActivity() {
         const val CONFIG = "config"
         const val SUBSCRIBER_ID = "subscriber_id"
         const val DISTINCT_ID = "distinct_id"
+
     }
 
 }

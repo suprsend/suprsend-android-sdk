@@ -25,7 +25,7 @@ object Deps {
     //App Details
     var APP_VERSION_CODE = (10000 * MAJOR_VERSION) + (1000 * MINOR_VERSION) + (100 * PATCH_VERSION) + SNAPSHOT
 
-    var APP_VERSION_NAME = if (ISPROD) "$SDK_VERSION_NAME Prod" else "$SDK_VERSION_NAME Stag"
+    var APP_VERSION_NAME = if (ISPROD) "$SDK_VERSION_NAME-Prod" else "$SDK_VERSION_NAME-Stag"
 
     //Prod
     var SS_API_BASE_URL = if (ISPROD) "https://hub.suprsend.com" else "https://collector-staging.suprsend.workers.dev"

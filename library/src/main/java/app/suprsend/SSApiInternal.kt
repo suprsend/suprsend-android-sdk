@@ -233,7 +233,6 @@ internal object SSApiInternal {
                 val id = notificationJo.safeString("n_id") ?: ""
                 if (id == nID) {
                     notificationJo.put("seen_on", System.currentTimeMillis())
-                    jsonArray.remove(i)
                     jsonArray.put(i, notificationJo)
                     break
                 }

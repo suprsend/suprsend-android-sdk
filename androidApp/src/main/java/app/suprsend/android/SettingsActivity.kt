@@ -71,11 +71,13 @@ class SettingsActivity : AppCompatActivity() {
         binding.notificationTv.setOnClickListener {
             val intent = Intent(this, SSInboxActivity::class.java)
             intent.putExtra(SSInboxActivity.DISTINCT_ID, AppCreator.getEmail(this))
-            intent.putExtra(SSInboxActivity.SUBSCRIBER_ID, HmacGeneratation()
-                .hmacRawURLSafeBase64String(
-                    AppCreator.getEmail(this),
-                BuildConfig.INBOX_SECRET
-                )
+            intent.putExtra(
+                SSInboxActivity.SUBSCRIBER_ID,
+                HmacGeneratation()
+                    .hmacRawURLSafeBase64String(
+                        AppCreator.getEmail(this),
+                        BuildConfig.INBOX_SECRET
+                    )
             )
             if (ssInboxConfig != null)
                 intent.putExtra(SSInboxActivity.CONFIG, ssInboxConfig)
@@ -91,6 +93,19 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         fetchInboxTheme()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        binding.inboxBellView.updateCount(
+            distinctId = AppCreator.getEmail(this),
+            subscriberId = HmacGeneratation()
+                .hmacRawURLSafeBase64String(
+                    AppCreator.getEmail(this),
+                    BuildConfig.INBOX_SECRET
+                ),
+            activity = this
+        )
     }
 
     private fun fetchInboxTheme() {
