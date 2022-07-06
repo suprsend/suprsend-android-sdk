@@ -126,7 +126,6 @@ internal object SSApiInternal {
         saveTrackEventPayload(SSConstants.S_EVENT_USER_LOGOUT)
         SuperPropertiesLocalDataSource().removeAll()
         ConfigHelper.addOrUpdate(SSConstants.INBOX_RESPONSE, "[]")
-        ConfigHelper.addOrUpdate(SSConstants.INBOX_FETCH_TIME, "-1")
         userLocalDatasource.identify(newID)
         appendNotificationToken()
     }

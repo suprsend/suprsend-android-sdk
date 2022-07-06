@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/inboxLL"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/inboxRv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/emptyMessageTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="10dp"
+        android:gravity="center"
+        android:text="@string/no_data_available" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/newUpdatesAvailableTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/inbox_message_item_bg"
+        android:padding="@dimen/margin_10"
+        android:text="@string/new_updates_available"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:visibility="visible" />
+</FrameLayout>

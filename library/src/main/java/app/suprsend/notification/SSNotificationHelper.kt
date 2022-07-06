@@ -97,7 +97,8 @@ object SSNotificationHelper {
             Logger.i("notification","Notification isShown : ${rawNotification.notificationGroupId} $isShown")
             if (isShown == true)
                 return
-
+            val unReadCount = (ConfigHelper.getInt(SSConstants.INBOX_MESSAGE_UNREAD_COUNT) ?:0)+1
+            ConfigHelper.addOrUpdate(SSConstants.INBOX_MESSAGE_UNREAD_COUNT,unReadCount)
             ConfigHelper.addOrUpdate(showNotificationId, true)
 
             Logger.i("notification","showNotificationInternal")

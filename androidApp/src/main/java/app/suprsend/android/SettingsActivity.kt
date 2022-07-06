@@ -5,10 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.android.databinding.ActivitySettingsBinding
-import app.suprsend.event.Algo
-import app.suprsend.inbox.SSInboxActivity
 import app.suprsend.inbox.SSInboxConfig
-import org.json.JSONObject
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -68,22 +65,6 @@ class SettingsActivity : AppCompatActivity() {
             CommonAnalyticsHandler.unSetSuperProperties(binding.setSuprPropertyKey.text.toString())
         }
 
-        binding.notificationTv.setOnClickListener {
-            val intent = Intent(this, SSInboxActivity::class.java)
-            intent.putExtra(SSInboxActivity.DISTINCT_ID, AppCreator.getEmail(this))
-            intent.putExtra(
-                SSInboxActivity.SUBSCRIBER_ID,
-                HmacGeneratation()
-                    .hmacRawURLSafeBase64String(
-                        AppCreator.getEmail(this),
-                        BuildConfig.INBOX_SECRET
-                    )
-            )
-            if (ssInboxConfig != null)
-                intent.putExtra(SSInboxActivity.CONFIG, ssInboxConfig)
-            startActivity(intent)
-        }
-
         binding.logoutTv.clickWithThrottle {
             CommonAnalyticsHandler.unset("choices")
             CommonAnalyticsHandler.reset()
@@ -91,54 +72,11 @@ class SettingsActivity : AppCompatActivity() {
             finishAffinity()
             AppCreator.setEmail(this, "")
         }
-
-        fetchInboxTheme()
     }
 
-    override fun onStart() {
-        super.onStart()
-        binding.inboxBellView.updateCount(
-            distinctId = AppCreator.getEmail(this),
-            subscriberId = HmacGeneratation()
-                .hmacRawURLSafeBase64String(
-                    AppCreator.getEmail(this),
-                    BuildConfig.INBOX_SECRET
-                ),
-            activity = this
-        )
+    companion object {
+        const val APP_INBOX_THEME = "inbox_theme"
     }
-
-    private fun fetchInboxTheme() {
-        demoAppExecutorService.execute {
-            // Todo : Testing url
-            val responseStr = makeGetCall("https://freeappcreator.in/http/uploads/inbox_screen_theme.json")
-            if (responseStr.isBlank()) {
-                ssInboxConfig = null
-                return@execute
-            }
-
-            val response = JSONObject(responseStr)
-            ssInboxConfig = SSInboxConfig(
-                statusBarColor = response.optString("statusBarColor"),
-                navigationBarColor = response.optString("navigationBarColor"),
-                toolbarBgColor = response.optString("toolbarBgColor"),
-                toolbarTitle = response.optString("toolbarTitle"),
-                toolbarTitleColor = response.optString("toolbarTitleColor"),
-                screenBgColor = response.optString("screenBgColor"),
-                cardBackgroundColor = response.optString("cardBackgroundColor"),
-                backButtonColor = response.optString("backButtonColor"),
-                emptyScreenMessage = response.optString("emptyScreenMessage"),
-                emptyScreenMessageTextColor = response.optString("emptyScreenMessageTextColor"),
-                messageTextColor = response.optString("messageTextColor")
-            )
-        }
-    }
-}
-
-// This is generated here just for testing purpose we do not recommend doing this in mobile app instead this should be generated on server
-private fun generateSubscriberId(distinctId: String): String? {
-    val secret = BuildConfig.SS_SECRET
-    return Algo.base64(Algo.generateHashWithHmac256(distinctId, secret))
 }
 
 fun View.clickWithThrottle(throttleTime: Long = 600L, action: () -> Unit) {

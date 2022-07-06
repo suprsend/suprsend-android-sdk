@@ -3,6 +3,7 @@ package app.suprsend.inbox
 import android.os.Parcel
 import android.os.Parcelable
 import app.suprsend.base.safeString
+import org.json.JSONObject
 
 data class SSInboxConfig(
     //Change parcel details in constructor(parcel: Parcel) & writeToParcel place
@@ -14,10 +15,36 @@ data class SSInboxConfig(
     val screenBgColor: String = "#FFFFFF",
     val cardBackgroundColor: String = "#000000",
     val backButtonColor: String = "#000000",
-    val emptyScreenMessage: String = "No data available",
     val emptyScreenMessageTextColor: String = "#000000",
-    val messageTextColor: String = "#000000"
+    val emptyScreenMessage: String = "No data available",
+    val messageTextColor: String = "#000000",
+    val bellIconColor: String = "#000000",
+    val bellIconCountBgColor: String = "#000000",
+    val bellIconCountTextColor: String = "#000000",
+    val newUpdatesAvailableText: String = "New Updates Available",
+    val newUpdatesAvailableTextColor: String = "#000000",
+    val newUpdatesAvailablePosition: String = "bottom"
 ) : Parcelable {
+    constructor(response: JSONObject) :
+        this(
+            statusBarColor = response.optString("statusBarColor"),
+            navigationBarColor = response.optString("navigationBarColor"),
+            toolbarBgColor = response.optString("toolbarBgColor"),
+            toolbarTitleColor = response.optString("toolbarTitleColor"),
+            toolbarTitle = response.optString("toolbarTitle"),
+            screenBgColor = response.optString("screenBgColor"),
+            cardBackgroundColor = response.optString("cardBackgroundColor"),
+            backButtonColor = response.optString("backButtonColor"),
+            emptyScreenMessageTextColor = response.optString("emptyScreenMessageTextColor"),
+            emptyScreenMessage = response.optString("emptyScreenMessage"),
+            messageTextColor = response.optString("messageTextColor"),
+            bellIconColor = response.optString("bellIconColor"),
+            bellIconCountBgColor = response.optString("bellIconCountBgColor"),
+            bellIconCountTextColor = response.optString("bellIconCountTextColor"),
+            newUpdatesAvailableText = response.optString("newUpdatesAvailableText"),
+            newUpdatesAvailableTextColor = response.optString("newUpdatesAvailableTextColor"),
+            newUpdatesAvailablePosition = response.optString("newUpdatesAvailablePosition")
+        )
 
     constructor(parcel: Parcel) : this(
         statusBarColor = parcel.safeString(),
@@ -28,9 +55,15 @@ data class SSInboxConfig(
         screenBgColor = parcel.safeString(),
         cardBackgroundColor = parcel.safeString(),
         backButtonColor = parcel.safeString(),
-        emptyScreenMessage = parcel.safeString(),
         emptyScreenMessageTextColor = parcel.safeString(),
-        messageTextColor = parcel.safeString()
+        emptyScreenMessage = parcel.safeString(),
+        messageTextColor = parcel.safeString(),
+        bellIconColor = parcel.safeString(),
+        bellIconCountBgColor = parcel.safeString(),
+        bellIconCountTextColor = parcel.safeString(),
+        newUpdatesAvailableText = parcel.safeString(),
+        newUpdatesAvailableTextColor = parcel.safeString(),
+        newUpdatesAvailablePosition = parcel.safeString()
     )
 
     override fun writeToParcel(parcel: Parcel?, flag: Int) {
@@ -42,9 +75,15 @@ data class SSInboxConfig(
         parcel?.writeString(screenBgColor)
         parcel?.writeString(cardBackgroundColor)
         parcel?.writeString(backButtonColor)
-        parcel?.writeString(emptyScreenMessage)
         parcel?.writeString(emptyScreenMessageTextColor)
+        parcel?.writeString(emptyScreenMessage)
         parcel?.writeString(messageTextColor)
+        parcel?.writeString(bellIconColor)
+        parcel?.writeString(bellIconCountBgColor)
+        parcel?.writeString(bellIconCountTextColor)
+        parcel?.writeString(newUpdatesAvailableText)
+        parcel?.writeString(newUpdatesAvailableTextColor)
+        parcel?.writeString(newUpdatesAvailablePosition)
     }
 
     override fun describeContents(): Int {

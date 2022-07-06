@@ -79,6 +79,6 @@ internal object SSConstants {
 
     const val TAG_VALIDATION = "validation"
 
-    const val INBOX_FETCH_TIME = "inbox_fetch_time"
     const val INBOX_RESPONSE = "inbox_response"
+    const val INBOX_MESSAGE_UNREAD_COUNT = "inbox_message_unread_count"
 }
