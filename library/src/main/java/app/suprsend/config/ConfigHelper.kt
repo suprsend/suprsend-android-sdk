@@ -1,5 +1,6 @@
 package app.suprsend.config
 
+import app.suprsend.base.Logger
 import app.suprsend.base.SdkAndroidCreator
 
 import app.suprsend.database.Config_Model
@@ -10,11 +11,11 @@ import app.suprsend.database.Config_Model
  */
 internal object ConfigHelper {
 
-    private var configChangeMap = hashMapOf<String, ConfigListener>()
+    private var configChangeMap = arrayListOf<ConfigListener>()
 
     fun addOrUpdate(key: String, value: String) {
         SdkAndroidCreator.sqlDataHelper.insert_configByKey(Config_Model(key = key, value = value))
-        configChangeMap[key]?.onChange()
+        notifyConfig(key)
     }
 
     fun get(key: String): String? {
@@ -23,7 +24,7 @@ internal object ConfigHelper {
 
     fun addOrUpdate(key: String, value: Int) {
         SdkAndroidCreator.sqlDataHelper.insert_configByKey(Config_Model(key = key, value = value.toString()))
-        configChangeMap[key]?.onChange()
+        notifyConfig(key)
     }
 
     fun getInt(key: String): Int? {
@@ -32,7 +33,7 @@ internal object ConfigHelper {
 
     fun addOrUpdate(key: String, value: Boolean) {
         SdkAndroidCreator.sqlDataHelper.insert_configByKey(Config_Model(key = key, value = getBooleanToString(value)))
-        configChangeMap[key]?.onChange()
+        notifyConfig(key)
     }
 
 
@@ -40,12 +41,20 @@ internal object ConfigHelper {
         return getStringToBoolean(SdkAndroidCreator.sqlDataHelper.getconfigByKey(key)?.value)
     }
 
-    fun setChangeListener(key: String, configListener: ConfigListener) {
-        configChangeMap[key] = configListener
+    fun setChangeListener(configListener: ConfigListener) {
+        configChangeMap.add(configListener)
     }
 
-    fun removeListener(key: String) {
-        configChangeMap.remove(key)
+    fun removeListener(configListener: ConfigListener) {
+        configChangeMap.remove(configListener)
+    }
+
+    private fun notifyConfig(key: String) {
+        try {
+            configChangeMap.forEach { it.onChange(key) }
+        } catch (e: Exception) {
+            Logger.e("config", "", e)
+        }
     }
 
     private fun getStringToBoolean(value: String?): Boolean? {

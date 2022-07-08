@@ -14,13 +14,22 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <app.suprsend.inbox.InboxBellView
+            android:id="@+id/inboxBellView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageIV"
             android:layout_width="match_parent"
             android:layout_height="150dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/inboxBellView" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/title"

@@ -3,9 +3,12 @@ package app.suprsend.android
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import app.suprsend.android.databinding.ActivityHomeBinding
+import app.suprsend.inbox.InboxMenuHandler
 import app.suprsend.inbox.SSInboxActivity
 import app.suprsend.inbox.SSInboxConfig
 import org.json.JSONObject
@@ -14,10 +17,18 @@ class HomeActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityHomeBinding
 
+    var inboxMenuHandler: InboxMenuHandler? = null
+
+    lateinit var ssInboxConfig: SSInboxConfig
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ssInboxConfig = getThemeJson()?.let { SSInboxConfig(it) } ?: SSInboxConfig()
+
         val layoutManager = GridLayoutManager(this, 2)
 
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -35,10 +46,29 @@ class HomeActivity : AppCompatActivity() {
 
         CommonAnalyticsHandler.track("home_screen_viewed")
         fetchInboxTheme()
-        val ssInboxConfig = SSInboxConfig(getThemeJson())
-        binding
-            .inboxBellView
-            .initialize(
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menu?.let { safeMenu ->
+            menuInflater.inflate(R.menu.home, safeMenu)
+        }
+        return true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        inboxMenuHandler?.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        inboxMenuHandler?.onStop()
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.let { safeMenu ->
+            inboxMenuHandler = InboxMenuHandler(
+                item = safeMenu.findItem(R.id.notificationMenu),
                 distinctId = AppCreator.getEmail(this),
                 // This is generated here just for testing purpose we do not recommend doing this in mobile app instead this should be generated on server
                 // We should not keep inbox secret at mobile end
@@ -47,29 +77,24 @@ class HomeActivity : AppCompatActivity() {
                         AppCreator.getEmail(this),
                         BuildConfig.INBOX_SECRET
                     ),
-                ssInboxConfig = ssInboxConfig
+                ssInboxConfig = ssInboxConfig,
+                onClickListener = View.OnClickListener {
+                    val inboxIntent = Intent(this, SSInboxActivity::class.java)
+                    inboxIntent.putExtra(SSInboxActivity.DISTINCT_ID, AppCreator.getEmail(this))
+                    inboxIntent.putExtra(
+                        SSInboxActivity.SUBSCRIBER_ID,
+                        HmacGeneratation()
+                            .hmacRawURLSafeBase64String(
+                                AppCreator.getEmail(this),
+                                BuildConfig.INBOX_SECRET
+                            )
+                    )
+                    inboxIntent.putExtra(SSInboxActivity.CONFIG, ssInboxConfig)
+                    startActivity(inboxIntent)
+                }
             )
-        binding
-            .inboxBellView
-            .setOnClickListener {
-                val intent = Intent(this, SSInboxActivity::class.java)
-                intent.putExtra(SSInboxActivity.DISTINCT_ID, AppCreator.getEmail(this))
-                intent.putExtra(
-                    SSInboxActivity.SUBSCRIBER_ID,
-                    HmacGeneratation()
-                        .hmacRawURLSafeBase64String(
-                            AppCreator.getEmail(this),
-                            BuildConfig.INBOX_SECRET
-                        )
-                )
-                intent.putExtra(SSInboxActivity.CONFIG, ssInboxConfig)
-                startActivity(intent)
-            }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        binding.inboxBellView.dispose()
+        }
+        return super.onPrepareOptionsMenu(menu)
     }
 
     private fun getSpanCount(position: Int): Int {
@@ -87,18 +112,19 @@ class HomeActivity : AppCompatActivity() {
             if (responseStr.isBlank()) {
                 return@execute
             }
-            val config = SSInboxConfig(JSONObject(responseStr))
-            runOnUiThread {
-                binding.inboxBellView.setThemeConfig(config)
-            }
         }
     }
 }
 
-fun Activity.getThemeJson(): JSONObject {
+fun Activity.getThemeJson(): JSONObject? {
     return try {
-        defaultSharedPreferences.getString(SettingsActivity.APP_INBOX_THEME, "{}")?.let { JSONObject(it) } ?: JSONObject()
+        defaultSharedPreferences.getString(SettingsActivity.APP_INBOX_THEME, "")?.let {
+            if (it.isBlank())
+                null
+            else
+                JSONObject(it)
+        }
     } catch (e: Exception) {
-        JSONObject()
+        null
     }
 }

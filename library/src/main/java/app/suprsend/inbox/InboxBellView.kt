@@ -1,7 +1,6 @@
 package app.suprsend.inbox
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -29,13 +28,11 @@ class InboxBellView : FrameLayout {
     private val bellView = LayoutInflater.from(context).inflate(R.layout.inbox_bell, this, true)
 
     private var configListener = object : ConfigListener {
-        override fun onChange() {
-            Logger.i("yep","change called")
+        override fun onChange(key:String) {
             try {
                 bellView.post {
                     try {
-                        Logger.i("yep","set count")
-                        setCount()
+                        syncCount()
                     } catch (e: Exception) {
                         Log.e(SSInboxActivity.TAG, "", e)
                     }
@@ -46,10 +43,10 @@ class InboxBellView : FrameLayout {
         }
     }
 
-
     init {
-        ConfigHelper.setChangeListener(SSConstants.INBOX_MESSAGE_UNREAD_COUNT, configListener)
+        onStart()
     }
+
 
     fun initialize(
         distinctId: String,
@@ -58,22 +55,26 @@ class InboxBellView : FrameLayout {
     ) {
         if (ssInboxConfig != null)
             setThemeConfig(ssInboxConfig)
-        setCount()
+        syncCount()
         InboxHelper.fetchApiCall(
             distinctId = distinctId,
             subscriberId = subscriberId
         )
     }
 
-    fun dispose() {
-        ConfigHelper.removeListener(SSConstants.INBOX_MESSAGE_UNREAD_COUNT)
+    fun onStart() {
+        ConfigHelper.setChangeListener(configListener)
+        syncCount()
+    }
+
+    fun onStop() {
+        ConfigHelper.removeListener(configListener)
     }
 
     @SuppressLint("SetTextI18n")
-    private fun setCount() {
+    private fun syncCount() {
         val countTv = bellView.findViewById<TextView>(R.id.messagesCountTv)
         val count = InboxHelper.getUnReadMessagesCount()
-        Logger.i("yep","Unread count : $count")
         countTv.visibility = if (count == 0) View.GONE else View.VISIBLE
         if (count > 99) {
             countTv.text = "99+"

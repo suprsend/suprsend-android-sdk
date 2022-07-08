@@ -6,6 +6,8 @@ import android.os.CountDownTimer
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -55,23 +57,6 @@ internal class SSInboxMessageListFragment : Fragment() {
         return view
     }
 
-    private fun initializeNewUpdateAvailable(view: View) {
-        newUpdatesAvailableTv = view.findViewById(R.id.newUpdatesAvailableTv)
-        newUpdatesAvailableTv?.setOnClickListener {
-            newUpdatesAvailableTv?.visibility = View.GONE
-        }
-        newUpdatesAvailableTv?.text = ssInboxConfig.newUpdatesAvailableText
-        newUpdatesAvailableTv?.setTextColor(Color.parseColor(ssInboxConfig.newUpdatesAvailableTextColor))
-        val layoutParams = newUpdatesAvailableTv?.layoutParams as? FrameLayout.LayoutParams
-        if (ssInboxConfig.newUpdatesAvailablePosition == "top") {
-            layoutParams?.topMargin = resources.getDimension(R.dimen.margin_10).toInt()
-            layoutParams?.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-        } else {
-            layoutParams?.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            layoutParams?.bottomMargin = resources.getDimension(R.dimen.margin_10).toInt()
-        }
-    }
-
     override fun onStart() {
         super.onStart()
         try {
@@ -98,7 +83,6 @@ internal class SSInboxMessageListFragment : Fragment() {
 
     }
 
-
     override fun onStop() {
         super.onStop()
         try {
@@ -107,6 +91,23 @@ internal class SSInboxMessageListFragment : Fragment() {
             countDownTimer = null
         } catch (e: Exception) {
             Logger.e(SSInboxActivity.TAG, "onStop", e)
+        }
+    }
+
+    private fun initializeNewUpdateAvailable(view: View) {
+        newUpdatesAvailableTv = view.findViewById(R.id.newUpdatesAvailableTv)
+        newUpdatesAvailableTv?.setOnClickListener {
+            newUpdatesAvailableTv?.visibility = View.GONE
+        }
+        newUpdatesAvailableTv?.text = ssInboxConfig.newUpdatesAvailableText
+        newUpdatesAvailableTv?.setTextColor(Color.parseColor(ssInboxConfig.newUpdatesAvailableTextColor))
+        val layoutParams = newUpdatesAvailableTv?.layoutParams as? FrameLayout.LayoutParams
+        if (ssInboxConfig.newUpdatesAvailablePosition == "top") {
+            layoutParams?.topMargin = resources.getDimension(R.dimen.margin_10).toInt()
+            layoutParams?.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+        } else {
+            layoutParams?.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+            layoutParams?.bottomMargin = resources.getDimension(R.dimen.margin_10).toInt()
         }
     }
 
