@@ -30,8 +30,10 @@ data class RawNotification(
 
     val category: String? = null,
 
-    val setGroupSummary: Boolean? = null,
     val group: String? = null,
+    val groupSubText: String? = null,
+    val groupShowWhenTimeStamp: Boolean? = null,
+    val groupWhenTimeStamp: Long? = null,
     val sortKey: String? = null,
 
     val onGoing: Boolean? = null,
@@ -73,8 +75,10 @@ data class RawNotification(
                 autoCancel = autoCancel,
                 smallIconDrawableName = smallIconDrawableName,
                 category = category,
-                setGroupSummary = setGroupSummary,
                 group = group,
+                groupSubText = groupSubText,
+                groupShowWhenTimeStamp = groupShowWhenTimeStamp,
+                groupWhenTimeStamp = groupWhenTimeStamp,
                 sortKey = sortKey,
                 localOnly = localOnly,
                 timeoutAfter = timeoutAfter,
@@ -187,8 +191,11 @@ data class NotificationBasicVo(
 
     val category: String? = null,
 
-    val setGroupSummary: Boolean? = null,
     val group: String? = null,
+    val groupSubText: String? = null,
+    val groupShowWhenTimeStamp: Boolean? = null,
+    val groupWhenTimeStamp: Long? = null,
+
     val sortKey: String? = null,
 
     val onGoing: Boolean? = null,
