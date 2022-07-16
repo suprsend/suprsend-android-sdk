@@ -126,6 +126,35 @@ object SSNotificationHelper {
         setNotificationAction(context, notificationBuilder, notificationVo)
 
         Logger.i("notification","notify")
+
+        notificationVo.notificationBasicVo.group?.let {
+            val notificationBasicVo = notificationVo.notificationBasicVo
+            val smallIcon = context.getDrawableIdFromName(notificationBasicVo.smallIconDrawableName) ?: R.drawable.ic_notification
+            val groupNotification = NotificationCompat
+                .Builder(context, notificationVo.notificationChannelVo.id)
+                .setGroup(notificationBasicVo.group)
+                .setSmallIcon(smallIcon)
+                .setAutoCancel(true)
+                .setGroupSummary(true)
+
+            notificationBasicVo.groupSubText?.let { subText ->
+                groupNotification.setSubText(subText)
+            }
+
+            notificationBasicVo.groupShowWhenTimeStamp?.let { showWhenTimeStamp ->
+                groupNotification.setShowWhen(showWhenTimeStamp)
+            }
+
+            notificationBasicVo.groupWhenTimeStamp?.let { whenTimeStamp ->
+                groupNotification.setWhen(whenTimeStamp)
+            }
+            notificationManager
+                .notify(
+                    notificationBasicVo.group.hashCode(),
+                       groupNotification
+                        .build()
+                )
+        }
         notificationManager.notify(notificationVo.id.hashCode(), notificationBuilder.build())
     }
 
@@ -251,10 +280,6 @@ object SSNotificationHelper {
         // Set the key by which this notification will be grouped.
         notificationBasicVo.group?.let { group ->
             notificationBuilder.setGroup(group)
-        }
-
-        notificationBasicVo.setGroupSummary?.let { setGroupSummary ->
-            notificationBuilder.setGroupSummary(setGroupSummary)
         }
 
         notificationBasicVo.sortKey?.let { sortKey ->
@@ -500,8 +525,10 @@ private fun String?.getRawNotification(): RawNotification {
 
         category = notificationPayloadJO.safeString("category"),
 
-        setGroupSummary = notificationPayloadJO.safeBoolean("setGroupSummary"),
         group = notificationPayloadJO.safeString("group"),
+        groupSubText = notificationPayloadJO.safeString("groupSubText"),
+        groupShowWhenTimeStamp = notificationPayloadJO.safeBoolean("groupShowWhenTimeStamp"),
+        groupWhenTimeStamp = notificationPayloadJO.safeLong("groupWhenTimeStamp"),
         sortKey = notificationPayloadJO.safeString("sortKey"),
 
         onGoing = notificationPayloadJO.safeBoolean("onGoing"),
