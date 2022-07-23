@@ -90,15 +90,13 @@ object SSNotificationHelper {
                         put(SSConstants.PUSH_VENDOR, pushVendor)
                 }
             )
-            instance?.flush()
+            instance.flush()
 
             val showNotificationId = String.format(SSConstants.CONFIG_NOTIFICATION_GROUP_SHOWN, rawNotification.notificationGroupId)
             val isShown = ConfigHelper.getBoolean(showNotificationId)
             Logger.i("notification","Notification isShown : ${rawNotification.notificationGroupId} $isShown")
             if (isShown == true)
                 return
-            val unReadCount = (ConfigHelper.getInt(SSConstants.INBOX_MESSAGE_UNREAD_COUNT) ?:0)+1
-            ConfigHelper.addOrUpdate(SSConstants.INBOX_MESSAGE_UNREAD_COUNT,unReadCount)
             ConfigHelper.addOrUpdate(showNotificationId, true)
 
             Logger.i("notification","showNotificationInternal")

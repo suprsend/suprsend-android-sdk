@@ -19,13 +19,19 @@ private typealias UpdateInboxUi = (isConnected: Boolean) -> Unit
 
 internal object InboxHelper {
 
+    var fetchInboxMessages = false
 
     fun fetchApiCall(distinctId: String, subscriberId: String, messagesSeen: Boolean = false, updateUI: UpdateInboxUi? = null) {
         if (!SdkAndroidCreator.networkInfo.isConnected()) {
             updateUI?.invoke(false)
             return
         }
+        if (fetchInboxMessages) {
+            Logger.i(SSInboxActivity.TAG, "Fetch inbox messages already in progress")
+            return
+        }
         appExecutorService.execute {
+            fetchInboxMessages = true
             if (messagesSeen)
                 bellClicked(distinctId = distinctId, subscriberId = subscriberId)
             var fetchNext = false
@@ -54,8 +60,8 @@ internal object InboxHelper {
                         Logger.i(SSInboxActivity.TAG, "Latest items received : ${latestJA?.length()} unReadCount : $unReadCount")
                         if (latestJA != null && latestJA.length() > 0) {
                             storeResponse(latestJA)
-                            updateUI?.invoke(true)
                             ConfigHelper.addOrUpdate(SSConstants.INBOX_MESSAGE_UNREAD_COUNT, unReadCount)
+                            updateUI?.invoke(true)
                             true
                         } else {
                             false
@@ -75,7 +81,7 @@ internal object InboxHelper {
             } catch (e: Exception) {
                 Log.e(SSInboxActivity.TAG, "fetchApiCall", e)
             }
-
+            fetchInboxMessages = false
         }
     }
 

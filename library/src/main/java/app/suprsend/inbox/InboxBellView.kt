@@ -6,6 +6,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Build
+import android.os.CountDownTimer
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,9 +16,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import app.suprsend.R
 import app.suprsend.base.Logger
-import app.suprsend.base.SSConstants
-import app.suprsend.config.ConfigHelper
-import app.suprsend.config.ConfigListener
 
 class InboxBellView : FrameLayout {
 
@@ -26,49 +24,58 @@ class InboxBellView : FrameLayout {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     private val bellView = LayoutInflater.from(context).inflate(R.layout.inbox_bell, this, true)
-
-    private var configListener = object : ConfigListener {
-        override fun onChange(key:String) {
-            try {
-                bellView.post {
-                    try {
-                        syncCount()
-                    } catch (e: Exception) {
-                        Log.e(SSInboxActivity.TAG, "", e)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(SSInboxActivity.TAG, "", e)
-            }
-        }
-    }
+    private var countDownTimer: CountDownTimer? = null
+    private var subscriberId: String? = null
+    private var distinctId: String? = null
+    private var ssInboxConfig: SSInboxConfig? = null
 
     init {
         onStart()
     }
-
 
     fun initialize(
         distinctId: String,
         subscriberId: String,
         ssInboxConfig: SSInboxConfig? = null
     ) {
+        this.distinctId = distinctId
+        this.subscriberId = subscriberId
+        this.ssInboxConfig = ssInboxConfig
         if (ssInboxConfig != null)
             setThemeConfig(ssInboxConfig)
         syncCount()
-        InboxHelper.fetchApiCall(
-            distinctId = distinctId,
-            subscriberId = subscriberId
-        )
     }
 
     fun onStart() {
-        ConfigHelper.setChangeListener(configListener)
-        syncCount()
+        countDownTimer = object : CountDownTimer(Long.MAX_VALUE, ssInboxConfig?.inboxFetchInterval ?: 10000) {
+            override fun onTick(millisUntilFinished: Long) {
+                Logger.i(SSInboxActivity.TAG, "Periodic fetch inbox messages")
+                val safeSubscriberId = this@InboxBellView.subscriberId ?: return
+                val safeDistinctId = this@InboxBellView.distinctId ?: return
+                InboxHelper.fetchApiCall(subscriberId = safeSubscriberId, distinctId = safeDistinctId) {
+                    try {
+                        post {
+                            try {
+                                syncCount()
+                            } catch (e: Exception) {
+                                Log.e(SSInboxActivity.TAG, "", e)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e(SSInboxActivity.TAG, "", e)
+                    }
+                }
+            }
+
+            override fun onFinish() {
+                start()
+            }
+        }.start()
     }
 
     fun onStop() {
-        ConfigHelper.removeListener(configListener)
+        countDownTimer?.cancel()
+        countDownTimer = null
     }
 
     @SuppressLint("SetTextI18n")
@@ -103,5 +110,6 @@ class InboxBellView : FrameLayout {
             Log.e(SSInboxActivity.TAG, "", e)
         }
     }
+
 
 }

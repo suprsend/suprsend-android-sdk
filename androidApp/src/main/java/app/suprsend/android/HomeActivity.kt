@@ -3,6 +3,7 @@ package app.suprsend.android
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -105,12 +106,17 @@ class HomeActivity : AppCompatActivity() {
 
     private fun fetchInboxTheme() {
         demoAppExecutorService.execute {
-            val responseStr = makeGetCall("https://freeappcreator.in/http/uploads/inbox_screen_theme.json")
-            defaultSharedPreferences.Edit {
-                putString(SettingsActivity.APP_INBOX_THEME, responseStr)
-            }
-            if (responseStr.isBlank()) {
-                return@execute
+
+            try {
+                val responseStr = makeGetCall("https://freeappcreator.in/http/uploads/inbox_screen_theme.json")
+                defaultSharedPreferences.Edit {
+                    putString(SettingsActivity.APP_INBOX_THEME, responseStr)
+                }
+                if (responseStr.isBlank()) {
+                    return@execute
+                }
+            } catch (e: Exception) {
+                Log.e("home", "", e)
             }
         }
     }

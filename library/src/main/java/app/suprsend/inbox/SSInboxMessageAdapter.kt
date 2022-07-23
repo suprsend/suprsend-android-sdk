@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -70,8 +71,12 @@ constructor(
         fun bind(holder: InboxItemViewHolder, ssInboxItemVo: SSInboxItemVo) {
 
             try {
-                val itemContainerDrawable = holder.itemContainer.background
-                itemContainerDrawable?.setColorFilter(Color.parseColor(ssInboxConfig.cardBackgroundColor), PorterDuff.Mode.SRC_IN)
+                val itemContainerDrawable = holder.itemContainer.background as? GradientDrawable
+                itemContainerDrawable?.setColor(Color.parseColor(ssInboxConfig.cardBackgroundColor))
+                itemContainerDrawable?.setStroke(
+                    context.resources.getDimension(R.dimen.margin_1).toInt(),
+                    Color.parseColor(ssInboxConfig.cardBorderColor)
+                )
                 holder.itemContainer.background = itemContainerDrawable
 
                 val imageUrl = ssInboxItemVo.imageUrl

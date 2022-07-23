@@ -14,16 +14,18 @@ data class SSInboxConfig(
     val toolbarTitleColor: String = "#000000",
     val screenBgColor: String = "#FFFFFF",
     val cardBackgroundColor: String = "#000000",
+    val cardBorderColor: String = "#E4E4E4",
     val backButtonColor: String = "#000000",
     val emptyScreenMessageTextColor: String = "#000000",
     val emptyScreenMessage: String = "No data available",
     val messageTextColor: String = "#000000",
     val bellIconColor: String = "#000000",
-    val bellIconCountBgColor: String = "#000000",
+    val bellIconCountBgColor: String = "#FF0000",
     val bellIconCountTextColor: String = "#000000",
     val newUpdatesAvailableText: String = "New Updates Available",
     val newUpdatesAvailableTextColor: String = "#000000",
-    val newUpdatesAvailablePosition: String = "bottom"
+    val newUpdatesAvailablePosition: String = "bottom",
+    val inboxFetchInterval: Long = 10000
 ) : Parcelable {
     constructor(response: JSONObject) :
         this(
@@ -34,6 +36,7 @@ data class SSInboxConfig(
             toolbarTitle = response.optString("toolbarTitle"),
             screenBgColor = response.optString("screenBgColor"),
             cardBackgroundColor = response.optString("cardBackgroundColor"),
+            cardBorderColor = response.optString("cardBorderColor"),
             backButtonColor = response.optString("backButtonColor"),
             emptyScreenMessageTextColor = response.optString("emptyScreenMessageTextColor"),
             emptyScreenMessage = response.optString("emptyScreenMessage"),
@@ -43,7 +46,8 @@ data class SSInboxConfig(
             bellIconCountTextColor = response.optString("bellIconCountTextColor"),
             newUpdatesAvailableText = response.optString("newUpdatesAvailableText"),
             newUpdatesAvailableTextColor = response.optString("newUpdatesAvailableTextColor"),
-            newUpdatesAvailablePosition = response.optString("newUpdatesAvailablePosition")
+            newUpdatesAvailablePosition = response.optString("newUpdatesAvailablePosition"),
+            inboxFetchInterval = response.optLong("inboxFetchInterval")
         )
 
     constructor(parcel: Parcel) : this(
@@ -54,6 +58,7 @@ data class SSInboxConfig(
         toolbarTitleColor = parcel.safeString(),
         screenBgColor = parcel.safeString(),
         cardBackgroundColor = parcel.safeString(),
+        cardBorderColor = parcel.safeString(),
         backButtonColor = parcel.safeString(),
         emptyScreenMessageTextColor = parcel.safeString(),
         emptyScreenMessage = parcel.safeString(),
@@ -63,7 +68,8 @@ data class SSInboxConfig(
         bellIconCountTextColor = parcel.safeString(),
         newUpdatesAvailableText = parcel.safeString(),
         newUpdatesAvailableTextColor = parcel.safeString(),
-        newUpdatesAvailablePosition = parcel.safeString()
+        newUpdatesAvailablePosition = parcel.safeString(),
+        inboxFetchInterval = parcel.readLong()
     )
 
     override fun writeToParcel(parcel: Parcel?, flag: Int) {
@@ -74,6 +80,7 @@ data class SSInboxConfig(
         parcel?.writeString(toolbarTitleColor)
         parcel?.writeString(screenBgColor)
         parcel?.writeString(cardBackgroundColor)
+        parcel?.writeString(cardBorderColor)
         parcel?.writeString(backButtonColor)
         parcel?.writeString(emptyScreenMessageTextColor)
         parcel?.writeString(emptyScreenMessage)
@@ -84,6 +91,7 @@ data class SSInboxConfig(
         parcel?.writeString(newUpdatesAvailableText)
         parcel?.writeString(newUpdatesAvailableTextColor)
         parcel?.writeString(newUpdatesAvailablePosition)
+        parcel?.writeLong(inboxFetchInterval)
     }
 
     override fun describeContents(): Int {
