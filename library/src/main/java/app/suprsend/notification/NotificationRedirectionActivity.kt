@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import app.suprsend.SSApi
 import app.suprsend.SSApiInternal
@@ -12,8 +11,8 @@ import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.mapToEnum
 import app.suprsend.base.safeIntent
-import org.json.JSONObject
 import java.io.Serializable
+import org.json.JSONObject
 
 class NotificationRedirectionActivity : Activity() {
 
@@ -49,7 +48,6 @@ class NotificationRedirectionActivity : Activity() {
         }
     }
 
-
     private fun handleNotificationActionClicked(activityExtras: Bundle) {
         Logger.i(TAG, "Notification Action Clicked")
         val notificationActionVo = getNotificationActionVo(activityExtras)
@@ -83,7 +81,6 @@ class NotificationRedirectionActivity : Activity() {
     private fun getNotificationActionVo(activityExtras: Bundle): NotificationActionVo? {
         return activityExtras.get(NotificationRedirection.FLOW_PAYLOAD) as? NotificationActionVo
     }
-
 
     companion object {
         const val TAG = "NRA"

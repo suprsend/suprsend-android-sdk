@@ -9,7 +9,6 @@ import app.suprsend.base.flushExecutorService
 import app.suprsend.base.isInValidKey
 import app.suprsend.base.safeString
 import app.suprsend.base.size
-
 import app.suprsend.base.uuid
 import app.suprsend.config.ConfigHelper
 import app.suprsend.event.EventFlushHandler
@@ -82,17 +81,17 @@ internal object SSApiInternal {
         saveTrackEventPayload(eventName = SSConstants.S_EVENT_PURCHASE_MADE, propertiesJO = properties)
     }
 
-    //Todo : Need clarity cover test cases
+    // Todo : Need clarity cover test cases
     fun notificationSubscribed() {
         saveTrackEventPayload(eventName = SSConstants.S_EVENT_NOTIFICATION_SUBSCRIBED)
     }
 
-    //Todo : Need clarity cover test cases
+    // Todo : Need clarity cover test cases
     fun notificationUnSubscribed() {
         saveTrackEventPayload(eventName = SSConstants.S_EVENT_NOTIFICATION_UNSUBSCRIBED)
     }
 
-    //Todo : Need clarity cover test cases
+    // Todo : Need clarity cover test cases
     fun pageVisited() {
         saveTrackEventPayload(eventName = SSConstants.S_EVENT_PAGE_VISITED)
     }
@@ -149,9 +148,7 @@ internal object SSApiInternal {
                 ).toString(),
                 isDirty = true
             )
-
     }
-
 
     private fun appendNotificationToken() {
         val fcmToken = getFcmToken()
@@ -215,7 +212,6 @@ internal object SSApiInternal {
     fun getXiaomiToken(): String {
         return ConfigHelper.get(SSConstants.CONFIG_XIAOMI_PUSH_TOKEN) ?: ""
     }
-
 
     fun getCachedApiKey(): String {
         return ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""

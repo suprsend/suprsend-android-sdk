@@ -6,7 +6,7 @@ import app.suprsend.base.safeString
 import org.json.JSONObject
 
 data class SSInboxConfig(
-    //Change parcel details in constructor(parcel: Parcel) & writeToParcel place
+    // Change parcel details in constructor(parcel: Parcel) & writeToParcel place
     val statusBarColor: String = "#FFFFFF",
     val navigationBarColor: String = "#FFFFFF",
     val toolbarBgColor: String = "#FFFFFF",

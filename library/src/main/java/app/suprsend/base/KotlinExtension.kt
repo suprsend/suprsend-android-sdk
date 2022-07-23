@@ -1,21 +1,16 @@
 package app.suprsend.base
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Parcel
-import android.preference.PreferenceManager
 import androidx.core.content.res.ResourcesCompat
 import app.suprsend.config.ConfigHelper
 import app.suprsend.event.Algo
 import app.suprsend.event.EventFlushHandler
 import app.suprsend.event.toMD5
-import org.json.JSONArray
-import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.IOException
@@ -23,7 +18,9 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.*
+import java.util.Locale
+import org.json.JSONArray
+import org.json.JSONObject
 
 internal inline fun <reified T : Enum<T>> String?.mapToEnum(defaultValue: T): T {
     return mapToEnum<T>() ?: defaultValue
@@ -43,7 +40,6 @@ internal fun String?.toKotlinJsonObject(): JSONObject {
         JSONObject()
     }
 }
-
 
 internal fun JSONObject.filterSSReservedKeys(): JSONObject {
     val filteredJson = JSONObject()
@@ -126,7 +122,6 @@ internal fun safeDrawable(resources: Resources, drawableId: Int, theme: Resource
     try {
         return ResourcesCompat.getDrawable(resources, drawableId, theme)
     } catch (e: Exception) {
-
     }
     return null
 }
@@ -169,14 +164,14 @@ internal fun makeHttpRequest(method: String, urL: String, authorization: String,
         connection.doOutput = method.toUpperCase(Locale.getDefault()) == "POST"
         connection.doInput = true
 
-        //Send request
+        // Send request
         if (body != null) {
             val wr = DataOutputStream(connection.outputStream)
             wr.writeBytes(body)
             wr.close()
         }
 
-        //Get Response
+        // Get Response
         try {
             inputStream = connection.inputStream
         } catch (ioe: IOException) {

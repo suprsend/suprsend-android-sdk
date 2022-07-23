@@ -5,6 +5,6 @@ internal class Event_Model(
     var isDirty: Int = 0,
     var timeStamp: Long = 0,
     var uuid: String? = null,
-    //Database autoincrement id
+    // Database autoincrement id
     var id: Long? = null
 )

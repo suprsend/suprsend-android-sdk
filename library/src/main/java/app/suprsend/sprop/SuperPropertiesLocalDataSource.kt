@@ -9,7 +9,7 @@ internal class SuperPropertiesLocalDataSource : SuperPropertiesRepositoryContrac
 
     override fun add(key: String, value: Any) {
         val updatedJsonObject = getAll()
-        updatedJsonObject.put(key,value)
+        updatedJsonObject.put(key, value)
         saveValues(updatedJsonObject)
     }
 

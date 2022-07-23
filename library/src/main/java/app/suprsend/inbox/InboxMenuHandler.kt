@@ -30,7 +30,6 @@ class InboxMenuHandler(
         }
     }
 
-
     fun onStart() {
         try {
             inboxBellView?.onStart()

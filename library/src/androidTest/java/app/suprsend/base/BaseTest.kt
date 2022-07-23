@@ -4,9 +4,7 @@ import androidx.test.InstrumentationRegistry
 import app.suprsend.database.SQLDataHelper
 import junit.framework.Assert.assertEquals
 import org.json.JSONObject
-import org.junit.Assert
 import org.junit.Before
-
 
 open class BaseTest {
     val context = InstrumentationRegistry.getContext()

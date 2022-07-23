@@ -3,7 +3,6 @@ package app.suprsend.config
 import app.suprsend.base.SdkAndroidCreator
 import app.suprsend.database.Config_Model
 
-
 /**
  * This will only save key and value(string)
  */
@@ -28,7 +27,6 @@ internal object ConfigHelper {
     fun addOrUpdate(key: String, value: Boolean) {
         SdkAndroidCreator.sqlDataHelper.insert_configByKey(Config_Model(key = key, value = getBooleanToString(value)))
     }
-
 
     fun getBoolean(key: String): Boolean? {
         return getStringToBoolean(SdkAndroidCreator.sqlDataHelper.getconfigByKey(key)?.value)

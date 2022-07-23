@@ -120,7 +120,6 @@ internal object SSInternalUser {
         } else {
             Logger.e(TAG, "Email is not valid : $email")
         }
-
     }
 
     fun unSetEmail(email: String) {
@@ -230,7 +229,6 @@ internal object SSInternalUser {
         )
     }
 
-
     fun storeOperatorPayload(properties: JSONObject? = null, operator: String, setPropertiesArray: JSONArray? = null) {
 
         SdkAndroidCreator
@@ -255,7 +253,6 @@ internal object SSInternalUser {
             return
         }
         storeOperatorPayload(properties = filteredProperties, operator = operator)
-
     }
 
     const val TAG = SSApiInternal.TAG

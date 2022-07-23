@@ -1,8 +1,8 @@
 package app.suprsend
 
 import app.suprsend.base.executorService
-import app.suprsend.user.api.UserApiInternalContract
 import app.suprsend.user.api.SSInternalUser
+import app.suprsend.user.api.UserApiInternalContract
 import org.json.JSONObject
 
 class SSUserApi : UserApiInternalContract {
@@ -142,5 +142,4 @@ class SSUserApi : UserApiInternalContract {
             SSApiInternal.flush()
         }
     }
-
 }

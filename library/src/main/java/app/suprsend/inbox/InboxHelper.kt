@@ -11,9 +11,9 @@ import app.suprsend.base.makeHttpRequest
 import app.suprsend.base.safeJSONObject
 import app.suprsend.base.safeString
 import app.suprsend.config.ConfigHelper
+import java.util.Date
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.Date
 
 private typealias UpdateInboxUi = (isConnected: Boolean, showNewUpdatesAvailable: Boolean) -> Unit
 
@@ -36,7 +36,7 @@ internal object InboxHelper {
                 bellClicked(distinctId = distinctId, subscriberId = subscriberId)
             var fetchNext = false
             val dayTime: Long = 1000 * 60 * 60 * 24
-            //Start from 30 days earlier
+            // Start from 30 days earlier
             var after = System.currentTimeMillis() - (30 * dayTime)
             try {
                 do {
@@ -86,7 +86,6 @@ internal object InboxHelper {
             fetchInboxMessages = false
         }
     }
-
 
     fun getUnReadMessagesCount(): Int {
         return ConfigHelper.get(SSConstants.INBOX_MESSAGE_UNREAD_COUNT)?.toInt() ?: 0
@@ -153,7 +152,7 @@ internal object InboxHelper {
                     createdOn = jo.safeString("created_on")?.toLong(),
                     seenOn = jo.safeString("seen_on")?.toLong(),
 
-                    //Message
+                    // Message
                     header = messageJO?.safeString("header"),
                     text = messageJO?.safeString("text"),
                     url = messageJO?.safeString("url"),

@@ -26,16 +26,16 @@ internal object SSConstants {
 
     // Properties
 
-    const val APP_VERSION_STRING= "\$app_version_string"
-    const val APP_BUILD_NUMBER= "\$app_build_number"
-    const val OS= "\$os"
-    const val MANUFACTURER= "\$manufacturer"
-    const val BRAND= "\$brand"
-    const val MODEL= "\$model"
-    const val SS_SDK_VERSION_CODE= "\$ss_sdk_version_code"
-    const val SS_SDK_VERSION= "\$ss_sdk_version"
-    const val NETWORK= "\$network"
-    const val CONNECTED= "\$connected"
+    const val APP_VERSION_STRING = "\$app_version_string"
+    const val APP_BUILD_NUMBER = "\$app_build_number"
+    const val OS = "\$os"
+    const val MANUFACTURER = "\$manufacturer"
+    const val BRAND = "\$brand"
+    const val MODEL = "\$model"
+    const val SS_SDK_VERSION_CODE = "\$ss_sdk_version_code"
+    const val SS_SDK_VERSION = "\$ss_sdk_version"
+    const val NETWORK = "\$network"
+    const val CONNECTED = "\$connected"
 
     const val IDENTIFIED_ID = "\$identified_id"
     const val ANONYMOUS_ID = "\$anon_id"

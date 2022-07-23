@@ -9,7 +9,6 @@ import app.suprsend.base.PeriodicFlush
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
 import app.suprsend.base.executorService
-import app.suprsend.base.isInValidKey
 import app.suprsend.base.filterSSReservedKeys
 import app.suprsend.base.uuid
 import app.suprsend.config.ConfigHelper
@@ -22,8 +21,7 @@ import com.xiaomi.mipush.sdk.MiPushClient
 import org.json.JSONObject
 
 class SSApi
-private constructor(
-) {
+private constructor() {
 
     private val ssUserApi: SSUserApi = SSUserApi()
 
@@ -140,7 +138,6 @@ private constructor(
             // Device Properties
             SSApiInternal.setDeviceId(SdkAndroidCreator.deviceInfo.getDeviceId())
 
-
             if (!SSApiInternal.isAppInstalled()) {
                 // App Launched
                 SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_INSTALLED)
@@ -158,7 +155,6 @@ private constructor(
                 SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_LAUNCHED)
                 SSApiInternal.setAppLaunchTime(currentTime)
             }
-
         }
 
         fun initXiaomi(context: Context, appId: String, apiKey: String) {

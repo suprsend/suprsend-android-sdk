@@ -9,9 +9,9 @@ import app.suprsend.base.makeHttpRequest
 import app.suprsend.base.toKotlinJsonObject
 import app.suprsend.config.ConfigHelper
 import app.suprsend.database.Event_Model
-import org.json.JSONArray
 import java.security.MessageDigest
 import java.util.Date
+import org.json.JSONArray
 
 internal object EventFlushHandler {
     const val TAG = "flush"
@@ -57,9 +57,7 @@ internal object EventFlushHandler {
             }
         }
     }
-
 }
-
 
 internal fun String.toMD5(): String {
     val bytes = MessageDigest.getInstance("MD5").digest(this.toByteArray(Charsets.UTF_8))

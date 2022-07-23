@@ -35,5 +35,4 @@ interface UserApiInternalContract {
 
     fun setAndroidXiaomiPush(token: String)
     fun unSetAndroidXiaomiPush(token: String)
-
 }

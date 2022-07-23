@@ -5,7 +5,7 @@ class SSInboxItemVo(
     val createdOn: Long? = null,
     var seenOn: Long? = null,
 
-    //Message
+    // Message
 
     val header: String? = null,
     val text: String? = null,

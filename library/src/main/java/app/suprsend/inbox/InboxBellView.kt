@@ -18,7 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import app.suprsend.R
 import app.suprsend.base.Logger
-import java.util.*
+import java.util.Locale
 
 class InboxBellView : FrameLayout {
 
@@ -132,12 +132,8 @@ class InboxBellView : FrameLayout {
             val messagesCountTvDrawable = messagesCountTv.background
             messagesCountTvDrawable?.setColorFilter(Color.parseColor(ssInboxConfig.bellIconCountBgColor), PorterDuff.Mode.SRC_IN)
             messagesCountTv.background = messagesCountTvDrawable
-
-
         } catch (e: Exception) {
             Log.e(SSInboxActivity.TAG, "", e)
         }
     }
-
-
 }

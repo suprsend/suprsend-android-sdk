@@ -60,7 +60,7 @@ internal class SSInboxMessageListFragment : Fragment() {
                     Logger.i(SSInboxActivity.TAG, "Periodic fetch inbox messages")
                     val subscriberId = arguments?.getString(SSInboxActivity.SUBSCRIBER_ID, "") ?: ""
                     val distinctId = arguments?.getString(SSInboxActivity.DISTINCT_ID, "") ?: ""
-                    InboxHelper.fetchApiCall(subscriberId = subscriberId, distinctId = distinctId, messagesSeen = true) { isConnected,_ ->
+                    InboxHelper.fetchApiCall(subscriberId = subscriberId, distinctId = distinctId, messagesSeen = true) { isConnected, _ ->
                         activity?.runOnUiThread {
                             setRecyclerViewData(isConnected)
                         }
@@ -75,7 +75,6 @@ internal class SSInboxMessageListFragment : Fragment() {
         } catch (e: Exception) {
             Logger.e(SSInboxActivity.TAG, "onStart", e)
         }
-
     }
 
     override fun onStop() {
@@ -120,5 +119,4 @@ internal class SSInboxMessageListFragment : Fragment() {
         emptyMessageTv?.visibility = View.VISIBLE
         inboxRv?.visibility = View.GONE
     }
-
 }

@@ -47,7 +47,7 @@ internal data class RawNotification(
     // Actions
     val actions: List<NotificationActionVo>? = null
 
-): Serializable {
+) : Serializable {
     fun getNotificationVo(): NotificationVo {
         var notificationVo = NotificationVo(
             id = id,

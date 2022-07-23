@@ -5,6 +5,10 @@ plugins {
     id("signing")
 }
 
+apply {
+    from("$rootDir/ktlint.gradle")
+}
+
 android {
     compileSdkVersion(Deps.Android.compileSdk)
     buildToolsVersion(Deps.Android.buildToolsVersion)

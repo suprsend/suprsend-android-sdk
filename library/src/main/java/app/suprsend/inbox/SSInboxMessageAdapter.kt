@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.view.LayoutInflater
@@ -36,7 +35,7 @@ constructor(
                     .inflate(R.layout.inbox_message_item, viewGroup, false)
                 InboxItemViewHolder(view, ssInboxConfig)
             }
-            else -> throw  IllegalStateException("View type is unknown $viewType")
+            else -> throw IllegalStateException("View type is unknown $viewType")
         }
     }
 
@@ -49,7 +48,6 @@ constructor(
             holder.bind(holder, message[position])
         }
     }
-
 
     override fun getItemCount(): Int {
         return message.size
@@ -156,7 +154,5 @@ constructor(
             if (launchIntent != null)
                 holder.context.startActivity(launchIntent)
         }
-
     }
 }
-
