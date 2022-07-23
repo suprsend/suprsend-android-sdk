@@ -94,6 +94,7 @@ class HomeActivity : AppCompatActivity() {
                     startActivity(inboxIntent)
                 }
             )
+            inboxMenuHandler?.onStart()
         }
         return super.onPrepareOptionsMenu(menu)
     }

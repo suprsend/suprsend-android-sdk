@@ -9,13 +9,16 @@ import android.os.Build
 import android.os.CountDownTimer
 import android.util.AttributeSet
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import app.suprsend.R
 import app.suprsend.base.Logger
+import java.util.*
 
 class InboxBellView : FrameLayout {
 
@@ -29,57 +32,73 @@ class InboxBellView : FrameLayout {
     private var distinctId: String? = null
     private var ssInboxConfig: SSInboxConfig? = null
 
-    init {
-        onStart()
-    }
-
     fun initialize(
         distinctId: String,
         subscriberId: String,
         ssInboxConfig: SSInboxConfig? = null
     ) {
-        this.distinctId = distinctId
-        this.subscriberId = subscriberId
-        this.ssInboxConfig = ssInboxConfig
-        if (ssInboxConfig != null)
-            setThemeConfig(ssInboxConfig)
-        syncCount()
+        try {
+            this.distinctId = distinctId
+            this.subscriberId = subscriberId
+            this.ssInboxConfig = ssInboxConfig
+            if (ssInboxConfig != null)
+                setThemeConfig(ssInboxConfig)
+            syncCount()
+        } catch (e: Exception) {
+            Logger.e(SSInboxActivity.TAG, "", e)
+        }
     }
 
     fun onStart() {
-        countDownTimer = object : CountDownTimer(Long.MAX_VALUE, ssInboxConfig?.inboxFetchInterval ?: 10000) {
-            override fun onTick(millisUntilFinished: Long) {
-                Logger.i(SSInboxActivity.TAG, "Periodic fetch inbox messages")
-                val safeSubscriberId = this@InboxBellView.subscriberId ?: return
-                val safeDistinctId = this@InboxBellView.distinctId ?: return
-                InboxHelper.fetchApiCall(subscriberId = safeSubscriberId, distinctId = safeDistinctId) {
+        try {
+            countDownTimer?.cancel()
+            countDownTimer = null
+            val flushInterval = ssInboxConfig?.inboxFetchInterval ?: 10000
+            Logger.i(SSInboxActivity.TAG, "Setting Periodic Fetch : $flushInterval")
+            countDownTimer = object : CountDownTimer(Long.MAX_VALUE, flushInterval) {
+                override fun onTick(millisUntilFinished: Long) {
                     try {
-                        post {
+                        Logger.i(SSInboxActivity.TAG, "Periodic fetch inbox messages")
+                        val safeSubscriberId = this@InboxBellView.subscriberId ?: return
+                        val safeDistinctId = this@InboxBellView.distinctId ?: return
+                        InboxHelper.fetchApiCall(subscriberId = safeSubscriberId, distinctId = safeDistinctId) { _, showNewUpdatesAvailable ->
                             try {
-                                syncCount()
+                                post {
+                                    try {
+                                        syncCount(showNewUpdatesAvailable = showNewUpdatesAvailable)
+                                    } catch (e: Exception) {
+                                        Log.e(SSInboxActivity.TAG, "", e)
+                                    }
+                                }
                             } catch (e: Exception) {
                                 Log.e(SSInboxActivity.TAG, "", e)
                             }
                         }
                     } catch (e: Exception) {
-                        Log.e(SSInboxActivity.TAG, "", e)
+                        Logger.e(SSInboxActivity.TAG, "", e)
                     }
                 }
-            }
 
-            override fun onFinish() {
-                start()
-            }
-        }.start()
+                override fun onFinish() {
+                    start()
+                }
+            }.start()
+        } catch (e: Exception) {
+            Logger.e(SSInboxActivity.TAG, "", e)
+        }
     }
 
     fun onStop() {
-        countDownTimer?.cancel()
-        countDownTimer = null
+        try {
+            countDownTimer?.cancel()
+            countDownTimer = null
+        } catch (e: Exception) {
+            Logger.e(SSInboxActivity.TAG, "", e)
+        }
     }
 
     @SuppressLint("SetTextI18n")
-    private fun syncCount() {
+    private fun syncCount(showNewUpdatesAvailable: Boolean = false) {
         val countTv = bellView.findViewById<TextView>(R.id.messagesCountTv)
         val count = InboxHelper.getUnReadMessagesCount()
         countTv.visibility = if (count == 0) View.GONE else View.VISIBLE
@@ -88,9 +107,18 @@ class InboxBellView : FrameLayout {
         } else {
             countTv.text = count.toString()
         }
+        val newUpdatesAvailableText = ssInboxConfig?.newUpdatesAvailableText ?: ""
+        if (showNewUpdatesAvailable && newUpdatesAvailableText.isNotBlank()) {
+            Toast.makeText(context, newUpdatesAvailableText, Toast.LENGTH_SHORT).apply {
+                if (ssInboxConfig?.newUpdatesAvailablePosition?.toLowerCase(Locale.ROOT) == "top") {
+                    setGravity(Gravity.TOP, 0, resources.getDimension(R.dimen.margin_70).toInt())
+                }
+                show()
+            }
+        }
     }
 
-    fun setThemeConfig(ssInboxConfig: SSInboxConfig) {
+    private fun setThemeConfig(ssInboxConfig: SSInboxConfig) {
         try {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

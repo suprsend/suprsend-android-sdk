@@ -25,17 +25,4 @@
         android:gravity="center"
         android:text="@string/no_data_available" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/newUpdatesAvailableTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/inbox_message_item_bg"
-        android:padding="@dimen/margin_10"
-        android:text="@string/new_updates_available"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:visibility="gone"
-        tools:visibility="visible" />
 </FrameLayout>

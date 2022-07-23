@@ -23,7 +23,6 @@ data class SSInboxConfig(
     val bellIconCountBgColor: String = "#FF0000",
     val bellIconCountTextColor: String = "#000000",
     val newUpdatesAvailableText: String = "New Updates Available",
-    val newUpdatesAvailableTextColor: String = "#000000",
     val newUpdatesAvailablePosition: String = "bottom",
     val inboxFetchInterval: Long = 10000
 ) : Parcelable {
@@ -45,7 +44,6 @@ data class SSInboxConfig(
             bellIconCountBgColor = response.optString("bellIconCountBgColor"),
             bellIconCountTextColor = response.optString("bellIconCountTextColor"),
             newUpdatesAvailableText = response.optString("newUpdatesAvailableText"),
-            newUpdatesAvailableTextColor = response.optString("newUpdatesAvailableTextColor"),
             newUpdatesAvailablePosition = response.optString("newUpdatesAvailablePosition"),
             inboxFetchInterval = response.optLong("inboxFetchInterval")
         )
@@ -67,7 +65,6 @@ data class SSInboxConfig(
         bellIconCountBgColor = parcel.safeString(),
         bellIconCountTextColor = parcel.safeString(),
         newUpdatesAvailableText = parcel.safeString(),
-        newUpdatesAvailableTextColor = parcel.safeString(),
         newUpdatesAvailablePosition = parcel.safeString(),
         inboxFetchInterval = parcel.readLong()
     )
@@ -89,7 +86,6 @@ data class SSInboxConfig(
         parcel?.writeString(bellIconCountBgColor)
         parcel?.writeString(bellIconCountTextColor)
         parcel?.writeString(newUpdatesAvailableText)
-        parcel?.writeString(newUpdatesAvailableTextColor)
         parcel?.writeString(newUpdatesAvailablePosition)
         parcel?.writeLong(inboxFetchInterval)
     }

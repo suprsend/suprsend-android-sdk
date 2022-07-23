@@ -15,7 +15,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Date
 
-private typealias UpdateInboxUi = (isConnected: Boolean) -> Unit
+private typealias UpdateInboxUi = (isConnected: Boolean, showNewUpdatesAvailable: Boolean) -> Unit
 
 internal object InboxHelper {
 
@@ -23,7 +23,7 @@ internal object InboxHelper {
 
     fun fetchApiCall(distinctId: String, subscriberId: String, messagesSeen: Boolean = false, updateUI: UpdateInboxUi? = null) {
         if (!SdkAndroidCreator.networkInfo.isConnected()) {
-            updateUI?.invoke(false)
+            updateUI?.invoke(false, false)
             return
         }
         if (fetchInboxMessages) {
@@ -57,11 +57,13 @@ internal object InboxHelper {
                         val responseJO = httpResponse.response?.let { JSONObject(it) } ?: JSONObject()
                         val latestJA = responseJO.optJSONArray("results")
                         val unReadCount = responseJO.optInt("unread")
-                        Logger.i(SSInboxActivity.TAG, "Latest items received : ${latestJA?.length()} unReadCount : $unReadCount")
+                        val prevUnReadCount = ConfigHelper.get(SSConstants.INBOX_MESSAGE_UNREAD_COUNT)?.toInt() ?: 0
+                        val showNewUpdatesAvailable = (unReadCount - prevUnReadCount > 0)
+                        Logger.i(SSInboxActivity.TAG, "Latest items received : ${latestJA?.length()} unReadCount : $unReadCount showNewUpdatesAvailable : $showNewUpdatesAvailable")
                         if (latestJA != null && latestJA.length() > 0) {
                             storeResponse(latestJA)
                             ConfigHelper.addOrUpdate(SSConstants.INBOX_MESSAGE_UNREAD_COUNT, unReadCount)
-                            updateUI?.invoke(true)
+                            updateUI?.invoke(true, showNewUpdatesAvailable)
                             true
                         } else {
                             false
