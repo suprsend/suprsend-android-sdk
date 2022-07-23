@@ -7,21 +7,21 @@ import org.json.JSONObject
 
 data class SSInboxConfig(
     // Change parcel details in constructor(parcel: Parcel) & writeToParcel place
-    val statusBarColor: String = "#FFFFFF",
+    val statusBarColor: String = "#3700B3",
     val navigationBarColor: String = "#FFFFFF",
-    val toolbarBgColor: String = "#FFFFFF",
+    val toolbarBgColor: String = "#6200EE",
     val toolbarTitle: String = "Inbox",
-    val toolbarTitleColor: String = "#000000",
+    val toolbarTitleColor: String = "#FFFFFF",
     val screenBgColor: String = "#FFFFFF",
-    val cardBackgroundColor: String = "#000000",
+    val cardBackgroundColor: String = "#FFFFFF",
     val cardBorderColor: String = "#E4E4E4",
-    val backButtonColor: String = "#000000",
+    val backButtonColor: String = "#FFFFFF",
     val emptyScreenMessageTextColor: String = "#000000",
     val emptyScreenMessage: String = "No data available",
     val messageTextColor: String = "#000000",
-    val bellIconColor: String = "#000000",
+    val bellIconColor: String = "#FFFFFF",
     val bellIconCountBgColor: String = "#FF0000",
-    val bellIconCountTextColor: String = "#000000",
+    val bellIconCountTextColor: String = "#FFFFFF",
     val newUpdatesAvailableText: String = "New Updates Available",
     val newUpdatesAvailablePosition: String = "bottom",
     val inboxFetchInterval: Long = 10000
