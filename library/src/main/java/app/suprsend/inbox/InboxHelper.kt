@@ -17,7 +17,7 @@ import org.json.JSONObject
 
 private typealias UpdateInboxUi = (isConnected: Boolean, showNewUpdatesAvailable: Boolean) -> Unit
 
-internal object InboxHelper {
+object InboxHelper {
 
     var fetchInboxMessages = false
 
