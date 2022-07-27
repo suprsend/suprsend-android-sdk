@@ -95,8 +95,7 @@ internal class SSInboxMessageListFragment : Fragment() {
 
     private fun setRecyclerViewData(isConnected: Boolean) {
         try {
-            val response = ConfigHelper.get(SSConstants.INBOX_RESPONSE) ?: "[]"
-            val items = InboxHelper.parseInboxItems(JSONArray(response))
+            val items = InboxHelper.getInboxItems()
             Logger.i(SSInboxActivity.TAG, "Showing Messages : ${items.size}")
             if (items.isEmpty()) {
                 if (isConnected) {

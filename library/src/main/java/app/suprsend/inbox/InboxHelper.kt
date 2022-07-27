@@ -139,8 +139,9 @@ object InboxHelper {
         Log.i(SSInboxActivity.TAG, "Merged items Total : ${prevJA.length()}")
     }
 
-    fun parseInboxItems(jsonArray: JSONArray?): List<SSInboxItemVo> {
-        jsonArray ?: return listOf()
+    fun getInboxItems(): List<SSInboxItemVo> {
+        val response = ConfigHelper.get(SSConstants.INBOX_RESPONSE) ?: "[]"
+        val jsonArray = JSONArray(response)
         val inboxItems = arrayListOf<SSInboxItemVo>()
         for (i in 0 until jsonArray.length()) {
             val jo = jsonArray.getJSONObject(i)
