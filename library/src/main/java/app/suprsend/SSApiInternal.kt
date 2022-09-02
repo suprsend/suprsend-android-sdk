@@ -233,12 +233,7 @@ internal object SSApiInternal {
                 }
             }
             ConfigHelper.addOrUpdate(SSConstants.INBOX_RESPONSE, jsonArray.toString())
-            saveTrackEventPayload(
-                eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
-                propertiesJO = JSONObject().apply {
-                    put("id", nID)
-                }
-            )
+            SSInternalUser.notificationClicked(id = nID)
         }
     }
 

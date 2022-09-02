@@ -35,4 +35,6 @@ interface UserApiInternalContract {
 
     fun setAndroidXiaomiPush(token: String)
     fun unSetAndroidXiaomiPush(token: String)
+
+    fun notificationClicked(id: String, actionId: String? = null)
 }

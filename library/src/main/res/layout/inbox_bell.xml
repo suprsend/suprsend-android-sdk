@@ -23,5 +23,5 @@
         android:gravity="center"
         android:textColor="#FFF"
         android:textSize="6sp"
-        tools:text="99" />
+        tools:text="99+" />
 </RelativeLayout>

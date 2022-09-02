@@ -146,7 +146,12 @@ internal data class NotificationActionVo(
     val iconDrawableName: String? = null,
     val notificationId: String? = null,
     val notificationActionType: NotificationActionType? = null
-) : Serializable
+) : Serializable {
+
+    fun actionId(): String? {
+        return if (notificationId != id) id else null
+    }
+}
 
 internal enum class NotificationActionType {
     BODY, BUTTON

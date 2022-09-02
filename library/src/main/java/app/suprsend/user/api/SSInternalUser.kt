@@ -229,6 +229,18 @@ internal object SSInternalUser {
         )
     }
 
+    fun notificationClicked(id: String, actionId: String? = null) {
+        SSApiInternal.saveTrackEventPayload(
+            eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
+            propertiesJO = JSONObject().apply {
+                put("id", id)
+                if (actionId != null) {
+                    put("label_id", actionId)
+                }
+            }
+        )
+    }
+
     fun storeOperatorPayload(properties: JSONObject? = null, operator: String, setPropertiesArray: JSONArray? = null) {
 
         SdkAndroidCreator

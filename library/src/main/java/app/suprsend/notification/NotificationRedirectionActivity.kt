@@ -11,6 +11,7 @@ import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.mapToEnum
 import app.suprsend.base.safeIntent
+import app.suprsend.user.api.SSInternalUser
 import java.io.Serializable
 import org.json.JSONObject
 
@@ -53,15 +54,10 @@ class NotificationRedirectionActivity : Activity() {
         val notificationActionVo = getNotificationActionVo(activityExtras)
         notificationActionVo ?: return
 
-        val instance = SSApi.getInstanceFromCachedApiKey()
-        SSApiInternal.saveTrackEventPayload(
-            eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
-            propertiesJO = JSONObject().apply {
-                put("id", notificationActionVo.notificationId)
-                if (notificationActionVo.notificationId != notificationActionVo.id) {
-                    put("label_id", notificationActionVo.id)
-                }
-            }
+        val instance = SSApi.getInstance()
+        SSInternalUser.notificationClicked(
+            id = notificationActionVo.notificationId ?: "",
+            actionId = notificationActionVo.actionId()
         )
         instance.flush()
 
