@@ -560,7 +560,7 @@ private fun getActions(notificationPayloadJO: JSONObject): List<NotificationActi
                 id = actionObj.safeString("id"),
                 title = actionObj.safeString("title"),
                 link = actionObj.safeString("link"),
-                iconDrawableName = actionObj.safeString("iconDrawableName"),
+                iconDrawableName = actionObj.safeString("iconIdentifierName"),
                 notificationId = actionObj.safeString("notificationId"),
                 notificationActionType = actionObj.safeString("notificationActionType").mapToEnum<NotificationActionType>()
             )
