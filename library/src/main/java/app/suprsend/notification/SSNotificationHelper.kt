@@ -515,7 +515,7 @@ private fun String?.getRawNotification(): RawNotification {
 
         priority = notificationPayloadJO.safeString("priority").mapToEnum<NotificationPriority>(),
 
-        smallIconDrawableName = notificationPayloadJO.safeString("smallIconDrawableNameV2"),
+        smallIconDrawableName = notificationPayloadJO.safeString("smallIconIdentifierName"),
         color = notificationPayloadJO.safeString("color"),
         notificationTitle = notificationPayloadJO.safeString("notificationTitle"),
         subText = notificationPayloadJO.safeString("subText"),
