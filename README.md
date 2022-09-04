@@ -3,6 +3,9 @@
 #Release Notes
 
 ```
+0.1.8
+- Icon drawable (Small Icon & Action Icon) - If icon do not exist in drawable folder then notification was not getting shown
+
 0.1.7
 - Notification group issue fixed
 

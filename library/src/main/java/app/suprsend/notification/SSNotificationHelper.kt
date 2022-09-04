@@ -474,7 +474,10 @@ object SSNotificationHelper {
 private fun Context.getDrawableIdFromName(drawableName: String?): Int? {
     drawableName ?: return null
     return try {
-        resources.getIdentifier(drawableName, "drawable", packageName)
+        val id = resources.getIdentifier(drawableName, "drawable", packageName)
+        return if (id == 0)
+            null
+        else id
     } catch (e: Exception) {
         null
     }
@@ -512,7 +515,7 @@ private fun String?.getRawNotification(): RawNotification {
 
         priority = notificationPayloadJO.safeString("priority").mapToEnum<NotificationPriority>(),
 
-        smallIconDrawableName = notificationPayloadJO.safeString("smallIconDrawableName"),
+        smallIconDrawableName = notificationPayloadJO.safeString("smallIconIdentifierName"),
         color = notificationPayloadJO.safeString("color"),
         notificationTitle = notificationPayloadJO.safeString("notificationTitle"),
         subText = notificationPayloadJO.safeString("subText"),
@@ -557,7 +560,7 @@ private fun getActions(notificationPayloadJO: JSONObject): List<NotificationActi
                 id = actionObj.safeString("id"),
                 title = actionObj.safeString("title"),
                 link = actionObj.safeString("link"),
-                iconDrawableName = actionObj.safeString("iconDrawableName"),
+                iconDrawableName = actionObj.safeString("iconIdentifierName"),
                 notificationId = actionObj.safeString("notificationId"),
                 notificationActionType = actionObj.safeString("notificationActionType").mapToEnum<NotificationActionType>()
             )
