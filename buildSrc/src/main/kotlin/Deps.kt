@@ -7,7 +7,7 @@ object Deps {
     const val SDK_PACKAGE_NAME = "app.suprsend"
     const val MAJOR_VERSION = 0
     const val MINOR_VERSION = 1
-    const val PATCH_VERSION = 8
+    const val PATCH_VERSION = 9
     val SNAPSHOT = -1
     val BUILD_TYPE = BuildType.NATIVE
     const val ISPROD = false
