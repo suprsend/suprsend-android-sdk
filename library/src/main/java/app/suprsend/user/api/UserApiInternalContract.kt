@@ -36,4 +36,5 @@ interface UserApiInternalContract {
     fun setAndroidXiaomiPush(token: String)
     fun unSetAndroidXiaomiPush(token: String)
 
+    fun setPreferredLanguage(languageCode:String)
 }

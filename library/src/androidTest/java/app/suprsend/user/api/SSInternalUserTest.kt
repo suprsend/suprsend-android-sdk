@@ -579,4 +579,23 @@ class SSInternalUserTest : BaseTest() {
 
     }
 
+    @Test
+    fun testCorrectSetPreferredLanguage() {
+        val preferredLanguage = "en"
+        val operator = SSConstants.SET
+        SSInternalUser.setPreferredLanguage(preferredLanguage)
+        val eventsList = EventLocalDatasource().getEvents(10)
+        assertEquals(1, eventsList.size)
+        val payload = eventsList.first().value.toKotlinJsonObject()
+        val propertiesPayload = payload.getJSONObject(operator)
+        assertEquals(preferredLanguage, propertiesPayload.get(SSConstants.PREFERRED_LANGUAGE))
+    }
+
+    @Test
+    fun testInCorrectSetPreferredLanguage() {
+        SSInternalUser.setPreferredLanguage("abc")
+        val eventsList = EventLocalDatasource().getEvents(10)
+        assertEquals(0, eventsList.size)
+    }
+
 }

@@ -192,7 +192,7 @@ class SSApiInternalTest : BaseTest() {
 
         val propertiesPayload = eventPayload.getJSONObject(SSConstants.PROPERTIES)
         Assert.assertEquals("ABC", eventPayload.getString(SSConstants.EVENT))
-        Assert.assertEquals(4, propertiesPayload.size() - 11) // Removed device properties keys
+        Assert.assertEquals(4, propertiesPayload.size() - 10) // Removed device properties keys
         Assert.assertEquals(1, propertiesPayload.getInt("Product ID"))
         Assert.assertEquals("Abc Title", propertiesPayload.getString("Product Name"))
         Assert.assertEquals(10, propertiesPayload.getInt("Product Quantity"))

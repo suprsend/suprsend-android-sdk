@@ -149,6 +149,26 @@
                 android:text="UnSet Suprproperty"
                 android:textSize="17sp" />
 
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/preferredLanguageEt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:hint="Set Preferred Language"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/preferredLanguageTv"
+                style="@style/btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Set Preferred Language"
+                android:textSize="17sp" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/logoutTv"
                 style="@style/btn"

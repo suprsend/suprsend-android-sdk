@@ -127,6 +127,10 @@ object CommonAnalyticsHandler {
         mixpanelAPI.unregisterSuperProperty(key)
     }
 
+    fun setPreferredLanguage(languageCode: String) {
+        ssApi.getUser().setPreferredLanguage(languageCode)
+    }
+
     fun purchaseMade(properties: JSONObject) {
         ssApi.purchaseMade(properties)
     }
