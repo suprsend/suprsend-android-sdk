@@ -3,6 +3,10 @@
 #Release Notes
 
 ```
+0.1.9
+- Set Preferred Language
+- Tracking notification if deeplink is not provided(Notification without deeplink)
+
 0.1.8
 - Icon drawable (Small Icon & Action Icon) - If icon do not exist in drawable folder then notification was not getting shown
 
