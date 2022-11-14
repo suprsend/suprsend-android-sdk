@@ -134,12 +134,9 @@ data class NotificationVo(
     val inboxStyleVo: InBoxStyleVo? = null,
     val actions: List<NotificationActionVo>? = null
 ) {
-    fun getDeeplinkNotificationActionVo(): NotificationActionVo? {
+    fun getNotificationBodyActionVo(): NotificationActionVo {
         val deeplink = notificationBasicVo.deeplink
-        return if (deeplink == null)
-            null
-        else
-            NotificationActionVo(id = id, link = deeplink, notificationId = id, notificationActionType = NotificationActionType.BODY)
+        return NotificationActionVo(id = id, link = deeplink, notificationId = id, notificationActionType = NotificationActionType.BODY)
     }
 }
 

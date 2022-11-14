@@ -7,7 +7,7 @@ object Deps {
     const val SDK_PACKAGE_NAME = "app.suprsend"
     const val MAJOR_VERSION = 0
     const val MINOR_VERSION = 1
-    const val PATCH_VERSION = 5
+    const val PATCH_VERSION = 9
     val SNAPSHOT = -1
     val BUILD_TYPE = BuildType.NATIVE
     const val ISPROD = false
@@ -62,9 +62,8 @@ object Deps {
         const val POM_URL = "https://github.com/suprsend/suprsend-android-sdk"
         const val POM_LICENCE_NAME = "The Apache Software License, Version 2.0"
         const val POM_LICENCE_URL = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        const val POM_DEVELOPER_ID = "XXXX"
-        const val POM_DEVELOPER_NAME = "XXXX"
-        const val POM_DEVELOPER_EMAIL = "XXXX"
+        const val POM_DEVELOPER_NAME = "SuprSend Team"
+        const val POM_DEVELOPER_EMAIL = "developers@suprsend.com"
         const val POM_SCM_CONNECTION = "scm:git@github.com:suprsend/suprsend-android-sdk.git"
         const val POM_SCM_DEV_CONNECTION = "scm:git@github.com:suprsend/suprsend-android-sdk.git"
         const val POM_SCM_URL = "https://github.com/suprsend/suprsend-android-sdk"

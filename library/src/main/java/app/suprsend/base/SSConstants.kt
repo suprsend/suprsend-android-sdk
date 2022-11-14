@@ -59,6 +59,7 @@ internal object SSConstants {
     const val EMAIL = "\$email"
     const val SMS = "\$sms"
     const val WHATS_APP = "\$whatsapp"
+    const val PREFERRED_LANGUAGE = "\$preferred_language"
 
     const val ENV = "env"
     const val PROPERTIES = "properties"
@@ -78,4 +79,5 @@ internal object SSConstants {
     const val S_EVENT_PAGE_VISITED = "\$page_visited"
 
     const val TAG_VALIDATION = "validation"
+    const val TAG_SUPRSEND = "suprsend"
 }

@@ -62,6 +62,10 @@ class SettingsActivity : AppCompatActivity() {
             CommonAnalyticsHandler.unSetSuperProperties(binding.setSuprPropertyKey.text.toString())
         }
 
+        binding.preferredLanguageTv.clickWithThrottle {
+            CommonAnalyticsHandler.setPreferredLanguage(binding.preferredLanguageEt.text.toString())
+        }
+
         binding.logoutTv.clickWithThrottle {
             CommonAnalyticsHandler.unset("choices")
             CommonAnalyticsHandler.reset()

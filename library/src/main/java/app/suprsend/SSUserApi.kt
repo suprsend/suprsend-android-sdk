@@ -143,4 +143,9 @@ class SSUserApi : UserApiInternalContract {
         }
     }
 
+    override fun setPreferredLanguage(languageCode: String) {
+        executorService.execute {
+            SSInternalUser.setPreferredLanguage(languageCode)
+        }
+    }
 }

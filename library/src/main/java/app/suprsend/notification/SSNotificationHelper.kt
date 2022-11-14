@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
-import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import app.suprsend.BuildConfig
 import app.suprsend.R
@@ -167,7 +166,7 @@ object SSNotificationHelper {
 
                 val actionIntent = NotificationRedirectionActivity.getIntent(context, notificationActionVo)
 
-                actionIntent?.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                actionIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
 
                 notificationBuilder.addAction(
                     actionIcon,
@@ -305,9 +304,9 @@ object SSNotificationHelper {
 
         try {
             // Todo : set big text / picture notification content intent
-            val notificationActionVo = notificationVo.getDeeplinkNotificationActionVo()
+            val notificationActionVo = notificationVo.getNotificationBodyActionVo()
             val contentIntent = NotificationRedirectionActivity.getIntent(context, notificationActionVo)
-            contentIntent?.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            contentIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             val contentPI = PendingIntent.getActivity(context, System.currentTimeMillis().toInt(), contentIntent, getPendingIntentFlag())
             notificationBuilder.setContentIntent(contentPI)
         } catch (e: Exception) {
