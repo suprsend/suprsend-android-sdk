@@ -9,6 +9,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import app.suprsend.BuildConfig
 import app.suprsend.R
 import app.suprsend.SSApi
@@ -78,6 +79,13 @@ object SSNotificationHelper {
     private fun showRawNotification(context: Context, rawNotification: RawNotification, pushVendor: String? = null) {
         try {
             Logger.i("notification","showRawNotification $rawNotification")
+
+            val notificationManagerCompat = NotificationManagerCompat.from(context)
+            if(!notificationManagerCompat.areNotificationsEnabled()){
+                Logger.e("notification","Notifications are disabled please request the Manifest.permission.POST_NOTIFICATIONS permission")
+                return
+            }
+
             // Notification Delivered
             val instance = SSApi.getInstanceFromCachedApiKey()
             SSApiInternal.saveTrackEventPayload(

@@ -40,10 +40,11 @@ android {
 
 dependencies {
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.3.72")
-    implementation("com.google.firebase:firebase-messaging:20.2.4")
-    implementation(files("libs/MiPush_SDK_Client_4_8_3.jar"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:${Deps.JetBrains.Kotlin.VERSION}")
+    implementation("com.google.firebase:firebase-messaging:${Deps.Firebase.messaging}")
+    implementation(files("libs/MiPush_SDK_Client_5_1_1-G_3rd.aar"))
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.38")
+    implementation("com.google.android.material:material:${Deps.material}")
 
     testImplementation("junit:junit:4.+")
 
