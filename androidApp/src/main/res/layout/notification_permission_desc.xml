@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="10dp"
-        android:text="To keep you updated about the order delivery update by push you will require to grant the notification permission"
+        android:text="Please allow notification permission in settings for push notifications to work"
         android:textSize="16sp" />
 
 </LinearLayout>

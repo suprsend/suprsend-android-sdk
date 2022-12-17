@@ -43,7 +43,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${Deps.JetBrains.Kotlin.VERSION}")
     implementation("com.google.firebase:firebase-messaging:${Deps.Firebase.messaging}")
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.38")
-    implementation("com.google.android.material:material:${Deps.material}")
 
     testImplementation("junit:junit:4.+")
 

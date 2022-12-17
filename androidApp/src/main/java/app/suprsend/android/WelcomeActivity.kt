@@ -1,22 +1,46 @@
 package app.suprsend.android
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import app.suprsend.android.databinding.ActivityWelcomeBinding
 import app.suprsend.notification.NotificationPermissionHelper.isNotificationPermissionGranted
 import app.suprsend.notification.NotificationPermissionHelper.requestNotificationPermission
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
 
 class WelcomeActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityWelcomeBinding
+
+    private val activityResultLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (!isGranted) {
+            // You can show a dialog which explains the intent of this permission request of how it is important for certain features of your app to work
+            AlertDialog.Builder(this)
+                .setView(R.layout.notification_permission_desc)
+                .setTitle(getString(R.string.app_name))
+                .setPositiveButton("Proceed") { _, _ ->
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    val uri: Uri = Uri.fromParts("package", packageName, null)
+                    intent.data = uri
+                    startActivity(intent)
+                }
+                .setNegativeButton("Deny") { _, _ ->
+                }.show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,23 +97,13 @@ class WelcomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
         subscribeToTopic()
-        requestNotificationPermission(NOTIFICATION_PERMISSION_REQUEST_CODE)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE && !isNotificationPermissionGranted()) {
-            // You can show a dialog which explains the intent of this permission request how it is important
-            // for certain features to work and re-request the permission by calling requestNotificationPermission()
-            AlertDialog.Builder(this)
-                .setView(R.layout.notification_permission_desc)
-                .setPositiveButton("Grant") { _, _ ->
-                    requestNotificationPermission(NOTIFICATION_PERMISSION_REQUEST_CODE)
-                }
-                .setNegativeButton("Deny") { _, _ ->
-                }.show()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            activityResultLauncher.launch(
+                Manifest.permission.POST_NOTIFICATIONS
+            )
         }
     }
+
 
     private fun subscribeToTopic() {
         val topicName = "all_users"
@@ -110,7 +124,4 @@ class WelcomeActivity : AppCompatActivity() {
         CommonAnalyticsHandler.initialize(applicationContext)
     }
 
-    companion object {
-        const val NOTIFICATION_PERMISSION_REQUEST_CODE = 12345678
-    }
 }
