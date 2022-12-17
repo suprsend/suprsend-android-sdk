@@ -39,10 +39,9 @@ android {
 }
 
 dependencies {
-
+    compileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar","*.aar"))))
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${Deps.JetBrains.Kotlin.VERSION}")
     implementation("com.google.firebase:firebase-messaging:${Deps.Firebase.messaging}")
-    implementation(files("libs/MiPush_SDK_Client_5_1_1-G_3rd.aar"))
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.38")
     implementation("com.google.android.material:material:${Deps.material}")
 

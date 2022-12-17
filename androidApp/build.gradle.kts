@@ -88,6 +88,8 @@ android {
 }
 
 dependencies {
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar","*.aar"))))
+
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${Deps.JetBrains.Kotlin.VERSION}")
 //    implementation(Deps.AndroidX.CORE_KTX)
     implementation("androidx.appcompat:appcompat:1.3.1")
@@ -106,7 +108,6 @@ dependencies {
 
 //    implementation(files("libs/library-debug.aar"))
     implementation("com.google.firebase:firebase-messaging:${Deps.Firebase.messaging}")
-
 
     implementation("com.mixpanel.android:mixpanel-android:5.9.1")
 

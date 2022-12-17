@@ -8,6 +8,7 @@
 - Push Notification permission implemented
 - Compile with 33
 - unset push token on reset call
+- Users will have to add xiaomi sdk aar to the project
 
 0.1.9
 - Set Preferred Language
