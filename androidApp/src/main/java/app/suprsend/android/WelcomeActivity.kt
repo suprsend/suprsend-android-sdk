@@ -14,9 +14,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import app.suprsend.android.databinding.ActivityWelcomeBinding
-import app.suprsend.notification.NotificationPermissionHelper.isNotificationPermissionGranted
-import app.suprsend.notification.NotificationPermissionHelper.requestNotificationPermission
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
 
@@ -104,7 +101,6 @@ class WelcomeActivity : AppCompatActivity() {
         }
     }
 
-
     private fun subscribeToTopic() {
         val topicName = "all_users"
         FirebaseMessaging
@@ -123,5 +119,4 @@ class WelcomeActivity : AppCompatActivity() {
     private fun initializeSdk() {
         CommonAnalyticsHandler.initialize(applicationContext)
     }
-
 }
