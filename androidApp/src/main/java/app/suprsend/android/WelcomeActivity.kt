@@ -1,18 +1,15 @@
 package app.suprsend.android
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import app.suprsend.android.databinding.ActivityWelcomeBinding
+import app.suprsend.notification.NotificationPermissionHelper.isNotificationPermissionGranted
 import app.suprsend.notification.NotificationPermissionHelper.requestNotificationPermission
 import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
@@ -86,22 +83,11 @@ class WelcomeActivity : AppCompatActivity() {
             // for certain features to work and re-request the permission by calling requestNotificationPermission()
             AlertDialog.Builder(this)
                 .setView(R.layout.notification_permission_desc)
-                .setPositiveButton("Grant") { dialogInterface, p1 ->
+                .setPositiveButton("Grant") { _, _ ->
                     requestNotificationPermission(NOTIFICATION_PERMISSION_REQUEST_CODE)
                 }
-                .setNegativeButton("Deny") { dialogInterface, p1 ->
+                .setNegativeButton("Deny") { _, _ ->
                 }.show()
-
-
-        }
-    }
-
-
-    private fun isNotificationPermissionGranted(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
         }
     }
 

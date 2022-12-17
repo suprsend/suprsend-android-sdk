@@ -3,6 +3,12 @@
 #Release Notes
 
 ```
+0.1.10
+- Xiaomi sdk updated from 4.8.3 to 5.1.1
+- Push Notification permission implemented
+- Compile with 33
+- unset push token on reset call
+
 0.1.9
 - Set Preferred Language
 - Tracking notification if deeplink is not provided(Notification without deeplink)
