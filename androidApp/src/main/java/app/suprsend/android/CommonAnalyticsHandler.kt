@@ -97,8 +97,8 @@ object CommonAnalyticsHandler {
         mixpanelAPI.people.unset(key)
     }
 
-    fun reset() {
-        ssApi.reset()
+    fun reset(unSubscribeNotification: Boolean) {
+        ssApi.reset(unSubscribeNotification)
         mixpanelAPI.reset()
     }
 

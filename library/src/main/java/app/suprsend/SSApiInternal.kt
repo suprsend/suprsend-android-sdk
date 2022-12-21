@@ -116,12 +116,13 @@ internal object SSApiInternal {
         }
     }
 
-    fun reset() {
+    fun reset(unSubscribeNotification:Boolean) {
         val newID = uuid()
         val userId = userLocalDatasource.getIdentity()
         Logger.i(TAG, "reset : Current : $userId New : $newID")
         saveTrackEventPayload(SSConstants.S_EVENT_USER_LOGOUT)
-        removeNotificationToken()
+        if (unSubscribeNotification)
+            removeNotificationToken()
         SuperPropertiesLocalDataSource().removeAll()
         userLocalDatasource.identify(newID)
         appendNotificationToken()
