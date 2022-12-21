@@ -121,7 +121,7 @@ internal object SSApiInternal {
         val userId = userLocalDatasource.getIdentity()
         Logger.i(TAG, "reset : Current : $userId New : $newID")
         saveTrackEventPayload(SSConstants.S_EVENT_USER_LOGOUT)
-        unsetNotificationToken()
+        removeNotificationToken()
         SuperPropertiesLocalDataSource().removeAll()
         userLocalDatasource.identify(newID)
         appendNotificationToken()
@@ -170,14 +170,14 @@ internal object SSApiInternal {
         }
     }
 
-    private fun unsetNotificationToken() {
+    private fun removeNotificationToken() {
         val fcmToken = getFcmToken()
         if (fcmToken.isNotBlank()) {
             val jsonObject = JSONObject()
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, fcmToken)
             jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_FCM)
             jsonObject.put(SSConstants.DEVICE_ID, getDeviceID())
-            SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.UNSET)
+            SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.REMOVE)
         }
 
         val xiaomiToken = getXiaomiToken()
@@ -186,7 +186,7 @@ internal object SSApiInternal {
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, xiaomiToken)
             jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_XIAOMI)
             jsonObject.put(SSConstants.DEVICE_ID, getDeviceID())
-            SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.UNSET)
+            SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.REMOVE)
         }
     }
 
