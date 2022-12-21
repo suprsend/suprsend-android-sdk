@@ -7,7 +7,8 @@
 - Compile with API 33
 - Xiaomi sdk updated from 4.8.3 to 5.1.1
 - Push Notification permission implemented
-- unset push token on reset call
+- remove push token on reset call
+- Unsubscribe flag in reset
 
 Developer Change
 - Developers will have to add xiaomi sdk aar manually to the project
