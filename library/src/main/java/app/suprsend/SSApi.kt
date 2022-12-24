@@ -91,9 +91,9 @@ private constructor(
         SSApiInternal.flush()
     }
 
-    fun reset() {
+    fun reset(unSubscribeNotification:Boolean = true) {
         executorService.execute {
-            SSApiInternal.reset()
+            SSApiInternal.reset(unSubscribeNotification)
             SSApiInternal.flush()
         }
     }

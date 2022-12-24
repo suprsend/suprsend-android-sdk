@@ -88,10 +88,12 @@ android {
 }
 
 dependencies {
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar","*.aar"))))
+
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${Deps.JetBrains.Kotlin.VERSION}")
 //    implementation(Deps.AndroidX.CORE_KTX)
     implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("com.google.android.material:material:1.4.0")
+    implementation("com.google.android.material:material:${Deps.material}")
     implementation("androidx.constraintlayout:constraintlayout:2.1.0")
     implementation("com.google.firebase:firebase-crashlytics:18.2.1")
 
@@ -105,8 +107,7 @@ dependencies {
     }
 
 //    implementation(files("libs/library-debug.aar"))
-    implementation("com.google.firebase:firebase-messaging:20.2.4")
-
+    implementation("com.google.firebase:firebase-messaging:${Deps.Firebase.messaging}")
 
     implementation("com.mixpanel.android:mixpanel-android:5.9.1")
 

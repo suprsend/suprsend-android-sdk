@@ -67,12 +67,20 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.logoutTv.clickWithThrottle {
-            CommonAnalyticsHandler.unset("choices")
-            CommonAnalyticsHandler.reset()
-            startActivity(Intent(this, WelcomeActivity::class.java))
-            finishAffinity()
-            AppCreator.setEmail(this, "")
+            logout(false)
         }
+
+        binding.logoutUnSubTv.clickWithThrottle {
+            logout(true)
+        }
+    }
+
+    private fun logout(unSubscribeNotification: Boolean) {
+        CommonAnalyticsHandler.unset("choices")
+        CommonAnalyticsHandler.reset(unSubscribeNotification)
+        startActivity(Intent(this, WelcomeActivity::class.java))
+        finishAffinity()
+        AppCreator.setEmail(this, "")
     }
 
     private fun getValue(key: String, default: String = ""): String {

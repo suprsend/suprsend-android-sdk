@@ -1,10 +1,16 @@
 package app.suprsend.android
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import app.suprsend.android.databinding.ActivityWelcomeBinding
@@ -14,6 +20,24 @@ import org.json.JSONObject
 class WelcomeActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityWelcomeBinding
+
+    private val activityResultLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (!isGranted) {
+            // You can show a dialog which explains the intent of this permission request of how it is important for certain features of your app to work
+            AlertDialog.Builder(this)
+                .setView(R.layout.notification_permission_desc)
+                .setTitle(getString(R.string.app_name))
+                .setPositiveButton("Proceed") { _, _ ->
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    val uri: Uri = Uri.fromParts("package", packageName, null)
+                    intent.data = uri
+                    startActivity(intent)
+                }
+                .setNegativeButton("Deny") { _, _ ->
+                }.show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +94,11 @@ class WelcomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
         subscribeToTopic()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            activityResultLauncher.launch(
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        }
     }
 
     private fun subscribeToTopic() {
