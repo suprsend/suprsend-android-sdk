@@ -12,6 +12,7 @@ import app.suprsend.base.uuid
 import app.suprsend.config.ConfigHelper
 import app.suprsend.event.EventFlushHandler
 import app.suprsend.event.PayloadCreator
+import app.suprsend.log.LoggerCallback
 import app.suprsend.sprop.SuperPropertiesLocalDataSource
 import app.suprsend.user.UserLocalDatasource
 import app.suprsend.user.api.SSInternalUser
@@ -22,6 +23,8 @@ internal object SSApiInternal {
     var isFlushing = false
 
     val userLocalDatasource = UserLocalDatasource()
+
+    var loggerCallback:LoggerCallback? = null
 
     fun identify(uniqueId: String) {
         if (userLocalDatasource.getIdentity() == uniqueId) {

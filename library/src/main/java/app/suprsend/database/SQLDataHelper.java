@@ -8,6 +8,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import app.suprsend.base.Logger;
+
 public class SQLDataHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "suprsend.db";
     private static final int DATABASE_VERSION = 1;
@@ -43,6 +45,7 @@ public class SQLDataHelper extends SQLiteOpenHelper {
             db.execSQL(query1);
             db.execSQL(query2);
         } catch (Exception e) {
+            Logger.INSTANCE.e("db","onCreate",e);
         }
     }
 
@@ -52,6 +55,7 @@ public class SQLDataHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + TABLENAME_events);
             db.execSQL("DROP TABLE IF EXISTS " + TABLENAME_config);
         } catch (Exception e) {
+            Logger.INSTANCE.e("db","onUpgrade",e);
         }
         onCreate(db);
     }
@@ -65,6 +69,7 @@ public class SQLDataHelper extends SQLiteOpenHelper {
         try {
             db.insert(TABLENAME_events, null, contentValues);
         } catch (Exception e) {
+            Logger.INSTANCE.e("db","insert_events",e);
         }
     }
 
@@ -86,6 +91,7 @@ public class SQLDataHelper extends SQLiteOpenHelper {
             }
             c.close();
         } catch (Exception e) {
+            Logger.INSTANCE.e("db","geteventsList",e);
         } finally {
             if (c != null)
                 c.close();
@@ -100,6 +106,7 @@ public class SQLDataHelper extends SQLiteOpenHelper {
         try {
             db.insert(TABLENAME_config, null, contentValues);
         } catch (Exception e) {
+            Logger.INSTANCE.e("db","insert_config",e);
         }
     }
 
@@ -116,6 +123,7 @@ public class SQLDataHelper extends SQLiteOpenHelper {
                     try {
                         db.update(TABLENAME_config, contentValues, config_Key + "= ? ", new String[]{table_model_obj.getKey()});
                     } catch (Exception e) {
+                        Logger.INSTANCE.e("db","insert_configByKey",e);
                     }
                 }
             } else {
@@ -123,6 +131,7 @@ public class SQLDataHelper extends SQLiteOpenHelper {
             }
             c.close();
         } catch (Exception e) {
+            Logger.INSTANCE.e("db","insert_configByKey",e);
         } finally {
             if (c != null)
                 c.close();
@@ -133,6 +142,7 @@ public class SQLDataHelper extends SQLiteOpenHelper {
         try {
             db.execSQL("DELETE FROM " + TABLENAME_events + " WHERE " + events_Id + " IN (" + ids + ")");
         } catch (Exception e) {
+            Logger.INSTANCE.e("db","deleteeventsByID",e);
         }
     }
 
@@ -140,6 +150,7 @@ public class SQLDataHelper extends SQLiteOpenHelper {
         try {
             db.execSQL("DELETE FROM " + TABLENAME_events);
         } catch (Exception e) {
+            Logger.INSTANCE.e("db","deleteAllEvents",e);
         }
     }
 
@@ -160,6 +171,7 @@ public class SQLDataHelper extends SQLiteOpenHelper {
             }
             c.close();
         } catch (Exception e) {
+            Logger.INSTANCE.e("db","getconfigByKey",e);
         } finally {
             if (c != null)
                 c.close();
@@ -171,6 +183,7 @@ public class SQLDataHelper extends SQLiteOpenHelper {
         try {
             db.execSQL("DELETE FROM " + TABLENAME_config);
         } catch (Exception e) {
+            Logger.INSTANCE.e("db","deleteAllConfigs",e);
         }
     }
 }
