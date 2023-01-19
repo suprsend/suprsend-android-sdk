@@ -58,11 +58,9 @@ internal object EventFlushHandler {
                 body = requestJson,
                 date = date
             )
-            if(httpResponse.statusCode!=202 || BuildConfig.DEBUG) {
-                Logger.i(TAG, "${httpResponse.statusCode} \n$requestJson \n${httpResponse.response}")
-            }else{
-                Logger.i(TAG, "statusCode:${httpResponse.statusCode}")
-            }
+
+            Logger.i(TAG, "${httpResponse.statusCode} \n$requestJson \n${httpResponse.response}")
+
             if (httpResponse.statusCode == 202) {
                 eventLocalDatasource.delete(eventModelList.map { event -> event.id!! }.joinToString())
                 eventModelList = eventLocalDatasource.getEvents(SSConstants.FLUSH_EVENT_PAYLOAD_SIZE)
