@@ -5,9 +5,9 @@ object Deps {
 
     //Sdk Details
     const val SDK_PACKAGE_NAME = "app.suprsend"
-    private const val MAJOR_VERSION = 0
-    private const val MINOR_VERSION = 1
-    private const val PATCH_VERSION = 10
+    private const val MAJOR_VERSION = 1
+    private const val MINOR_VERSION = 0
+    private const val PATCH_VERSION = 1
     const val SNAPSHOT = -1
     val BUILD_TYPE = BuildType.NATIVE
     private const val ISPROD = false
