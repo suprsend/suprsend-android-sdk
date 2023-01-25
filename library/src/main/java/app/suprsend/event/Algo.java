@@ -8,6 +8,8 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import app.suprsend.base.Logger;
+
 public class Algo {
     public static byte[] generateHashWithHmac256(String key, String message) {
         try {
@@ -18,6 +20,7 @@ public class Algo {
             return bytes;
 
         } catch (Exception e) {
+            Logger.INSTANCE.e("algo","generateHashWithHmac256",e);
         }
         return null;
     }
@@ -43,6 +46,7 @@ public class Algo {
         try {
             return Base64.encodeToString(data, Base64.NO_WRAP);
         } catch (Exception e) {
+            Logger.INSTANCE.e("algo","base64",e);
             return "";
         }
     }

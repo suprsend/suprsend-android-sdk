@@ -17,6 +17,7 @@ import app.suprsend.xiaomi.SSXiaomiReceiver
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
 import com.xiaomi.mipush.sdk.Logger as XiaomiLogger
 import app.suprsend.base.Logger
+import app.suprsend.log.LoggerCallback
 import com.xiaomi.mipush.sdk.MiPushClient
 import org.json.JSONObject
 
@@ -158,6 +159,10 @@ private constructor(
                 SSApiInternal.setAppLaunchTime(currentTime)
             }
 
+        }
+
+        fun setLogger(loggerCallback: LoggerCallback) {
+            SSApiInternal.loggerCallback = loggerCallback
         }
 
         fun initXiaomi(context: Context, appId: String, apiKey: String) {

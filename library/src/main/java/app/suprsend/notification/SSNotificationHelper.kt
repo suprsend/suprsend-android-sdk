@@ -486,6 +486,7 @@ private fun Context.getDrawableIdFromName(drawableName: String?): Int? {
             null
         else id
     } catch (e: Exception) {
+        Logger.e("utils","getDrawableIdFromName $drawableName not found")
         null
     }
 }
