@@ -3,6 +3,9 @@
 #Release Notes
 
 ```
+1.0.1
+- Logging Support
+
 0.1.10
 - Compile with API 33
 - Xiaomi sdk updated from 4.8.3 to 5.1.1
