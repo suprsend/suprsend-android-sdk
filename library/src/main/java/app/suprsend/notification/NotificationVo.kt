@@ -13,6 +13,7 @@ data class RawNotification(
     val channelShowBadge: Boolean? = null,
     val channelLockScreenVisibility: NotificationChannelVisibility? = null,
     val channelImportance: NotificationChannelImportance? = null,
+    val channelSound: String? = null,
 
     val priority: NotificationPriority? = null,
 
@@ -27,6 +28,7 @@ data class RawNotification(
     val iconUrl: String? = null,
     val imageUrl: String? = null,
     val deeplink: String? = null,
+    val sound: String? = null,
 
     val category: String? = null,
 
@@ -59,7 +61,8 @@ data class RawNotification(
                 description = channelDescription ?: "",
                 showBadge = channelShowBadge ?: true,
                 channelLockScreenVisibility = channelLockScreenVisibility ?: NotificationChannelVisibility.PUBLIC,
-                channelImportance = channelImportance ?: NotificationChannelImportance.HIGH
+                channelImportance = channelImportance ?: NotificationChannelImportance.HIGH,
+                channelSound = channelSound
             ),
             notificationBasicVo = NotificationBasicVo(
                 priority = priority ?: NotificationPriority.DEFAULT,
@@ -82,7 +85,8 @@ data class RawNotification(
                 sortKey = sortKey,
                 localOnly = localOnly,
                 timeoutAfter = timeoutAfter,
-                deeplink = deeplink
+                deeplink = deeplink,
+                sound = sound
             ),
             actions = actions
                 ?.mapIndexed { index, notificationActionVo ->
@@ -123,6 +127,8 @@ data class RawNotification(
 
         return notificationVo
     }
+
+
 }
 
 data class NotificationVo(
@@ -159,7 +165,8 @@ data class NotificationChannelVo(
     val description: String,
     val showBadge: Boolean,
     val channelLockScreenVisibility: NotificationChannelVisibility = NotificationChannelVisibility.PUBLIC,
-    val channelImportance: NotificationChannelImportance = NotificationChannelImportance.HIGH
+    val channelImportance: NotificationChannelImportance = NotificationChannelImportance.HIGH,
+    val channelSound:String?
 )
 
 enum class NotificationChannelVisibility {
@@ -185,6 +192,7 @@ data class NotificationBasicVo(
     val tickerText: String,
     val largeIconUrl: String? = null,
     val deeplink: String? = null,
+    val sound: String? = null,
 
     val category: String? = null,
 
