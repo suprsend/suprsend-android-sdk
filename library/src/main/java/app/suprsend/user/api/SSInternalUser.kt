@@ -267,23 +267,30 @@ internal object SSInternalUser {
             )
     }
 
-    fun fetchUserPreference(){
+    fun fetchUserPreference() {
 
     }
 
-    fun subscribeUserPreference(userPreferenceListener:UserPreferenceListener): SharedPreferences.OnSharedPreferenceChangeListener {
+    fun subscribeUserPreference(userPreferenceListener: UserPreferenceListener): SharedPreferences.OnSharedPreferenceChangeListener {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreference, key ->
             val userPreferenceString = sharedPreference.getString(key, "")
             if (!userPreferenceString.isNullOrBlank()) {
                 userPreferenceListener.onUpdate(UserPreferenceParser.parse(JSONObject(userPreferenceString)))
             }
         }
-        SdkAndroidCreator.context.getSharedPreferences(SSConstants.SP_USER_PREFERENCES, Context.MODE_PRIVATE)?.registerOnSharedPreferenceChangeListener(listener)
+        SdkAndroidCreator.getSharedPreference().registerOnSharedPreferenceChangeListener(listener)
         return listener
     }
 
     fun unSubscribeUserPreference(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
-        SdkAndroidCreator.context.getSharedPreferences(SSConstants.SP_USER_PREFERENCES, Context.MODE_PRIVATE)?.unregisterOnSharedPreferenceChangeListener(listener)
+        SdkAndroidCreator.getSharedPreference().unregisterOnSharedPreferenceChangeListener(listener)
+    }
+
+    fun clearUserPreference() {
+        SdkAndroidCreator.getSharedPreference().edit().apply {
+            putString(SSConstants.SP_USER_PREFERENCES, "")
+            commit()
+        }
     }
 
     private fun filterAndStoreOperatorPayload(properties: JSONObject, operator: String) {

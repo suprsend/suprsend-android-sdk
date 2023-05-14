@@ -167,5 +167,6 @@ class SSUserApi : UserApiInternalContract {
         userPreferenceSharedPreferenceChangeListener?.let {listener->
             SSInternalUser.unSubscribeUserPreference(listener)
         }
+        userPreferenceSharedPreferenceChangeListener = null
     }
 }
