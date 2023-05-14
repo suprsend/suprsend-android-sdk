@@ -1,5 +1,7 @@
 package app.suprsend.user.api
 
+import android.content.Context
+import android.content.SharedPreferences
 import app.suprsend.SSApiInternal
 import app.suprsend.base.Logger
 import app.suprsend.base.PreferredLanguage
@@ -12,12 +14,14 @@ import app.suprsend.base.isValidEmail
 import app.suprsend.base.size
 import app.suprsend.event.PayloadCreator
 import app.suprsend.user.UserLocalDatasource
+import app.suprsend.user.preference.UserPreferenceListener
+import app.suprsend.user.preference.UserPreferenceParser
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Locale
 
 internal object SSInternalUser {
-    val userLocalDatasource = UserLocalDatasource()
+    private val userLocalDatasource = UserLocalDatasource()
 
     fun set(key: String, value: Any) {
         filterAndStoreOperatorPayload(
@@ -261,6 +265,25 @@ internal object SSInternalUser {
                     ).toString(),
                 isDirty = true
             )
+    }
+
+    fun fetchUserPreference(){
+
+    }
+
+    fun subscribeUserPreference(userPreferenceListener:UserPreferenceListener): SharedPreferences.OnSharedPreferenceChangeListener {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreference, key ->
+            val userPreferenceString = sharedPreference.getString(key, "")
+            if (!userPreferenceString.isNullOrBlank()) {
+                userPreferenceListener.onUpdate(UserPreferenceParser.parse(JSONObject(userPreferenceString)))
+            }
+        }
+        SdkAndroidCreator.context.getSharedPreferences(SSConstants.SP_USER_PREFERENCES, Context.MODE_PRIVATE)?.registerOnSharedPreferenceChangeListener(listener)
+        return listener
+    }
+
+    fun unSubscribeUserPreference(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        SdkAndroidCreator.context.getSharedPreferences(SSConstants.SP_USER_PREFERENCES, Context.MODE_PRIVATE)?.unregisterOnSharedPreferenceChangeListener(listener)
     }
 
     private fun filterAndStoreOperatorPayload(properties: JSONObject, operator: String) {

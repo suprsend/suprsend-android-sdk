@@ -1,11 +1,15 @@
 package app.suprsend
 
+import android.content.SharedPreferences
 import app.suprsend.base.executorService
 import app.suprsend.user.api.UserApiInternalContract
 import app.suprsend.user.api.SSInternalUser
+import app.suprsend.user.preference.UserPreferenceListener
 import org.json.JSONObject
 
 class SSUserApi : UserApiInternalContract {
+
+    private var userPreferenceSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
 
     override fun set(key: String, value: Any) {
         executorService.execute {
@@ -146,6 +150,22 @@ class SSUserApi : UserApiInternalContract {
     override fun setPreferredLanguage(languageCode: String) {
         executorService.execute {
             SSInternalUser.setPreferredLanguage(languageCode)
+        }
+    }
+
+    override fun fetchUserPreference() {
+        executorService.execute {
+            SSInternalUser.fetchUserPreference()
+        }
+    }
+
+    override fun subscribeUserPreference(userPreferenceListener: UserPreferenceListener) {
+        userPreferenceSharedPreferenceChangeListener = SSInternalUser.subscribeUserPreference(userPreferenceListener)
+    }
+
+    override fun unSubscribeUserPreference() {
+        userPreferenceSharedPreferenceChangeListener?.let {listener->
+            SSInternalUser.unSubscribeUserPreference(listener)
         }
     }
 }

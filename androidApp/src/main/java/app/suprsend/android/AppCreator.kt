@@ -23,14 +23,14 @@ object AppCreator {
     }
 
     fun setEmail(context: Context, email: String) {
-        val sp = context.getSharedPreferences("main", 0)
+        val sp = context.getSharedPreferences("main", Context.MODE_PRIVATE)
         val spedit = sp.edit()
         spedit.putString("email", email)
         spedit.commit()
     }
 
     fun getEmail(context: Context): String {
-        val sp = context.getSharedPreferences("main", 0)
+        val sp = context.getSharedPreferences("main", Context.MODE_PRIVATE)
         return sp.getString("email", "") ?: ""
     }
 

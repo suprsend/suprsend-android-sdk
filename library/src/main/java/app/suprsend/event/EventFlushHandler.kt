@@ -1,12 +1,14 @@
 package app.suprsend.event
 
 import app.suprsend.BuildConfig
+import app.suprsend.SSApiInternal
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
 import app.suprsend.base.toKotlinJsonObject
 import app.suprsend.config.ConfigHelper
 import app.suprsend.database.Event_Model
+import app.suprsend.user.api.SSInternalUser
 import org.json.JSONArray
 import java.io.BufferedReader
 import java.io.DataOutputStream
@@ -28,7 +30,7 @@ internal object EventFlushHandler {
             Logger.i(TAG, "No events found")
             return
         }
-        val baseUrl = ConfigHelper.get(SSConstants.CONFIG_API_BASE_URL) ?: SSConstants.DEFAULT_BASE_API_URL
+        val baseUrl = SSApiInternal.getBaseUrl()
         while (eventModelList.isNotEmpty()) {
 
             val jsonArray = JSONArray()

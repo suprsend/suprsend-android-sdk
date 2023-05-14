@@ -237,10 +237,12 @@ internal object SSApiInternal {
         return ConfigHelper.get(SSConstants.CONFIG_XIAOMI_PUSH_TOKEN) ?: ""
     }
 
-
-
     fun getCachedApiKey(): String {
         return ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""
+    }
+
+    fun getBaseUrl(): String {
+        return ConfigHelper.get(SSConstants.CONFIG_API_BASE_URL) ?: SSConstants.DEFAULT_BASE_API_URL
     }
 
     const val TAG = "ssinternal"
