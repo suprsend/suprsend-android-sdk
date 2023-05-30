@@ -1,6 +1,9 @@
 package app.suprsend.base
 
 import androidx.test.InstrumentationRegistry
+import app.suprsend.SSApi
+import app.suprsend.SSApiInternal
+import app.suprsend.config.ConfigHelper
 import app.suprsend.database.SQLDataHelper
 import junit.framework.Assert.assertEquals
 import org.json.JSONObject
@@ -10,10 +13,23 @@ import org.junit.Before
 
 open class BaseTest {
     val context = InstrumentationRegistry.getContext()
-    val sqlDataHelper = SQLDataHelper(context)
+    private val sqlDataHelper = SQLDataHelper(context)
 
     init {
         SdkAndroidCreator.context = context
+        if (
+            listOf(
+                TestConstant.CONFIG_API_BASE_URL,
+                TestConstant.CONFIG_API_KEY,
+                TestConstant.CONFIG_API_SECRET
+            ).any { it == "XXXX" }
+        )
+            throw IllegalStateException("Please input credentials")
+
+        ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, TestConstant.CONFIG_API_BASE_URL)
+        ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, TestConstant.CONFIG_API_KEY)
+        ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_SECRET, TestConstant.CONFIG_API_SECRET)
+        SSApiInternal.identify(TestConstant.CONFIG_API_USER_ID)
     }
 
     @Before

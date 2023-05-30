@@ -1,6 +1,6 @@
 package app.suprsend.user.preference
 
-data class UserPreferences(
-    val categories: List<Category>,
+data class PreferenceData(
+    val sections: List<Section>,
     val channelPreferences: List<ChannelPreference>
 )

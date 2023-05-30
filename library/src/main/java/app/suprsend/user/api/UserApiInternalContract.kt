@@ -1,6 +1,6 @@
 package app.suprsend.user.api
 
-import app.suprsend.user.preference.UserPreferenceListener
+import app.suprsend.user.preference.Preferences
 import org.json.JSONObject
 
 interface UserApiInternalContract {
@@ -39,9 +39,6 @@ interface UserApiInternalContract {
 
     fun setPreferredLanguage(languageCode: String)
 
-    fun fetchUserPreference()
+    fun getPreferences(): Preferences
 
-    fun subscribeUserPreference(userPreferenceListener: UserPreferenceListener)
-
-    fun unSubscribeUserPreference()
 }

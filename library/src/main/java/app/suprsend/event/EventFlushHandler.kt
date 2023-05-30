@@ -1,67 +1,33 @@
 package app.suprsend.event
 
-import app.suprsend.BuildConfig
 import app.suprsend.SSApiInternal
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
+import app.suprsend.base.createAuthorization
+import app.suprsend.base.getDate
+import app.suprsend.base.httpCall
 import app.suprsend.base.toKotlinJsonObject
-import app.suprsend.config.ConfigHelper
 import app.suprsend.database.Event_Model
-import app.suprsend.user.api.SSInternalUser
 import org.json.JSONArray
-import java.io.BufferedReader
-import java.io.DataOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
 import java.security.MessageDigest
 import java.util.Date
 
 internal object EventFlushHandler {
     const val TAG = "flush"
 
-    fun flushEvents() {
+    fun flush() {
+
         val eventLocalDatasource = SdkAndroidCreator.eventLocalDatasource
         var eventModelList: List<Event_Model> = eventLocalDatasource.getEvents(SSConstants.FLUSH_EVENT_PAYLOAD_SIZE)
         if (eventModelList.isEmpty()) {
             Logger.i(TAG, "No events found")
             return
         }
-        val baseUrl = SSApiInternal.getBaseUrl()
+
         while (eventModelList.isNotEmpty()) {
 
-            val jsonArray = JSONArray()
-            eventModelList.forEach { eventModel ->
-                jsonArray.put(eventModel.value.toKotlinJsonObject())
-            }
-            val requestJson = jsonArray.toString()
-            val httpVerb = "POST"
-            val contentMd5 = requestJson.toMD5()
-            val contentType = "application/json"
-            val date = Date().toString()
-            val requestURI = "/event/"
-            val envKey = ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""
-            val secret = ConfigHelper.get(SSConstants.CONFIG_API_SECRET) ?: ""
-
-            val stringToSign = httpVerb + "\n" +
-                contentMd5 + "\n" +
-                contentType + "\n" +
-                date + "\n" +
-                requestURI
-
-            val signature = Algo.base64(Algo.generateHashWithHmac256(secret, stringToSign))
-
-            val httpResponse = httpPost(
-                urL = "$baseUrl$requestURI",
-                authorization = "$envKey:$signature",
-                body = requestJson,
-                date = date
-            )
-
-            Logger.i(TAG, "${httpResponse.statusCode} \n$requestJson \n${httpResponse.response}")
+            val httpResponse = flushEvents(eventModelList)
 
             if (httpResponse.statusCode == 202) {
                 eventLocalDatasource.delete(eventModelList.map { event -> event.id!! }.joinToString())
@@ -73,59 +39,53 @@ internal object EventFlushHandler {
         }
     }
 
-    private fun httpPost(urL: String, authorization: String, date: String, body: String): HttPResponse {
+    fun flushEvents(eventModelList: List<Event_Model>): HttPResponse {
+        val requestJson = eventModelList.toJsonArray().toString()
 
-        var connection: HttpURLConnection? = null
-        var inputStream: InputStream? = null
-        try {
-            val url = URL(urL)
-            connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "POST"
-            connection.setRequestProperty("Content-Type", "application/json")
-            connection.addRequestProperty("Authorization", authorization)
-            connection.addRequestProperty("Date", date)
-            connection.useCaches = false
-            connection.doOutput = true
-            connection.doInput = true
+        val requestURI = "/event/"
+        val date = getDate()
 
-            //Send request
-            val wr = DataOutputStream(connection.outputStream)
-            wr.writeBytes(body)
-            wr.close()
+        val authorization = createAuthorization(
+            requestJson = requestJson,
+            requestURI = requestURI,
+            date = date
+        )
+        val baseUrl = SSApiInternal.getBaseUrl()
+        val httpResponse = httpCall(
+            urL = "$baseUrl$requestURI",
+            authorization = authorization,
+            requestJson = requestJson,
+            date = date
+        )
 
-            //Get Response
-            try {
-                inputStream = connection.inputStream
-            } catch (ioe: IOException) {
-
-                val statusCode = connection.responseCode
-                if (statusCode >= 400) {
-                    inputStream = connection.errorStream
-                }
-            }
-            val bufferedReader = BufferedReader(InputStreamReader(inputStream))
-            val response = StringBuilder()
-            var line: String?
-            while (bufferedReader.readLine().also { line = it } != null) {
-                response.append(line)
-                response.append('\r')
-            }
-            bufferedReader.close()
-
-            return HttPResponse(connection.responseCode, response.toString())
-        } catch (e: Exception) {
-            Logger.e(TAG, "", e)
-        } finally {
-            connection?.disconnect()
-        }
-        return HttPResponse(400)
+        Logger.i(TAG, "${httpResponse.statusCode} \n$requestJson \n${httpResponse.response}")
+        return httpResponse
     }
+
+    private fun List<Event_Model>.toJsonArray(): JSONArray {
+        val jsonArray = JSONArray()
+        forEach { eventModel ->
+            jsonArray.put(eventModel.value.toKotlinJsonObject())
+        }
+        return jsonArray
+    }
+
+
 }
 
 data class HttPResponse(
     val statusCode: Int,
     val response: String? = null
-)
+){
+    fun ok(): Boolean {
+        return statusCode == 200
+    }
+
+    fun accepted(): Boolean {
+        return statusCode == 202
+    }
+
+}
 
 internal fun String.toMD5(): String {
     val bytes = MessageDigest.getInstance("MD5").digest(this.toByteArray(Charsets.UTF_8))

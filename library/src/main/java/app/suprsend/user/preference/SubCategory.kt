@@ -4,8 +4,7 @@ data class SubCategory(
     val name: String,
     val category: String,
     val description: String,
-    val defaultPreference: String,
-    val preference: Preference,
+    val preferenceOptions: PreferenceOptions,
     val isEditable: Boolean,
     val channels: List<Channel>
 )

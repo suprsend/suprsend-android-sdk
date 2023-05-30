@@ -1,0 +1,49 @@
+package app.suprsend.user.preference
+
+import androidx.annotation.WorkerThread
+import app.suprsend.base.Response
+import org.json.JSONObject
+
+interface Preferences {
+
+    @WorkerThread
+    fun fetchUserPreference(brandId: String? = null): Response<PreferenceData>
+
+    @WorkerThread
+    fun fetchCategories(
+        brandId: String? = null,
+        limit: Int? = null,
+        offset: Int? = null
+    ): Response<JSONObject>
+
+    @WorkerThread
+    fun fetchCategory(
+        category: String,
+        brandId: String? = null
+    ): Response<JSONObject>
+
+    @WorkerThread
+    fun fetchOverallChannelPreferences(): Response<JSONObject>
+
+    @WorkerThread
+    fun updateCategoryPreference(
+        category: String,
+        brandId: String?,
+        preference: PreferenceOptions
+    ): Response<JSONObject>
+
+    @WorkerThread
+    fun updateChannelPreferenceInCategory(
+        category: String,
+        channel: String,
+        preference: PreferenceOptions,
+        brandId: String?
+    ): Response<JSONObject>
+
+    @WorkerThread
+    fun updateOverallChannelPreference(
+        channel: String,
+        channelPreference: ChannelPreferenceOptions
+    ): Response<JSONObject>
+
+}

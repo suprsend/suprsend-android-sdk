@@ -1,15 +1,15 @@
 package app.suprsend
 
-import android.content.SharedPreferences
 import app.suprsend.base.executorService
-import app.suprsend.user.api.UserApiInternalContract
 import app.suprsend.user.api.SSInternalUser
-import app.suprsend.user.preference.UserPreferenceListener
+import app.suprsend.user.api.UserApiInternalContract
+import app.suprsend.user.preference.Preferences
+import app.suprsend.user.preference.PreferencesImpl
 import org.json.JSONObject
 
 class SSUserApi : UserApiInternalContract {
 
-    private var userPreferenceSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
+    val preference = PreferencesImpl()
 
     override fun set(key: String, value: Any) {
         executorService.execute {
@@ -153,20 +153,7 @@ class SSUserApi : UserApiInternalContract {
         }
     }
 
-    override fun fetchUserPreference() {
-        executorService.execute {
-            SSInternalUser.fetchUserPreference()
-        }
-    }
-
-    override fun subscribeUserPreference(userPreferenceListener: UserPreferenceListener) {
-        userPreferenceSharedPreferenceChangeListener = SSInternalUser.subscribeUserPreference(userPreferenceListener)
-    }
-
-    override fun unSubscribeUserPreference() {
-        userPreferenceSharedPreferenceChangeListener?.let {listener->
-            SSInternalUser.unSubscribeUserPreference(listener)
-        }
-        userPreferenceSharedPreferenceChangeListener = null
+    override fun getPreferences(): Preferences {
+        return preference
     }
 }

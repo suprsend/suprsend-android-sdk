@@ -1,7 +1,5 @@
 package app.suprsend.user.api
 
-import android.content.Context
-import android.content.SharedPreferences
 import app.suprsend.SSApiInternal
 import app.suprsend.base.Logger
 import app.suprsend.base.PreferredLanguage
@@ -14,8 +12,6 @@ import app.suprsend.base.isValidEmail
 import app.suprsend.base.size
 import app.suprsend.event.PayloadCreator
 import app.suprsend.user.UserLocalDatasource
-import app.suprsend.user.preference.UserPreferenceListener
-import app.suprsend.user.preference.UserPreferenceParser
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Locale
@@ -238,9 +234,9 @@ internal object SSInternalUser {
 
     fun setPreferredLanguage(languageCode: String) {
         val processedLanguageCode = languageCode.toLowerCase(Locale.getDefault())
-        val isValid  = PreferredLanguage.values[processedLanguageCode] !=null
-        if(!isValid){
-            Logger.i(SSConstants.TAG_SUPRSEND,"invalid value $languageCode")
+        val isValid = PreferredLanguage.values[processedLanguageCode] != null
+        if (!isValid) {
+            Logger.i(SSConstants.TAG_SUPRSEND, "invalid value $languageCode")
             return
         }
         val jsonObject = JSONObject()
@@ -265,32 +261,6 @@ internal object SSInternalUser {
                     ).toString(),
                 isDirty = true
             )
-    }
-
-    fun fetchUserPreference() {
-
-    }
-
-    fun subscribeUserPreference(userPreferenceListener: UserPreferenceListener): SharedPreferences.OnSharedPreferenceChangeListener {
-        val listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreference, key ->
-            val userPreferenceString = sharedPreference.getString(key, "")
-            if (!userPreferenceString.isNullOrBlank()) {
-                userPreferenceListener.onUpdate(UserPreferenceParser.parse(JSONObject(userPreferenceString)))
-            }
-        }
-        SdkAndroidCreator.getSharedPreference().registerOnSharedPreferenceChangeListener(listener)
-        return listener
-    }
-
-    fun unSubscribeUserPreference(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
-        SdkAndroidCreator.getSharedPreference().unregisterOnSharedPreferenceChangeListener(listener)
-    }
-
-    fun clearUserPreference() {
-        SdkAndroidCreator.getSharedPreference().edit().apply {
-            putString(SSConstants.SP_USER_PREFERENCES, "")
-            commit()
-        }
     }
 
     private fun filterAndStoreOperatorPayload(properties: JSONObject, operator: String) {
