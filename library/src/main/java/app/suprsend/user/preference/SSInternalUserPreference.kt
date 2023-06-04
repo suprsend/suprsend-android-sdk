@@ -212,14 +212,14 @@ internal object SSInternalUserPreference {
 
     fun updateOverallChannelPreference(
         channel: String,
-        channelPreference: ChannelPreferenceOptions
+        channelPreferenceOptions: ChannelPreferenceOptions
     ): Response<JSONObject> {
         val preferenceDataJO = getPreferenceDataJO() ?: return Response.Error(
             IllegalStateException("Preference data is not available. Please fetch preference data with fetchPreferenceData() call")
         )
         var channelJoFound: JSONObject? = null
         var updated = false
-        val isRestricted = channelPreference == ChannelPreferenceOptions.REQUIRED
+        val isRestricted = channelPreferenceOptions == ChannelPreferenceOptions.REQUIRED
         preferenceDataJO.safeJsonArray("channel_preferences")?.forEach ChannelForEach@{ channelPrefJo ->
             if (channelPrefJo.safeStringDefault("channel", "") == channel) {
                 channelJoFound = channelPrefJo

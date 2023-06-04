@@ -3,11 +3,6 @@ package app.suprsend.android
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-
-fun ViewGroup.layoutInflater(): LayoutInflater {
-    return LayoutInflater.from(context)
-}
 
 fun View.layoutInflater(): LayoutInflater {
     return LayoutInflater.from(context)

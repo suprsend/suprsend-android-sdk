@@ -6,8 +6,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import app.suprsend.SSApi
 import app.suprsend.android.databinding.UserPreferenceActivityBinding
 import app.suprsend.android.isLast
+import app.suprsend.android.logInfo
 import app.suprsend.android.myToast
 import app.suprsend.exception.NoInternetException
+import app.suprsend.user.preference.ChannelPreferenceOptions
 import app.suprsend.user.preference.PreferenceCallback
 import app.suprsend.user.preference.PreferenceData
 import app.suprsend.user.preference.PreferenceOptions
@@ -27,13 +29,15 @@ class UserPreferenceActivity : AppCompatActivity() {
     lateinit var preferences: Preferences
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
+    private val expandedIds = hashMapOf<String, Boolean>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = "Preferences"
         binding = UserPreferenceActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.categoriesRV.layoutManager = LinearLayoutManager(this@UserPreferenceActivity)
-        adapter = UserPreferenceRecyclerViewAdapter({ category, checked ->
+        adapter = UserPreferenceRecyclerViewAdapter(categoryItemClick = { category, checked ->
             coroutineScope.launch {
                 val response = SSApi.getInstance().getUser().getPreferences().updateCategoryPreference(
                     category = category,
@@ -45,7 +49,7 @@ class UserPreferenceActivity : AppCompatActivity() {
                     }
                 }
             }
-        }, { category, channel, checked ->
+        }, channelItemClick = { category, channel, checked ->
             coroutineScope.launch {
                 val response = SSApi.getInstance().getUser().getPreferences().updateChannelPreferenceInCategory(
                     category = category,
@@ -58,7 +62,24 @@ class UserPreferenceActivity : AppCompatActivity() {
                     }
                 }
             }
-        })
+        },
+            channelPreferenceArrowClick = { category, expanded ->
+                expandedIds[category] = expanded
+            },
+            channelPreferenceChangeClick = { channel: String, channelPreferenceOptions: ChannelPreferenceOptions ->
+                logInfo("Updated channelPreferenceOptions channel:$channel channelPreferenceOptions: $channelPreferenceOptions ")
+                coroutineScope.launch {
+                    val response = SSApi.getInstance().getUser().getPreferences().updateOverallChannelPreference(
+                        channel = channel,
+                        channelPreferenceOptions = channelPreferenceOptions
+                    )
+                    if (response.getException() is NoInternetException) {
+                        withContext(Dispatchers.Main) {
+                            myToast("Please check internet connection")
+                        }
+                    }
+                }
+            })
         binding.categoriesRV.adapter = adapter
 
         preferences = SSApi.getInstance().getUser().getPreferences()
@@ -102,10 +123,20 @@ class UserPreferenceActivity : AppCompatActivity() {
         val itemsList = arrayListOf<RecyclerViewItem>()
         sections.forEachIndexed { sIndex, section ->
             if (section.name.isNotBlank())
-                itemsList.add(RecyclerViewItem.SectionVo(section))
+                itemsList.add(RecyclerViewItem.SectionVo(idd = section.name, title = section.name, description = section.description))
             section.subCategories.forEachIndexed { scIndex, subCategory ->
                 itemsList.add(RecyclerViewItem.SubCategoryVo(subCategory, section.subCategories.isLast(scIndex)))
             }
+        }
+        itemsList.add(
+            RecyclerViewItem.SectionVo(
+                "Over all section divider",
+                "What notifications to allow for channel?"
+            )
+        )
+        channelPreferences.forEach { channelPreference ->
+            val isExpanded = expandedIds[channelPreference.channel] ?: false
+            itemsList.add(RecyclerViewItem.ChannelPreferenceVo(channelPreference, isExpanded))
         }
         return itemsList
     }

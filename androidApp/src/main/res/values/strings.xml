@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SuprSend Android SDK Sample</string>
+    <string name="allow_all_notifications">Allow all notifications</string>
 </resources>

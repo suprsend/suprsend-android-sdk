@@ -7,10 +7,10 @@
 
         <variable
             name="obj"
-            type="app.suprsend.user.preference.Section" />
+            type="app.suprsend.android.preference.RecyclerViewItem.SectionVo" />
     </data>
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#F4F6F6"
@@ -20,12 +20,17 @@
             android:id="@+id/sectionNameTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:fontFamily="@font/inter_bold"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="14dp"
-            android:text="@{obj.name}"
+            android:text="@{obj.title}"
             android:textColor="#3D3D3D"
             android:textSize="14sp"
+            app:fontFamily="@font/inter_bold"
+            app:layout_constraintBottom_toTopOf="@id/sectionDescTv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginBottom="14dp"
             tools:text="Transactional Notifications" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -34,11 +39,16 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="18dp"
+            android:layout_marginBottom="14dp"
             android:text="@{obj.description}"
             android:textColor="#6C727F"
             android:textSize="12sp"
+            android:visibility="visible"
             app:fontFamily="@font/inter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sectionNameTv"
             tools:text="Non-marketing notifications related to authentication, activity updates, reminders etc." />
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

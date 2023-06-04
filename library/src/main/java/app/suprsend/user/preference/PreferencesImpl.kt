@@ -43,8 +43,10 @@ class PreferencesImpl : Preferences {
     }
 
     override fun updateCategoryPreference(category: String, preference: PreferenceOptions, brandId: String?): Response<JSONObject> {
-        if (!SdkAndroidCreator.networkInfo.isConnected())
+        if (!SdkAndroidCreator.networkInfo.isConnected()) {
+            preferenceCallback?.onUpdate()
             return Response.Error(NoInternetException())
+        }
         val response = SSInternalUserPreference.updateCategoryPreference(category, brandId, preference)
         if (!response.isSuccess()) {
             Logger.e(SSConstants.TAG_SUPRSEND, response.getException()?.message ?: "Something went wrong")
@@ -59,8 +61,10 @@ class PreferencesImpl : Preferences {
         preference: PreferenceOptions,
         brandId: String?
     ): Response<JSONObject> {
-        if (!SdkAndroidCreator.networkInfo.isConnected())
+        if (!SdkAndroidCreator.networkInfo.isConnected()) {
+            preferenceCallback?.onUpdate()
             return Response.Error(NoInternetException())
+        }
         val response = SSInternalUserPreference.updateChannelPreferenceInCategory(category, channel, preference, brandId)
         if (!response.isSuccess()) {
             Logger.e(SSConstants.TAG_SUPRSEND, response.getException()?.message ?: "Something went wrong")
@@ -71,11 +75,13 @@ class PreferencesImpl : Preferences {
 
     override fun updateOverallChannelPreference(
         channel: String,
-        channelPreference: ChannelPreferenceOptions
+        channelPreferenceOptions: ChannelPreferenceOptions
     ): Response<JSONObject> {
-        if (!SdkAndroidCreator.networkInfo.isConnected())
+        if (!SdkAndroidCreator.networkInfo.isConnected()) {
+            preferenceCallback?.onUpdate()
             return Response.Error(NoInternetException())
-        val response = SSInternalUserPreference.updateOverallChannelPreference(channel, channelPreference)
+        }
+        val response = SSInternalUserPreference.updateOverallChannelPreference(channel, channelPreferenceOptions)
         if (!response.isSuccess()) {
             Logger.e(SSConstants.TAG_SUPRSEND, response.getException()?.message ?: "Something went wrong")
         }

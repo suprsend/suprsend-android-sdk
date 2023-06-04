@@ -47,7 +47,7 @@ interface Preferences {
     @WorkerThread
     fun updateOverallChannelPreference(
         channel: String,
-        channelPreference: ChannelPreferenceOptions
+        channelPreferenceOptions: ChannelPreferenceOptions
     ): Response<JSONObject>
 
 }
