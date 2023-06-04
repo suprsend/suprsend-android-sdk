@@ -27,8 +27,8 @@ internal object SdkAndroidCreator {
     val eventLocalDatasource: EventLocalDatasource by lazy { EventLocalDatasource() }
     val sqlDataHelper: SQLDataHelper by lazy { SQLDataHelper(context) }
 
-    fun getSharedPreference(): SharedPreferences {
-        return context.getSharedPreferences(SSConstants.SS_SHARED_PREFERENCE_KEY,Context.MODE_PRIVATE)
+    internal fun getSharedPreference(key:String): SharedPreferences {
+        return context.getSharedPreferences(key,Context.MODE_PRIVATE)
     }
 }
 

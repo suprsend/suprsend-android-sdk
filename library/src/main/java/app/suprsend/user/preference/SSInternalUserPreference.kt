@@ -5,6 +5,7 @@ import app.suprsend.base.Response
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
 import app.suprsend.base.forEach
+import app.suprsend.base.forEachIndexed
 import app.suprsend.base.mapToEnum
 import app.suprsend.base.safeBoolean
 import app.suprsend.base.safeJsonArray
@@ -16,18 +17,24 @@ import org.json.JSONObject
 
 internal object SSInternalUserPreference {
 
-    fun fetchAndSavePreferenceData(brandId: String? = null): Response<PreferenceData> {
+    fun fetchAndSavePreferenceData(brandId: String? = null, fetchRemote: Boolean): Response<PreferenceData> {
         return try {
-            val httpResponse = UserPreferenceRemote.preference(brandId)
-            if (httpResponse.statusCode == 200) {
-                val response = httpResponse.response
-                if (!response.isNullOrBlank()) {
-                    savePreferenceData(response)
-                    val preferenceData = UserPreferenceParser.parse(JSONObject(response))
-                    return Response.Success(preferenceData)
+            if (fetchRemote) {
+                val httpResponse = UserPreferenceRemote.preference(brandId)
+                if (httpResponse.statusCode == 200) {
+                    val response = httpResponse.response
+                    if (!response.isNullOrBlank()) {
+                        savePreferenceData(response)
+                    }
                 }
             }
-            Response.Error(IllegalStateException("Something went wrong status code : ${httpResponse.statusCode}"))
+            val response = getPreferenceDataJO()
+            return if (response == null) {
+                Response.Error(IllegalStateException("Something went wrong"))
+            } else {
+                val preferenceData = UserPreferenceParser.parse(response)
+                Response.Success(preferenceData)
+            }
         } catch (e: Exception) {
             Response.Error(e)
         }
@@ -72,16 +79,20 @@ internal object SSInternalUserPreference {
         val updatePreference = preference
 
         var updated = false
+        var subCategoryIndexInSection: Int? = null
+        var sectionJoFound: JSONObject? = null
         var subCategoryJoFound: JSONObject? = null
-        var response: Response<JSONObject>? = null
+        var validationResponse: Response<JSONObject>? = null
 
         if (preferenceDataJO.has("sections")) {
             preferenceDataJO
                 .safeJsonArray("sections")
                 ?.forEach SectionForEach@{ sectionJo ->
-                    sectionJo.safeJsonArray("subcategories")?.forEach SubCategoryForEach@{ subCategoryJo ->
+                    sectionJo.safeJsonArray("subcategories")?.forEachIndexed SubCategoryForEach@{ subCategoryIndex, subCategoryJo ->
                         val categoryStr = subCategoryJo.safeString("category")
                         if (categoryStr == updateCategory) {
+                            subCategoryIndexInSection = subCategoryIndex
+                            sectionJoFound = sectionJo
                             subCategoryJoFound = subCategoryJo
                             if (subCategoryJo.safeBoolean("is_editable") == true) {
                                 val preferenceStr = getPreference(subCategoryJo.safeString("preference") ?: "")
@@ -90,7 +101,7 @@ internal object SSInternalUserPreference {
                                     updated = true
                                 }
                             } else {
-                                response = Response.Error(IllegalStateException("Category-$updateCategory is not editable"))
+                                validationResponse = Response.Error(IllegalStateException("Category-$updateCategory is not editable"))
                             }
                             return@SubCategoryForEach true
                         }
@@ -99,13 +110,30 @@ internal object SSInternalUserPreference {
                     updated
                 }
         }
-        return if (subCategoryJoFound == null) {
+        return if (subCategoryJoFound == null ||
+            sectionJoFound == null ||
+            subCategoryIndexInSection == null
+        ) {
             Response.Error(IllegalStateException("Category-$updateCategory is not found"))
         } else {
             if (!updated) {
-                return response ?: Response.Success(preferenceDataJO)
+                return validationResponse ?: Response.Success(preferenceDataJO)
             }
-            updateCategoryPreferenceRemote(subCategoryJoFound, updatePreference, updateCategory, brandId)
+
+            val nwResponse = updateCategoryPreferenceRemote(subCategoryJoFound, updatePreference, updateCategory, brandId)
+            if (nwResponse.isSuccess()) {
+                val responseJo = nwResponse.getData()
+                if (responseJo != null) {
+                    if (responseJo.has("channels")) {
+                        sectionJoFound?.safeJsonArray("subcategories")?.put(
+                            subCategoryIndexInSection!!,
+                            responseJo
+                        )
+                    }
+                    savePreferenceData(preferenceDataJO.toString())
+                }
+            }
+            return nwResponse
         }
     }
 
@@ -152,7 +180,7 @@ internal object SSInternalUserPreference {
                                                 updated = true
                                             }
                                         } else {
-                                            response = Response.Error(IllegalStateException("Channel-$updateChannel is not editable"))
+                                            response = Response.Error(IllegalStateException("Channel-$updateChannel is not editable in category-$updateCategory"))
                                         }
                                         return@ChannelForEach true
                                     }
@@ -177,6 +205,7 @@ internal object SSInternalUserPreference {
             if (!updated) {
                 return response ?: Response.Success(preferenceDataJO)
             }
+            savePreferenceData(preferenceDataJO.toString())
             updateCategoryPreferenceRemote(subCategoryJoFound, getPreference(subCategoryJoFound?.safeString("preference") ?: ""), updateCategory, brandId)
         }
     }
@@ -193,7 +222,7 @@ internal object SSInternalUserPreference {
         val isRestricted = channelPreference == ChannelPreferenceOptions.REQUIRED
         preferenceDataJO.safeJsonArray("channel_preferences")?.forEach ChannelForEach@{ channelPrefJo ->
             if (channelPrefJo.safeStringDefault("channel", "") == channel) {
-                channelJoFound= channelPrefJo
+                channelJoFound = channelPrefJo
                 if (channelPrefJo.safeBoolean("is_restricted") != isRestricted) {
                     channelPrefJo.put("is_restricted", isRestricted)
                     updated = true
@@ -205,12 +234,13 @@ internal object SSInternalUserPreference {
 
         return if (channelJoFound == null) {
             Response.Error(IllegalStateException("Channel-$channel is not found"))
-        }  else {
+        } else {
             if (!updated) {
-                return  Response.Success(preferenceDataJO)
+                return Response.Success(preferenceDataJO)
             }
+            savePreferenceData(preferenceDataJO.toString())
             UserPreferenceRemote
-                .updateChannelPreference(channel,isRestricted)
+                .updateChannelPreference(channel, isRestricted)
                 .toResponse()
         }
 
@@ -222,7 +252,7 @@ internal object SSInternalUserPreference {
 
     @SuppressLint("ApplySharedPref")
     internal fun clearUserPreference() {
-        SdkAndroidCreator.getSharedPreference().edit().apply {
+        SdkAndroidCreator.getSharedPreference(SSConstants.SP_USER_PREFERENCES).edit().apply {
             putString(SSConstants.SP_USER_PREFERENCES, "")
             commit()
         }
@@ -247,14 +277,14 @@ internal object SSInternalUserPreference {
 
     @SuppressLint("ApplySharedPref")
     private fun savePreferenceData(preferenceResponse: String) {
-        SdkAndroidCreator.getSharedPreference().edit().apply {
+        SdkAndroidCreator.getSharedPreference(SSConstants.SP_USER_PREFERENCES).edit().apply {
             putString(SSConstants.SP_USER_PREFERENCES, preferenceResponse)
             commit()
         }
     }
 
     private fun getPreferenceDataJO(): JSONObject? {
-        val response = SdkAndroidCreator.getSharedPreference().getString(SSConstants.SP_USER_PREFERENCES, "")
+        val response = SdkAndroidCreator.getSharedPreference(SSConstants.SP_USER_PREFERENCES).getString(SSConstants.SP_USER_PREFERENCES, "")
         return if (response.isNullOrBlank()) {
             null
         } else {

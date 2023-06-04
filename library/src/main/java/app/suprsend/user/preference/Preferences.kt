@@ -6,8 +6,12 @@ import org.json.JSONObject
 
 interface Preferences {
 
+    fun registerCallback(preferenceCallback:PreferenceCallback)
+
+    fun unRegisterCallback()
+
     @WorkerThread
-    fun fetchUserPreference(brandId: String? = null): Response<PreferenceData>
+    fun fetchUserPreference(brandId: String? = null, fetchRemote: Boolean = true): Response<PreferenceData>
 
     @WorkerThread
     fun fetchCategories(
@@ -28,8 +32,8 @@ interface Preferences {
     @WorkerThread
     fun updateCategoryPreference(
         category: String,
-        brandId: String?,
-        preference: PreferenceOptions
+        preference: PreferenceOptions,
+        brandId: String? = null
     ): Response<JSONObject>
 
     @WorkerThread
@@ -37,7 +41,7 @@ interface Preferences {
         category: String,
         channel: String,
         preference: PreferenceOptions,
-        brandId: String?
+        brandId: String? = null
     ): Response<JSONObject>
 
     @WorkerThread

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="obj"
+            type="app.suprsend.user.preference.Section" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F4F6F6"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/sectionNameTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:fontFamily="@font/inter_bold"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="14dp"
+            android:text="@{obj.name}"
+            android:textColor="#3D3D3D"
+            android:textSize="14sp"
+            tools:text="Transactional Notifications" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/sectionDescTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="18dp"
+            android:text="@{obj.description}"
+            android:textColor="#6C727F"
+            android:textSize="12sp"
+            app:fontFamily="@font/inter"
+            tools:text="Non-marketing notifications related to authentication, activity updates, reminders etc." />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

@@ -88,7 +88,7 @@ android {
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar","*.aar"))))
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${Deps.JetBrains.Kotlin.VERSION}")
 //    implementation(Deps.AndroidX.CORE_KTX)
@@ -100,7 +100,7 @@ dependencies {
     if (Deps.RUN_LIB) {
         implementation(project(":library"))
         println("Using shared library")
-    }else{
+    } else {
         val dependency = "${Deps.Publication.GROUP}:${Deps.Publication.PUBLISH_ARTIFACT_ID}:${Deps.Publication.VERSION}"
         implementation(dependency)
         println("Using remote library - $dependency")
@@ -113,6 +113,10 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.12.0")
     kapt("com.github.bumptech.glide:compiler:4.12.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7")
+    implementation("com.github.angads25:toggle:1.1.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

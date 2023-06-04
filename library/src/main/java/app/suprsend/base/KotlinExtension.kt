@@ -2,7 +2,7 @@ package app.suprsend.base
 
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.Locale
+import java.net.URLEncoder
 
 internal inline fun <reified T : Enum<T>> String?.mapToEnum(defaultValue: T): T {
     return mapToEnum<T>() ?: defaultValue
@@ -120,6 +120,16 @@ internal fun JSONArray.forEach(call: (jo: JSONObject) -> Boolean?) {
     }
 }
 
+internal fun JSONArray.forEachIndexed(call: (index:Int,jo: JSONObject) -> Boolean?) {
+    for (i in 0 until length()) {
+        val jo = getJSONObject(i)
+        val shouldBreak = call(i,jo) ?: false
+        if (shouldBreak) {
+            break
+        }
+    }
+}
+
 internal fun <T> JSONArray.map(mapper: (jo: JSONObject) -> T): List<T> {
     val list = arrayListOf<T>()
     for (i in 0 until length()) {
@@ -127,4 +137,8 @@ internal fun <T> JSONArray.map(mapper: (jo: JSONObject) -> T): List<T> {
         list.add(mapper(jo))
     }
     return list
+}
+
+internal fun urlEncode(value:String): String {
+    return URLEncoder.encode(value,"utf-8")
 }

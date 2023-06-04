@@ -11,7 +11,7 @@ class SSInternalUserPreferenceTest : BaseTest() {
 
     @Test
     fun fetchPreferenceData() {
-        val preference = SSInternalUserPreference.fetchAndSavePreferenceData()
+        val preference = SSInternalUserPreference.fetchAndSavePreferenceData(fetchRemote = true)
         Assert.assertEquals(true, preference.isSuccess())
     }
 
@@ -41,7 +41,7 @@ class SSInternalUserPreferenceTest : BaseTest() {
 
     @Test
     fun updateCategoryPreference() {
-        SSInternalUserPreference.fetchAndSavePreferenceData()
+        SSInternalUserPreference.fetchAndSavePreferenceData(fetchRemote = true)
         val preference = SSInternalUserPreference.updateCategoryPreference(
             category = "user-opt-in-and-out-cases",
             preference = PreferenceOptions.OPT_OUT,
@@ -63,7 +63,7 @@ class SSInternalUserPreferenceTest : BaseTest() {
 
     @Test
     fun updateChannelPreferenceInCategory() {
-        SSInternalUserPreference.fetchAndSavePreferenceData()
+        SSInternalUserPreference.fetchAndSavePreferenceData(fetchRemote = true)
         val preference = SSInternalUserPreference.updateChannelPreferenceInCategory(
             category = "do-not-publish",
             preference = PreferenceOptions.OPT_IN,
@@ -84,7 +84,7 @@ class SSInternalUserPreferenceTest : BaseTest() {
 
     @Test
     fun updateOverallChannelPreference() {
-        SSInternalUserPreference.fetchAndSavePreferenceData()
+        SSInternalUserPreference.fetchAndSavePreferenceData(fetchRemote = true)
         val preference = SSInternalUserPreference.updateOverallChannelPreference(
             channel = "email",
             channelPreference = ChannelPreferenceOptions.ALL
