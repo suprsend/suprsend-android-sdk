@@ -69,7 +69,6 @@ class PreferencesImpl : Preferences {
         if (!response.isSuccess()) {
             Logger.e(SSConstants.TAG_SUPRSEND, response.getException()?.message ?: "Something went wrong")
         }
-        preferenceCallback?.onUpdate()
         return response
     }
 
