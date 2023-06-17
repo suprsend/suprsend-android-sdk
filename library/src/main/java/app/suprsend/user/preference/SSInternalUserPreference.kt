@@ -235,13 +235,20 @@ internal object SSInternalUserPreference {
         return if (channelJoFound == null) {
             Response.Error(IllegalStateException("Channel-$channel is not found"))
         } else {
+
             if (!updated) {
                 return Response.Success(preferenceDataJO)
             }
+
             savePreferenceData(preferenceDataJO.toString())
-            UserPreferenceRemote
+
+            val updateChannelPrefResponse = UserPreferenceRemote
                 .updateChannelPreference(channel, isRestricted)
                 .toResponse()
+
+            fetchAndSavePreferenceData(fetchRemote = true)
+
+            return updateChannelPrefResponse
         }
 
     }
