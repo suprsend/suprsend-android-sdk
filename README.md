@@ -4,6 +4,9 @@
 
 ```
 1.0.2
+- User Preferences
+
+1.0.2
 - Notification Channel Sound Support
 
 1.0.1
