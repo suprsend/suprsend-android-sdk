@@ -29,7 +29,7 @@ object Deps {
 
     //Prod
     var SS_API_BASE_URL = if (ISPROD) "https://hub.suprsend.com" else "https://collector-staging.suprsend.workers.dev"
-
+    val SS_TENANT_ID = "null"
     var SS_TOKEN = "XXXX"
     var SS_SECRET = "XXXX"
 

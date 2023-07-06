@@ -35,7 +35,7 @@ class SSInternalUserPreferenceTest : BaseTest() {
 
     @Test
     fun updateCategoryPreferencePrefNotPresent() {
-        val preference = SSInternalUserPreference.updateCategoryPreference(category = "user-opt-in-and-out-cases", preference = PreferenceOptions.OPT_OUT, brandId = null)
+        val preference = SSInternalUserPreference.updateCategoryPreference(category = "user-opt-in-and-out-cases", preference = PreferenceOptions.OPT_OUT, tenantId = null)
         Assert.assertEquals(false, preference.isSuccess())
     }
 
@@ -45,7 +45,7 @@ class SSInternalUserPreferenceTest : BaseTest() {
         val preference = SSInternalUserPreference.updateCategoryPreference(
             category = "user-opt-in-and-out-cases",
             preference = PreferenceOptions.OPT_OUT,
-            brandId = null
+            tenantId = null
         )
         Assert.assertEquals(true, preference.isSuccess())
     }
@@ -55,7 +55,7 @@ class SSInternalUserPreferenceTest : BaseTest() {
         val preference = SSInternalUserPreference.updateChannelPreferenceInCategory(
             category = "do-not-publish",
             preference = PreferenceOptions.OPT_OUT,
-            brandId = null,
+            tenantId = null,
             channel = "email"
         )
         Assert.assertEquals(false, preference.isSuccess())
@@ -67,7 +67,7 @@ class SSInternalUserPreferenceTest : BaseTest() {
         val preference = SSInternalUserPreference.updateChannelPreferenceInCategory(
             category = "do-not-publish",
             preference = PreferenceOptions.OPT_IN,
-            brandId = null,
+            tenantId = null,
             channel = "email"
         )
         Assert.assertEquals(preference.getException().toString(), true, preference.isSuccess())
@@ -77,7 +77,7 @@ class SSInternalUserPreferenceTest : BaseTest() {
     fun updateOverallChannelPreferencePrefNotPresent() {
         val preference = SSInternalUserPreference.updateOverallChannelPreference(
             channel = "email",
-            channelPreference = ChannelPreferenceOptions.REQUIRED
+            channelPreferenceOptions = ChannelPreferenceOptions.REQUIRED
         )
         Assert.assertEquals(false, preference.isSuccess())
     }
@@ -87,7 +87,7 @@ class SSInternalUserPreferenceTest : BaseTest() {
         SSInternalUserPreference.fetchAndSavePreferenceData(fetchRemote = true)
         val preference = SSInternalUserPreference.updateOverallChannelPreference(
             channel = "email",
-            channelPreference = ChannelPreferenceOptions.ALL
+            channelPreferenceOptions = ChannelPreferenceOptions.ALL
         )
         Assert.assertEquals(preference.getException().toString(), true, preference.isSuccess())
     }

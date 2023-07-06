@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.suprsend.SSApi
+import app.suprsend.android.BuildConfig
 import app.suprsend.android.databinding.UserPreferenceActivityBinding
 import app.suprsend.android.isLast
 import app.suprsend.android.logInfo
@@ -41,7 +42,8 @@ class UserPreferenceActivity : AppCompatActivity() {
             coroutineScope.launch {
                 val response = SSApi.getInstance().getUser().getPreferences().updateCategoryPreference(
                     category = category,
-                    preference = PreferenceOptions.from(checked)
+                    preference = PreferenceOptions.from(checked),
+                    tenantId = BuildConfig.SS_TENANT_ID
                 )
                 if (response.getException() is NoInternetException) {
                     withContext(Dispatchers.Main) {
@@ -54,7 +56,8 @@ class UserPreferenceActivity : AppCompatActivity() {
                 val response = SSApi.getInstance().getUser().getPreferences().updateChannelPreferenceInCategory(
                     category = category,
                     channel = channel,
-                    preference = PreferenceOptions.from(checked)
+                    preference = PreferenceOptions.from(checked),
+                    tenantId = BuildConfig.SS_TENANT_ID
                 )
                 if (response.getException() is NoInternetException) {
                     withContext(Dispatchers.Main) {
@@ -85,7 +88,9 @@ class UserPreferenceActivity : AppCompatActivity() {
         preferences = SSApi.getInstance().getUser().getPreferences()
 
         coroutineScope.launch {
-            val data = preferences.fetchUserPreference().getData() ?: return@launch
+            val data = preferences.fetchUserPreference(
+                tenantId = BuildConfig.SS_TENANT_ID
+            ).getData() ?: return@launch
             showData(data)
         }
     }
@@ -95,7 +100,10 @@ class UserPreferenceActivity : AppCompatActivity() {
         preferences.registerCallback(object : PreferenceCallback {
             override fun onUpdate() {
                 coroutineScope.launch {
-                    val data = preferences.fetchUserPreference(fetchRemote = false).getData() ?: return@launch
+                    val data = preferences.fetchUserPreference(
+                        fetchRemote = false,
+                        tenantId = BuildConfig.SS_TENANT_ID
+                    ).getData() ?: return@launch
                     showData(data)
                 }
             }

@@ -17,10 +17,10 @@ import org.json.JSONObject
 
 internal object SSInternalUserPreference {
 
-    fun fetchAndSavePreferenceData(brandId: String? = null, fetchRemote: Boolean): Response<PreferenceData> {
+    fun fetchAndSavePreferenceData(tenantId: String? = null, fetchRemote: Boolean): Response<PreferenceData> {
         return try {
             if (fetchRemote) {
-                val httpResponse = UserPreferenceRemote.preference(brandId)
+                val httpResponse = UserPreferenceRemote.preference(tenantId)
                 if (httpResponse.statusCode == 200) {
                     val response = httpResponse.response
                     if (!response.isNullOrBlank()) {
@@ -41,21 +41,21 @@ internal object SSInternalUserPreference {
     }
 
     fun fetchCategories(
-        brandId: String? = null,
+        tenantId: String? = null,
         limit: Int? = null,
         offset: Int? = null
     ): Response<JSONObject> {
         return UserPreferenceRemote
-            .fetchCategories(brandId = brandId, limit = limit, offset = offset)
+            .fetchCategories(tenantId = tenantId, limit = limit, offset = offset)
             .toResponse()
     }
 
     fun fetchCategory(
         category: String,
-        brandId: String? = null
+        tenantId: String? = null
     ): Response<JSONObject> {
         return UserPreferenceRemote
-            .fetchCategory(category = category, brandId = brandId)
+            .fetchCategory(category = category, tenantId = tenantId)
             .toResponse()
     }
 
@@ -67,7 +67,7 @@ internal object SSInternalUserPreference {
 
     fun updateCategoryPreference(
         category: String,
-        brandId: String?,
+        tenantId: String?,
         preference: PreferenceOptions
     ): Response<JSONObject> {
 
@@ -120,7 +120,7 @@ internal object SSInternalUserPreference {
                 return validationResponse ?: Response.Success(preferenceDataJO)
             }
 
-            val nwResponse = updateCategoryPreferenceRemote(subCategoryJoFound, updatePreference, updateCategory, brandId)
+            val nwResponse = updateCategoryPreferenceRemote(subCategoryJoFound, updatePreference, updateCategory, tenantId)
             if (nwResponse.isSuccess()) {
                 val responseJo = nwResponse.getData()
                 if (responseJo != null) {
@@ -141,7 +141,7 @@ internal object SSInternalUserPreference {
         category: String,
         channel: String,
         preference: PreferenceOptions,
-        brandId: String?
+        tenantId: String?
     ): Response<JSONObject> {
 
         val preferenceDataJO = getPreferenceDataJO() ?: return Response.Error(
@@ -206,7 +206,7 @@ internal object SSInternalUserPreference {
                 return response ?: Response.Success(preferenceDataJO)
             }
             savePreferenceData(preferenceDataJO.toString())
-            updateCategoryPreferenceRemote(subCategoryJoFound, getPreference(subCategoryJoFound?.safeString("preference") ?: ""), updateCategory, brandId)
+            updateCategoryPreferenceRemote(subCategoryJoFound, getPreference(subCategoryJoFound?.safeString("preference") ?: ""), updateCategory, tenantId)
         }
     }
 
@@ -265,7 +265,7 @@ internal object SSInternalUserPreference {
         }
     }
 
-    private fun updateCategoryPreferenceRemote(subCategoryJoFound: JSONObject?, preference: PreferenceOptions, updateCategory: String, brandId: String?): Response<JSONObject> {
+    private fun updateCategoryPreferenceRemote(subCategoryJoFound: JSONObject?, preference: PreferenceOptions, updateCategory: String, tenantId: String?): Response<JSONObject> {
         val optOutChannelsJA = JSONArray()
         subCategoryJoFound?.safeJsonArray("channels")?.forEach { channelJo ->
             val channelPreference = getPreference(channelJo.safeString("preference") ?: "")
@@ -278,7 +278,7 @@ internal object SSInternalUserPreference {
         requestBody.put("preference", preference.getNetworkName())
         requestBody.put("opt_out_channels", optOutChannelsJA)
         return UserPreferenceRemote
-            .updateCategoryPreferences(category = updateCategory, brandId = brandId, body = requestBody.toString())
+            .updateCategoryPreferences(category = updateCategory, tenantId = tenantId, body = requestBody.toString())
             .toResponse()
     }
 

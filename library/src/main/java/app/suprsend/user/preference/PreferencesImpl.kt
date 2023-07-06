@@ -4,7 +4,6 @@ import app.suprsend.base.Logger
 import app.suprsend.base.Response
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
-import app.suprsend.base.executorService
 import app.suprsend.exception.NoInternetException
 import org.json.JSONObject
 
@@ -18,20 +17,20 @@ class PreferencesImpl : Preferences {
         preferenceCallback = null
     }
 
-    override fun fetchUserPreference(brandId: String?, fetchRemote: Boolean): Response<PreferenceData> {
-        val response = SSInternalUserPreference.fetchAndSavePreferenceData(brandId, fetchRemote)
+    override fun fetchUserPreference(tenantId: String?, fetchRemote: Boolean): Response<PreferenceData> {
+        val response = SSInternalUserPreference.fetchAndSavePreferenceData(tenantId, fetchRemote)
         if (fetchRemote)
             preferenceCallback?.onUpdate()
         return response
     }
 
-    override fun fetchCategories(brandId: String?, limit: Int?, offset: Int?): Response<JSONObject> {
-        val response = SSInternalUserPreference.fetchCategories(brandId, limit, offset)
+    override fun fetchCategories(tenantId: String?, limit: Int?, offset: Int?): Response<JSONObject> {
+        val response = SSInternalUserPreference.fetchCategories(tenantId, limit, offset)
         return response
     }
 
-    override fun fetchCategory(category: String, brandId: String?): Response<JSONObject> {
-        val response = SSInternalUserPreference.fetchCategory(category, brandId)
+    override fun fetchCategory(category: String, tenantId: String?): Response<JSONObject> {
+        val response = SSInternalUserPreference.fetchCategory(category, tenantId)
         preferenceCallback?.onUpdate()
         return response
     }
@@ -42,12 +41,12 @@ class PreferencesImpl : Preferences {
         return response
     }
 
-    override fun updateCategoryPreference(category: String, preference: PreferenceOptions, brandId: String?): Response<JSONObject> {
+    override fun updateCategoryPreference(category: String, preference: PreferenceOptions, tenantId: String?): Response<JSONObject> {
         if (!SdkAndroidCreator.networkInfo.isConnected()) {
             preferenceCallback?.onUpdate()
             return Response.Error(NoInternetException())
         }
-        val response = SSInternalUserPreference.updateCategoryPreference(category, brandId, preference)
+        val response = SSInternalUserPreference.updateCategoryPreference(category, tenantId, preference)
         if (!response.isSuccess()) {
             Logger.e(SSConstants.TAG_SUPRSEND, response.getException()?.message ?: "Something went wrong")
         }
@@ -59,13 +58,13 @@ class PreferencesImpl : Preferences {
         category: String,
         channel: String,
         preference: PreferenceOptions,
-        brandId: String?
+        tenantId: String?
     ): Response<JSONObject> {
         if (!SdkAndroidCreator.networkInfo.isConnected()) {
             preferenceCallback?.onUpdate()
             return Response.Error(NoInternetException())
         }
-        val response = SSInternalUserPreference.updateChannelPreferenceInCategory(category, channel, preference, brandId)
+        val response = SSInternalUserPreference.updateChannelPreferenceInCategory(category, channel, preference, tenantId)
         if (!response.isSuccess()) {
             Logger.e(SSConstants.TAG_SUPRSEND, response.getException()?.message ?: "Something went wrong")
         }

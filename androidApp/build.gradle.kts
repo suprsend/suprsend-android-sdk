@@ -45,10 +45,11 @@ android {
         getByName("debug") {
             buildConfigField("String", "XIAOMI_APP_ID", "\"${Deps.XIAOMI_APP_ID}\"")
             buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
+            buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
             buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
             buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
+            buildConfigField("String", "SS_TENANT_ID", "${Deps.SS_TENANT_ID}")
             buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
-            buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
             versionNameSuffix = "(d)"
             isDebuggable = true
             isCrunchPngs = false
@@ -57,10 +58,11 @@ android {
         getByName("release") {
             buildConfigField("String", "XIAOMI_APP_ID", "\"${Deps.XIAOMI_APP_ID}\"")
             buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
+            buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
             buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
             buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
+            buildConfigField("String", "SS_TENANT_ID", "${Deps.SS_TENANT_ID}")
             buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
-            buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
             signingConfig = signingConfigs.getByName("release")
             isDebuggable = false
             isMinifyEnabled = true

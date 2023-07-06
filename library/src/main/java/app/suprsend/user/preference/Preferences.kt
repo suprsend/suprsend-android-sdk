@@ -11,11 +11,11 @@ interface Preferences {
     fun unRegisterCallback()
 
     @WorkerThread
-    fun fetchUserPreference(brandId: String? = null, fetchRemote: Boolean = true): Response<PreferenceData>
+    fun fetchUserPreference(tenantId: String? = null, fetchRemote: Boolean = true): Response<PreferenceData>
 
     @WorkerThread
     fun fetchCategories(
-        brandId: String? = null,
+        tenantId: String? = null,
         limit: Int? = null,
         offset: Int? = null
     ): Response<JSONObject>
@@ -23,7 +23,7 @@ interface Preferences {
     @WorkerThread
     fun fetchCategory(
         category: String,
-        brandId: String? = null
+        tenantId: String? = null
     ): Response<JSONObject>
 
     @WorkerThread
@@ -33,7 +33,7 @@ interface Preferences {
     fun updateCategoryPreference(
         category: String,
         preference: PreferenceOptions,
-        brandId: String? = null
+        tenantId: String? = null
     ): Response<JSONObject>
 
     @WorkerThread
@@ -41,7 +41,7 @@ interface Preferences {
         category: String,
         channel: String,
         preference: PreferenceOptions,
-        brandId: String? = null
+        tenantId: String? = null
     ): Response<JSONObject>
 
     @WorkerThread

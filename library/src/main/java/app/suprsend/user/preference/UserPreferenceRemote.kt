@@ -6,41 +6,39 @@ import app.suprsend.base.SSConstants
 import app.suprsend.base.createAuthorization
 import app.suprsend.base.getDate
 import app.suprsend.base.httpCall
-import app.suprsend.base.urlEncode
 import app.suprsend.config.ConfigHelper
 import app.suprsend.event.EventFlushHandler
 import app.suprsend.event.HttPResponse
 import org.json.JSONArray
 import org.json.JSONObject
-import java.net.URLEncoder
 
 object UserPreferenceRemote {
 
-    fun preference(brandId: String?): HttPResponse {
+    fun preference(tenantId: String?): HttPResponse {
         return callApi(
             route = "full_preference",
-            queryParams = "brandId=${brandId ?: ""}"
+            queryParams = "tenantId=${tenantId ?: ""}"
         )
     }
 
     fun fetchCategories(
-        brandId: String?,
+        tenantId: String?,
         limit: Int?,
         offset: Int?
     ): HttPResponse {
         return callApi(
             route = "category",
-            queryParams = "brandId=${brandId ?: ""}&limit=${limit?.toString() ?: ""}&offset=${offset?.toString() ?: ""}"
+            queryParams = "tenantId=${tenantId ?: ""}&limit=${limit?.toString() ?: ""}&offset=${offset?.toString() ?: ""}"
         )
     }
 
     fun fetchCategory(
         category: String,
-        brandId: String?
+        tenantId: String?
     ): HttPResponse {
         return callApi(
             route = "category/$category",
-            queryParams = "brandId=${brandId ?: ""}"
+            queryParams = "tenantId=${tenantId ?: ""}"
         )
     }
 
@@ -50,10 +48,10 @@ object UserPreferenceRemote {
         )
     }
 
-    fun updateCategoryPreferences(category: String, brandId: String?, body: String): HttPResponse {
+    fun updateCategoryPreferences(category: String, tenantId: String?, body: String): HttPResponse {
         return callApi(
             route = "category/$category",
-            queryParams = "brandId=${brandId ?: ""}",
+            queryParams = "tenantId=${tenantId ?: ""}",
             requestJson = body
         )
     }
