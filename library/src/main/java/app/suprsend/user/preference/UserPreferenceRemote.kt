@@ -17,7 +17,7 @@ object UserPreferenceRemote {
     fun preference(tenantId: String?): HttPResponse {
         return callApi(
             route = "full_preference",
-            queryParams = "tenantId=${tenantId ?: ""}"
+            queryParams = "tenant_id=${tenantId ?: ""}"
         )
     }
 
@@ -28,7 +28,7 @@ object UserPreferenceRemote {
     ): HttPResponse {
         return callApi(
             route = "category",
-            queryParams = "tenantId=${tenantId ?: ""}&limit=${limit?.toString() ?: ""}&offset=${offset?.toString() ?: ""}"
+            queryParams = "tenant_id=${tenantId ?: ""}&limit=${limit?.toString() ?: ""}&offset=${offset?.toString() ?: ""}"
         )
     }
 
@@ -38,7 +38,7 @@ object UserPreferenceRemote {
     ): HttPResponse {
         return callApi(
             route = "category/$category",
-            queryParams = "tenantId=${tenantId ?: ""}"
+            queryParams = "tenant_id=${tenantId ?: ""}"
         )
     }
 
@@ -51,7 +51,7 @@ object UserPreferenceRemote {
     fun updateCategoryPreferences(category: String, tenantId: String?, body: String): HttPResponse {
         return callApi(
             route = "category/$category",
-            queryParams = "tenantId=${tenantId ?: ""}",
+            queryParams = "tenant_id=${tenantId ?: ""}",
             requestJson = body
         )
     }
