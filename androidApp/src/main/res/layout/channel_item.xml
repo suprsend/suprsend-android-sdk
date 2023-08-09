@@ -3,12 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.chip.Chip
-        style="@style/Widget.MaterialComponents.Chip.Filter"
+    <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:chipIconSize="20dp"
-        app:chipStartPadding="10dp"
-        app:checkedIcon="@drawable/ic_chip_selected"
-        tools:checked="true" />
+        android:background="@drawable/channel_background"
+        android:drawableStart="@drawable/ic_chip_selected"
+        android:drawablePadding="10dp"
+        android:padding="8dp"
+        tools:layout_margin="20dp"
+        tools:text="Abcde" />
 </layout>

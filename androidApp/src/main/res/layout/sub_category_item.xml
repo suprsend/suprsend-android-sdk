@@ -51,12 +51,12 @@
             app:fontFamily="@font/inter"
             tools:text="Send updates related to my payment history" />
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/channelChipGroup"
+        <com.nex3z.flowlayout.FlowLayout
+            android:id="@+id/channelFlowLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="10dp"
+            tools:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             tools:background="#e4e4e4"
             tools:layout_height="70dp" />
