@@ -1,7 +1,9 @@
 package app.suprsend.android.preference
 
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.RadioButton
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import app.suprsend.android.R
@@ -17,8 +19,7 @@ import app.suprsend.user.preference.ChannelPreference
 import app.suprsend.user.preference.ChannelPreferenceOptions
 import app.suprsend.user.preference.PreferenceOptions
 import app.suprsend.user.preference.SubCategory
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
+import com.nex3z.flowlayout.FlowLayout
 
 typealias ChannelItemClick = (category: String, channel: String, checked: Boolean) -> Unit
 typealias CategoryItemClick = (category: String, checked: Boolean) -> Unit
@@ -51,7 +52,8 @@ class UserPreferenceRecyclerViewAdapter(
                 SubCategoryHolder(binding)
             }
             RecyclerViewItem.ChannelPreferenceVo.VIEW_TYPE -> {
-                val binding = ChannelPreferenceItemBinding.inflate(parent.layoutInflater(), parent, false)
+                val binding =
+                    ChannelPreferenceItemBinding.inflate(parent.layoutInflater(), parent, false)
                 ChannelPreferenceHolder(binding)
             }
             else -> throw IllegalStateException("Not found : onCreateViewHolder")
@@ -64,10 +66,18 @@ class UserPreferenceRecyclerViewAdapter(
                 (holder as SectionHolder).bind(item)
             }
             is RecyclerViewItem.SubCategoryVo -> {
-                (holder as SubCategoryHolder).bind(item, categoryItemClick = categoryItemClick, channelItemClick = channelItemClick)
+                (holder as SubCategoryHolder).bind(
+                    item,
+                    categoryItemClick = categoryItemClick,
+                    channelItemClick = channelItemClick
+                )
             }
             is RecyclerViewItem.ChannelPreferenceVo -> {
-                (holder as ChannelPreferenceHolder).bind(item, channelPreferenceArrowClick = channelPreferenceArrowClick, channelPreferenceChangeClick = channelPreferenceChangeClick)
+                (holder as ChannelPreferenceHolder).bind(
+                    item,
+                    channelPreferenceArrowClick = channelPreferenceArrowClick,
+                    channelPreferenceChangeClick = channelPreferenceChangeClick
+                )
             }
         }
     }
@@ -101,7 +111,8 @@ private data class SubCategoryHolder(
     ) {
         val subCategory = item.subCategory
         binding.obj = subCategory
-        binding.subCategoryDescTv.visibility = setVisibleOrGone(subCategory.description.isNotBlank())
+        binding.subCategoryDescTv.visibility =
+            setVisibleOrGone(subCategory.description.isNotBlank())
         binding.subCategoryCheckbox.isEnabled = subCategory.isEditable
         binding.subCategoryCheckbox.isOn = subCategory.preferenceOptions == PreferenceOptions.OPT_IN
         binding.subCategoryCheckbox.setOnToggledListener { _, isOn ->
@@ -111,30 +122,92 @@ private data class SubCategoryHolder(
             }
         }
 
-        binding.channelChipGroup.removeAllViews()
+        binding.channelFlowLayout.removeAllViews()
         if (subCategory.preferenceOptions == PreferenceOptions.OPT_IN) {
-            subCategory.channels.forEach { channel ->
-                addChannel(channel, binding.channelChipGroup, subCategory, channelDebounce, channelItemClick)
+            subCategory.channels.forEachIndexed { index, channel ->
+                addChannel(
+                    index == 0,
+                    channel,
+                    binding.channelFlowLayout,
+                    subCategory,
+                    channelDebounce,
+                    channelItemClick
+                )
             }
         }
         binding.subCategoryDivider.visibility = setVisibleOrGone(!item.isLast)
     }
 
-    private fun addChannel(channel: Channel, channelChipGroup: ChipGroup, subCategory: SubCategory, channelDebounce: Debounce, channelItemClick: ChannelItemClick) {
+    private fun addChannel(
+        isStart: Boolean,
+        channel: Channel,
+        flowLayout: FlowLayout,
+        subCategory: SubCategory,
+        channelDebounce: Debounce,
+        channelItemClick: ChannelItemClick
+    ) {
         val isChecked = channel.preferenceOptions == PreferenceOptions.OPT_IN
-        val channelBinding = ChannelItemBinding.inflate(channelChipGroup.layoutInflater())
-        val chip = channelBinding.root as Chip
+        val channelBinding = ChannelItemBinding.inflate(flowLayout.layoutInflater())
+        val chip = channelBinding.root as AppCompatTextView
         chip.text = channel.channel
-        chip.isEnabled = channel.isEditable
-        chip.isChecked = isChecked
-        channelChipGroup.addView(chip)
-        chip.setOnCheckedChangeListener { _, isOn ->
-            channelDebounce.debounceLast {
-                channelItemClick(
-                    subCategory.category,
-                    channel.channel,
-                    isOn
+
+        val isEnabled = channel.isEditable
+
+        if (isChecked) {
+            chip.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_chip_selected, 0, 0, 0)
+        } else {
+            if (isEnabled) {
+                chip.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_chip_unselected, 0, 0, 0)
+            } else {
+                chip.setCompoundDrawablesWithIntrinsicBounds(
+                    R.drawable.ic_chip_disabled_unselected,
+                    0,
+                    0,
+                    0
                 )
+            }
+        }
+        chip.setTag(R.id.item_tag, isChecked.toString())
+        val layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        layoutParams.topMargin =
+            chip.context?.resources?.getDimension(R.dimen.margin_10)?.toInt() ?: 0
+        if (isStart) {
+            layoutParams.marginStart = 0
+        } else {
+            layoutParams.marginStart =
+                chip.context?.resources?.getDimension(R.dimen.margin_10)?.toInt() ?: 0
+        }
+        chip.layoutParams = layoutParams
+        flowLayout.addView(chip)
+        if (channel.isEditable) {
+            chip.setOnClickListener {
+                val isOn = !chip.getTag(R.id.item_tag).toString().toBoolean()
+                if (isOn) {
+                    chip.setCompoundDrawablesWithIntrinsicBounds(
+                        R.drawable.ic_chip_selected,
+                        0,
+                        0,
+                        0
+                    )
+                } else {
+                    chip.setCompoundDrawablesWithIntrinsicBounds(
+                        R.drawable.ic_chip_unselected,
+                        0,
+                        0,
+                        0
+                    )
+                }
+                chip.setTag(R.id.item_tag, isOn.toString())
+                channelDebounce.debounceLast {
+                    channelItemClick(
+                        subCategory.category,
+                        channel.channel,
+                        isOn
+                    )
+                }
             }
         }
     }
@@ -178,7 +251,10 @@ private data class ChannelPreferenceHolder(
         }
     }
 
-    private fun expandCollapse(channelPreferenceArrowClick: ChannelPreferenceArrowClick, channelPreference: ChannelPreference) {
+    private fun expandCollapse(
+        channelPreferenceArrowClick: ChannelPreferenceArrowClick,
+        channelPreference: ChannelPreference
+    ) {
         val isExpanded = binding.sectionArrowIV.rotation == 0f
         channelPreferenceArrowClick(channelPreference.channel, isExpanded)
         if (isExpanded) {
