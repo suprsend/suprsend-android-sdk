@@ -7,7 +7,7 @@ object Deps {
     const val SDK_PACKAGE_NAME = "app.suprsend"
     private const val MAJOR_VERSION = 1
     private const val MINOR_VERSION = 0
-    private const val PATCH_VERSION = 2
+    private const val PATCH_VERSION = 3
     const val SNAPSHOT = -1
     val BUILD_TYPE = BuildType.NATIVE
     private const val ISPROD = false
@@ -29,7 +29,7 @@ object Deps {
 
     //Prod
     var SS_API_BASE_URL = if (ISPROD) "https://hub.suprsend.com" else "https://collector-staging.suprsend.workers.dev"
-
+    val SS_TENANT_ID = "null"
     var SS_TOKEN = "XXXX"
     var SS_SECRET = "XXXX"
 

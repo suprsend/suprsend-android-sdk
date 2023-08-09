@@ -80,4 +80,7 @@ internal object SSConstants {
 
     const val TAG_VALIDATION = "validation"
     const val TAG_SUPRSEND = "suprsend"
+
+    const val SS_SHARED_PREFERENCE_KEY = "ss_pref"
+    const val SP_USER_PREFERENCES = "user_preferences"
 }

@@ -45,10 +45,11 @@ android {
         getByName("debug") {
             buildConfigField("String", "XIAOMI_APP_ID", "\"${Deps.XIAOMI_APP_ID}\"")
             buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
+            buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
             buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
             buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
+            buildConfigField("String", "SS_TENANT_ID", "${Deps.SS_TENANT_ID}")
             buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
-            buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
             versionNameSuffix = "(d)"
             isDebuggable = true
             isCrunchPngs = false
@@ -57,10 +58,11 @@ android {
         getByName("release") {
             buildConfigField("String", "XIAOMI_APP_ID", "\"${Deps.XIAOMI_APP_ID}\"")
             buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
+            buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
             buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
             buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
+            buildConfigField("String", "SS_TENANT_ID", "${Deps.SS_TENANT_ID}")
             buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
-            buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
             signingConfig = signingConfigs.getByName("release")
             isDebuggable = false
             isMinifyEnabled = true
@@ -88,7 +90,7 @@ android {
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar","*.aar"))))
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${Deps.JetBrains.Kotlin.VERSION}")
 //    implementation(Deps.AndroidX.CORE_KTX)
@@ -100,7 +102,7 @@ dependencies {
     if (Deps.RUN_LIB) {
         implementation(project(":library"))
         println("Using shared library")
-    }else{
+    } else {
         val dependency = "${Deps.Publication.GROUP}:${Deps.Publication.PUBLISH_ARTIFACT_ID}:${Deps.Publication.VERSION}"
         implementation(dependency)
         println("Using remote library - $dependency")
@@ -113,6 +115,10 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.12.0")
     kapt("com.github.bumptech.glide:compiler:4.12.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7")
+    implementation("com.github.angads25:toggle:1.1.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

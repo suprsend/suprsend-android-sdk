@@ -30,6 +30,9 @@
             android:name=".SettingsActivity"
             android:exported="false" />
         <activity
+            android:name=".preference.UserPreferenceActivity"
+            android:exported="false" />
+        <activity
             android:name=".OrderSuccessFullActivity"
             android:exported="false" />
         <activity
@@ -142,6 +145,10 @@
                 <action android:name="com.xiaomi.push.PING_TIMER" />
             </intent-filter>
         </receiver>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
         <!--Xiaomi End-->
 
     </application>

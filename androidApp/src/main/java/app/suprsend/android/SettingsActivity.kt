@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.android.databinding.ActivitySettingsBinding
+import app.suprsend.android.preference.UserPreferenceActivity
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -12,6 +13,7 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        title = "Settings"
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -72,6 +74,11 @@ class SettingsActivity : AppCompatActivity() {
 
         binding.logoutUnSubTv.clickWithThrottle {
             logout(true)
+        }
+
+        binding.userPreference.clickWithThrottle {
+            val intent = Intent(this, UserPreferenceActivity::class.java)
+            startActivity(intent)
         }
     }
 

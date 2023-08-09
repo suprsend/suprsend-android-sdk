@@ -17,7 +17,7 @@ import org.json.JSONObject
 import java.util.Locale
 
 internal object SSInternalUser {
-    val userLocalDatasource = UserLocalDatasource()
+    private val userLocalDatasource = UserLocalDatasource()
 
     fun set(key: String, value: Any) {
         filterAndStoreOperatorPayload(
@@ -234,9 +234,9 @@ internal object SSInternalUser {
 
     fun setPreferredLanguage(languageCode: String) {
         val processedLanguageCode = languageCode.toLowerCase(Locale.getDefault())
-        val isValid  = PreferredLanguage.values[processedLanguageCode] !=null
-        if(!isValid){
-            Logger.i(SSConstants.TAG_SUPRSEND,"invalid value $languageCode")
+        val isValid = PreferredLanguage.values[processedLanguageCode] != null
+        if (!isValid) {
+            Logger.i(SSConstants.TAG_SUPRSEND, "invalid value $languageCode")
             return
         }
         val jsonObject = JSONObject()

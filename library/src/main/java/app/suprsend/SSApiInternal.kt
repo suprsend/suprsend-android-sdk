@@ -16,6 +16,7 @@ import app.suprsend.log.LoggerCallback
 import app.suprsend.sprop.SuperPropertiesLocalDataSource
 import app.suprsend.user.UserLocalDatasource
 import app.suprsend.user.api.SSInternalUser
+import app.suprsend.user.preference.SSInternalUserPreference
 import org.json.JSONObject
 
 internal object SSApiInternal {
@@ -110,7 +111,7 @@ internal object SSApiInternal {
         flushExecutorService.execute {
             Logger.i(EventFlushHandler.TAG, "Flush event started")
             try {
-                EventFlushHandler.flushEvents()
+                EventFlushHandler.flush()
             }catch (e:Exception){
                 Logger.e(EventFlushHandler.TAG, "Error occurred while flushing",e)
             }
@@ -127,6 +128,7 @@ internal object SSApiInternal {
         if (unSubscribeNotification)
             removeNotificationToken()
         SuperPropertiesLocalDataSource().removeAll()
+        SSInternalUserPreference.clearUserPreference()
         userLocalDatasource.identify(newID)
         appendNotificationToken()
     }
@@ -237,10 +239,12 @@ internal object SSApiInternal {
         return ConfigHelper.get(SSConstants.CONFIG_XIAOMI_PUSH_TOKEN) ?: ""
     }
 
-
-
     fun getCachedApiKey(): String {
         return ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""
+    }
+
+    fun getBaseUrl(): String {
+        return ConfigHelper.get(SSConstants.CONFIG_API_BASE_URL) ?: SSConstants.DEFAULT_BASE_API_URL
     }
 
     const val TAG = "ssinternal"

@@ -3,6 +3,9 @@
 #Release Notes
 
 ```
+1.0.3
+- User Preferences
+
 1.0.2
 - Notification Channel Sound Support
 

@@ -36,6 +36,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    testOptions{
+        unitTests.isReturnDefaultValues = true
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
@@ -44,7 +48,9 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging:${Deps.Firebase.messaging}")
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.38")
 
-    testImplementation("junit:junit:4.+")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20230227")
+    testImplementation("org.robolectric:robolectric:4.10.3")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")

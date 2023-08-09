@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="obj"
+            type="app.suprsend.user.preference.SubCategory" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.github.angads25.toggle.widget.LabeledSwitch
+            android:id="@+id/subCategoryCheckbox"
+            android:layout_width="36dp"
+            android:layout_height="20dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="20dp"
+            android:textSize="14sp"
+            app:colorBorder="#386CBE"
+            app:colorOn="#386CBE"
+            app:on="false"
+            app:textOff=""
+            app:textOn="" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:text="@{obj.name}"
+            android:textColor="#3D3D3D"
+            android:textSize="14sp"
+            app:fontFamily="@font/inter_bold"
+            tools:text="Payment and history" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/subCategoryDescTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="2dp"
+            android:text="@{obj.description}"
+            android:textColor="#6C727F"
+            android:textSize="12sp"
+            app:fontFamily="@font/inter"
+            tools:text="Send updates related to my payment history" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/channelChipGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            tools:background="#e4e4e4"
+            tools:layout_height="70dp" />
+
+        <View
+            android:id="@+id/subCategoryDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="#B3D9D9D9" />
+    </LinearLayout>
+</layout>
