@@ -59,6 +59,7 @@ internal object SSConstants {
     const val EMAIL = "\$email"
     const val SMS = "\$sms"
     const val WHATS_APP = "\$whatsapp"
+    const val PREFERRED_LANGUAGE = "\$preferred_language"
 
     const val ENV = "env"
     const val PROPERTIES = "properties"
@@ -78,6 +79,10 @@ internal object SSConstants {
     const val S_EVENT_PAGE_VISITED = "\$page_visited"
 
     const val TAG_VALIDATION = "validation"
+    const val TAG_SUPRSEND = "suprsend"
+
+    const val SS_SHARED_PREFERENCE_KEY = "ss_pref"
+    const val SP_USER_PREFERENCES = "user_preferences"
 
     const val INBOX_RESPONSE = "inbox_response"
     const val INBOX_MESSAGE_UNREAD_COUNT = "inbox_message_unread_count"

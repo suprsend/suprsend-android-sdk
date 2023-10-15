@@ -7,7 +7,7 @@ import app.suprsend.database.Event_Model
 internal class EventLocalDatasource : EventDataSourceContract {
 
     override fun track(body: String, isDirty: Boolean) {
-        SdkAndroidCreator.sqlDataHelper.insert_events(
+        SdkAndroidCreator.sqlDataHelper.insertEvents(
             Event_Model(
                 value = body,
                 isDirty = DBConversion.booleanToLong(isDirty),
@@ -17,10 +17,10 @@ internal class EventLocalDatasource : EventDataSourceContract {
     }
 
     override fun getEvents(limit: Long, isDirty: Boolean): List<Event_Model> {
-        return SdkAndroidCreator.sqlDataHelper.geteventsList(DBConversion.booleanToLong(isDirty), limit)
+        return SdkAndroidCreator.sqlDataHelper.getEventsList(DBConversion.booleanToLong(isDirty), limit)
     }
 
     override fun delete(ids: String) {
-        SdkAndroidCreator.sqlDataHelper.deleteeventsByID(ids)
+        SdkAndroidCreator.sqlDataHelper.deleteEventsByID(ids)
     }
 }

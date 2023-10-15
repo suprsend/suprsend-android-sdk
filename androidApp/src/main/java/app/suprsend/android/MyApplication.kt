@@ -2,6 +2,8 @@ package app.suprsend.android
 
 import android.app.Application
 import app.suprsend.SSApi
+import app.suprsend.log.LoggerCallback
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 class MyApplication : Application() {
 
@@ -12,5 +14,15 @@ class MyApplication : Application() {
         super.onCreate()
 
         SSApi.initXiaomi(context = this, appId = BuildConfig.XIAOMI_APP_ID, apiKey = BuildConfig.XIAOMI_APP_KEY)
+        SSApi.setLogger(object : LoggerCallback {
+            override fun i(tag: String, message: String) {
+                // you will receive sdk info messages here
+            }
+
+            override fun e(tag: String, message: String, throwable: Throwable?) {
+                throwable ?: return
+                FirebaseCrashlytics.getInstance().recordException(throwable)
+            }
+        })
     }
 }

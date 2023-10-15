@@ -33,7 +33,7 @@ class NotificationRedirectionActivity : Activity() {
     private fun handleFlowPayload(activityExtras: Bundle) {
         if (activityExtras.containsKey(NotificationRedirection.FLOW_NAME)) {
             when (activityExtras.getString(NotificationRedirection.FLOW_NAME, "").mapToEnum<NotificationRedirection>()) {
-                NotificationRedirection.NOTIFICATION_ACTION_CLICKED -> {
+                NotificationRedirection.NOTIFICATION_CLICKED -> {
                     handleNotificationActionClicked(activityExtras)
                 }
                 else -> {
@@ -47,15 +47,12 @@ class NotificationRedirectionActivity : Activity() {
     }
 
     private fun handleNotificationActionClicked(activityExtras: Bundle) {
-        Logger.i(TAG, "Notification Action Clicked")
+        Logger.i(TAG, "Notification Clicked")
         val notificationActionVo = getNotificationActionVo(activityExtras)
         notificationActionVo ?: return
 
         val instance = SSApi.getInstance()
-        SSInternalUser.notificationClicked(
-            id = notificationActionVo.notificationId ?: "",
-            actionId = notificationActionVo.actionId()
-        )
+        SSInternalUser.notificationClicked(notificationActionVo )
         instance.flush()
 
         // Remove notification
@@ -78,14 +75,10 @@ class NotificationRedirectionActivity : Activity() {
     companion object {
         const val TAG = "NRA"
 
-        internal fun getIntent(context: Context, notificationActionVo: NotificationActionVo? = null): Intent? {
-            if (notificationActionVo?.link == null) {
-                return context.packageManager.getLaunchIntentForPackage(context.packageName)
-            }
+        internal fun getIntent(context: Context, notificationActionVo: NotificationActionVo): Intent {
             val bundle = Bundle()
-            bundle.putString(NotificationRedirection.FLOW_NAME, NotificationRedirection.NOTIFICATION_ACTION_CLICKED.name)
+            bundle.putString(NotificationRedirection.FLOW_NAME, NotificationRedirection.NOTIFICATION_CLICKED.name)
             bundle.putSerializable(NotificationRedirection.FLOW_PAYLOAD, notificationActionVo)
-
             return Intent()
                 .setClass(context, NotificationRedirectionActivity::class.java)
                 .putExtras(bundle)
@@ -94,7 +87,7 @@ class NotificationRedirectionActivity : Activity() {
 }
 
 enum class NotificationRedirection {
-    NOTIFICATION_ACTION_CLICKED, NOTIFICATION_DISMISS;
+    NOTIFICATION_CLICKED, NOTIFICATION_DISMISS;
 
     companion object {
         const val FLOW_NAME = "flow_name"

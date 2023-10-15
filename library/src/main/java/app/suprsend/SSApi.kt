@@ -17,6 +17,8 @@ import app.suprsend.user.api.UserApiInternalContract
 import app.suprsend.xiaomi.SSXiaomiReceiver
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
 import com.xiaomi.mipush.sdk.Logger as XiaomiLogger
+import app.suprsend.base.Logger
+import app.suprsend.log.LoggerCallback
 import com.xiaomi.mipush.sdk.MiPushClient
 import org.json.JSONObject
 
@@ -90,9 +92,9 @@ private constructor() {
         SSApiInternal.flush()
     }
 
-    fun reset() {
+    fun reset(unSubscribeNotification:Boolean = true) {
         executorService.execute {
-            SSApiInternal.reset()
+            SSApiInternal.reset(unSubscribeNotification)
             SSApiInternal.flush()
         }
     }
@@ -155,6 +157,10 @@ private constructor() {
                 SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_LAUNCHED)
                 SSApiInternal.setAppLaunchTime(currentTime)
             }
+        }
+
+        fun setLogger(loggerCallback: LoggerCallback) {
+            SSApiInternal.loggerCallback = loggerCallback
         }
 
         fun initXiaomi(context: Context, appId: String, apiKey: String) {

@@ -21,14 +21,15 @@ import java.net.URL
 import java.util.Locale
 import org.json.JSONArray
 import org.json.JSONObject
+import java.net.URLEncoder
 
 internal inline fun <reified T : Enum<T>> String?.mapToEnum(defaultValue: T): T {
     return mapToEnum<T>() ?: defaultValue
 }
 
-internal inline fun <reified T : Enum<T>> String?.mapToEnum(): T? {
+internal inline fun <reified T : Enum<T>> String?.mapToEnum(ignoreCase: Boolean = false): T? {
     this ?: return null
-    return enumValues<T>().find { value -> value.name == this }
+    return enumValues<T>().find { value -> value.name.equals(this, ignoreCase) }
 }
 
 internal fun String?.toKotlinJsonObject(): JSONObject {
@@ -93,11 +94,20 @@ internal fun JSONObject.safeString(key: String): String? {
     else null
 }
 
+internal fun JSONObject.safeStringDefault(key: String, default: String = ""): String {
+    return safeString(key) ?: default
+}
+
 internal fun JSONObject.safeBoolean(key: String): Boolean? {
     return if (!isNull(key))
         getBoolean(key)
     else null
 }
+
+internal fun JSONObject.safeBooleanDefault(key: String, default: Boolean = false): Boolean {
+    return safeBoolean(key) ?: default
+}
+
 
 internal fun JSONObject.safeLong(key: String): Long? {
     return if (!isNull(key))
@@ -147,6 +157,40 @@ internal fun Context.safeIntent(link: String? = null, defaultLauncherIntent: Boo
 
 internal fun Parcel.safeString(): String {
     return readString() ?: ""
+}
+
+
+internal fun JSONArray.forEach(call: (jo: JSONObject) -> Boolean?) {
+    for (i in 0 until length()) {
+        val jo = getJSONObject(i)
+        val shouldBreak = call(jo) ?: false
+        if (shouldBreak) {
+            break
+        }
+    }
+}
+
+internal fun JSONArray.forEachIndexed(call: (index:Int,jo: JSONObject) -> Boolean?) {
+    for (i in 0 until length()) {
+        val jo = getJSONObject(i)
+        val shouldBreak = call(i,jo) ?: false
+        if (shouldBreak) {
+            break
+        }
+    }
+}
+
+internal fun <T> JSONArray.map(mapper: (jo: JSONObject) -> T): List<T> {
+    val list = arrayListOf<T>()
+    for (i in 0 until length()) {
+        val jo = getJSONObject(i)
+        list.add(mapper(jo))
+    }
+    return list
+}
+
+internal fun urlEncode(value:String): String {
+    return URLEncoder.encode(value,"utf-8")
 }
 
 internal fun makeHttpRequest(method: String, urL: String, authorization: String, date: String, body: String? = null): HttPResponse {

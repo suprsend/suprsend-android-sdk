@@ -1,5 +1,6 @@
 package app.suprsend.user.api
 
+import app.suprsend.user.preference.Preferences
 import org.json.JSONObject
 
 interface UserApiInternalContract {
@@ -37,4 +38,8 @@ interface UserApiInternalContract {
     fun unSetAndroidXiaomiPush(token: String)
 
     fun notificationClicked(id: String, actionId: String? = null)
+    fun setPreferredLanguage(languageCode: String)
+
+    fun getPreferences(): Preferences
+
 }

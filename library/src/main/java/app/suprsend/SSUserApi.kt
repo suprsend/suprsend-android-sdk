@@ -3,9 +3,13 @@ package app.suprsend
 import app.suprsend.base.executorService
 import app.suprsend.user.api.SSInternalUser
 import app.suprsend.user.api.UserApiInternalContract
+import app.suprsend.user.preference.Preferences
+import app.suprsend.user.preference.PreferencesImpl
 import org.json.JSONObject
 
 class SSUserApi : UserApiInternalContract {
+
+    val preference = PreferencesImpl()
 
     override fun set(key: String, value: Any) {
         executorService.execute {
@@ -143,6 +147,15 @@ class SSUserApi : UserApiInternalContract {
         }
     }
 
+    override fun setPreferredLanguage(languageCode: String) {
+        executorService.execute {
+            SSInternalUser.setPreferredLanguage(languageCode)
+        }
+    }
+
+    override fun getPreferences(): Preferences {
+        return preference
+    }
     override fun notificationClicked(id: String, actionId: String?) {
         executorService.execute {
             SSInternalUser.notificationClicked(id, actionId)

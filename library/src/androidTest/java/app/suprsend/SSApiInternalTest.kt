@@ -236,7 +236,7 @@ class SSApiInternalTest : BaseTest() {
         SSApiInternal.identify("U1")
         Assert.assertEquals("U1", UserLocalDatasource().getIdentity())
 
-        SSApiInternal.reset()
+        SSApiInternal.reset(true)
         Assert.assertTrue("U1" != UserLocalDatasource().getIdentity())
 
         val eventsList = EventLocalDatasource().getEvents(10)

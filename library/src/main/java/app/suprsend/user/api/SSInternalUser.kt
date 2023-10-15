@@ -2,6 +2,7 @@ package app.suprsend.user.api
 
 import app.suprsend.SSApiInternal
 import app.suprsend.base.Logger
+import app.suprsend.base.PreferredLanguage
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
 import app.suprsend.base.filterSSReservedKeys
@@ -10,12 +11,15 @@ import app.suprsend.base.isMobileNumberValid
 import app.suprsend.base.isValidEmail
 import app.suprsend.base.size
 import app.suprsend.event.PayloadCreator
+import app.suprsend.notification.NotificationActionType
+import app.suprsend.notification.NotificationActionVo
 import app.suprsend.user.UserLocalDatasource
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.Locale
 
 internal object SSInternalUser {
-    val userLocalDatasource = UserLocalDatasource()
+    private val userLocalDatasource = UserLocalDatasource()
 
     fun set(key: String, value: Any) {
         filterAndStoreOperatorPayload(
@@ -229,15 +233,30 @@ internal object SSInternalUser {
         )
     }
 
-    fun notificationClicked(id: String, actionId: String? = null) {
+    fun notificationClicked( notificationActionVo: NotificationActionVo) {
         SSApiInternal.saveTrackEventPayload(
             eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
             propertiesJO = JSONObject().apply {
-                put("id", id)
-                if (actionId != null) {
-                    put("label_id", actionId)
+                put("id", notificationActionVo.notificationId)
+                put("label_id", notificationActionVo.notificationActionType)
+                if(notificationActionVo.notificationActionType == NotificationActionType.BUTTON) {
+                    put("label_id", notificationActionVo.id)
                 }
             }
+        )
+    }
+    fun setPreferredLanguage(languageCode: String) {
+        val processedLanguageCode = languageCode.toLowerCase(Locale.getDefault())
+        val isValid = PreferredLanguage.values[processedLanguageCode] != null
+        if (!isValid) {
+            Logger.i(SSConstants.TAG_SUPRSEND, "invalid value $languageCode")
+            return
+        }
+        val jsonObject = JSONObject()
+        jsonObject.put(SSConstants.PREFERRED_LANGUAGE, processedLanguageCode)
+        storeOperatorPayload(
+            properties = jsonObject,
+            operator = SSConstants.SET
         )
     }
 

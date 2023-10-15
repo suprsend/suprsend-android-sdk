@@ -103,7 +103,7 @@ class ProductDetailsActivity : AppCompatActivity() {
 
     private fun loadProduct(productId: String) {
         productVo = AppCreator.homeItemsList.find { item -> item.getItemId() == productId } as ProductVo
-
+        title = productVo.title
         binding.obj = productVo
 
         AppCreator.loadUrl(this, productVo.url, binding.imageIV)
