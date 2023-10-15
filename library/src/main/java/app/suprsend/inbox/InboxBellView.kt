@@ -54,11 +54,11 @@ class InboxBellView : FrameLayout {
             countDownTimer?.cancel()
             countDownTimer = null
             val flushInterval = ssInboxConfig?.inboxFetchInterval ?: 10000
-            Logger.i(SSInboxActivity.TAG, "Setting Periodic Fetch : $flushInterval")
+            Logger.i(SSInboxActivity.TAG, "Bell : Setting Periodic Fetch $flushInterval")
             countDownTimer = object : CountDownTimer(Long.MAX_VALUE, flushInterval) {
                 override fun onTick(millisUntilFinished: Long) {
                     try {
-                        Logger.i(SSInboxActivity.TAG, "Periodic fetch inbox messages")
+                        Logger.i(SSInboxActivity.TAG, "Bell : Periodic fetch inbox messages")
                         val safeSubscriberId = this@InboxBellView.subscriberId ?: return
                         val safeDistinctId = this@InboxBellView.distinctId ?: return
                         InboxHelper.fetchApiCall(subscriberId = safeSubscriberId, distinctId = safeDistinctId) { _, showNewUpdatesAvailable ->
@@ -90,6 +90,7 @@ class InboxBellView : FrameLayout {
 
     fun onStop() {
         try {
+            Logger.i(SSInboxActivity.TAG, "Bell :Stopping Periodic Fetch")
             countDownTimer?.cancel()
             countDownTimer = null
         } catch (e: Exception) {

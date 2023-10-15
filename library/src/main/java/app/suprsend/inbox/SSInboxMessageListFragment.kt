@@ -12,10 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.suprsend.R
 import app.suprsend.base.Logger
-import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
-import app.suprsend.config.ConfigHelper
-import org.json.JSONArray
 
 internal class SSInboxMessageListFragment : Fragment() {
 

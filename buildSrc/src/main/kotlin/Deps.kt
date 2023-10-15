@@ -5,12 +5,12 @@ object Deps {
 
     //Sdk Details
     const val SDK_PACKAGE_NAME = "app.suprsend"
-    const val MAJOR_VERSION = 0
-    const val MINOR_VERSION = 1
-    const val PATCH_VERSION = 8
-    val SNAPSHOT = -1
+    private const val MAJOR_VERSION = 1
+    private const val MINOR_VERSION = 0
+    private const val PATCH_VERSION = 4
+    const val SNAPSHOT = 1
     val BUILD_TYPE = BuildType.NATIVE
-    const val ISPROD = false
+    private const val ISPROD = false
     const val RUN_LIB = true
 
     const val SDK_VERSION_CODE = MAJOR_VERSION * 1000 + (MINOR_VERSION * 100) + PATCH_VERSION
@@ -32,6 +32,7 @@ object Deps {
 
     var SS_TOKEN = "XXXX"
     var SS_SECRET = "XXXX"
+    val SS_TENANT_ID = "XXXX"
     var INBOX_SECRET = "XXXX"
 
     const val XIAOMI_APP_ID = "XXXX"
@@ -40,15 +41,14 @@ object Deps {
     const val OPPO_APP_KEY = "XXXX"
     const val OPPO_APP_SECRET = "XXXX"
 
-    //Todo : Add jitpack publishing
     const val MX_TOKEN = "XXXX"
     const val JITPACK_TOKEN = "XXXX"
 
     object Android {
         const val minSdk = 19
-        const val targetSdk = 32
-        const val compileSdk = 32
-        const val buildToolsVersion = "32.0.0"
+        const val targetSdk = 33
+        const val compileSdk = 33
+        const val buildToolsVersion = "33.0.0"
     }
 
     object Publication {
@@ -63,9 +63,8 @@ object Deps {
         const val POM_URL = "https://github.com/suprsend/suprsend-android-sdk"
         const val POM_LICENCE_NAME = "The Apache Software License, Version 2.0"
         const val POM_LICENCE_URL = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        const val POM_DEVELOPER_ID = "XXXX"
-        const val POM_DEVELOPER_NAME = "XXXX"
-        const val POM_DEVELOPER_EMAIL = "XXXX"
+        const val POM_DEVELOPER_NAME = "SuprSend Team"
+        const val POM_DEVELOPER_EMAIL = "developers@suprsend.com"
         const val POM_SCM_CONNECTION = "scm:git@github.com:suprsend/suprsend-android-sdk.git"
         const val POM_SCM_DEV_CONNECTION = "scm:git@github.com:suprsend/suprsend-android-sdk.git"
         const val POM_SCM_URL = "https://github.com/suprsend/suprsend-android-sdk"

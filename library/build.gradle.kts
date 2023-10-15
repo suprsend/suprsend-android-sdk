@@ -93,7 +93,6 @@ afterEvaluate {
                     }
                     developers {
                         developer {
-                            id.set(Deps.Publication.POM_DEVELOPER_ID)
                             name.set(Deps.Publication.POM_DEVELOPER_NAME)
                             email.set(Deps.Publication.POM_DEVELOPER_EMAIL)
                         }

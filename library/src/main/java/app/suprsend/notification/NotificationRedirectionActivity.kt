@@ -6,14 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import app.suprsend.SSApi
-import app.suprsend.SSApiInternal
 import app.suprsend.base.Logger
-import app.suprsend.base.SSConstants
 import app.suprsend.base.mapToEnum
 import app.suprsend.base.safeIntent
 import app.suprsend.user.api.SSInternalUser
 import java.io.Serializable
-import org.json.JSONObject
 
 class NotificationRedirectionActivity : Activity() {
 

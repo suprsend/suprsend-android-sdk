@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 object AppCreator {
+    private const val BASE_IMAGE_SERVER_URL = "https://freeappcreator.in/heruku"
 
     fun loadUrl(context: Context, url: String, imageView: ImageView) {
         Glide.with(context)
@@ -29,33 +30,37 @@ object AppCreator {
     }
 
     fun setEmail(context: Context, email: String) {
-        val sp = context.getSharedPreferences("main", 0)
+        val sp = context.getSharedPreferences("main", Context.MODE_PRIVATE)
         val spedit = sp.edit()
         spedit.putString("email", email)
         spedit.commit()
     }
 
     fun getEmail(context: Context): String {
-        val sp = context.getSharedPreferences("main", 0)
+        val sp = context.getSharedPreferences("main", Context.MODE_PRIVATE)
         return sp.getString("email", "") ?: ""
     }
 
     fun getProductImage(): String {
-        return when ((0..6).random()) {
-            0 -> "https://niksdevelop.herokuapp.com/images/ecommerce/11461225530026-Antony-Morato-Men-Tshirts-8781461225528839-1.jpg"
-            1 -> "https://niksdevelop.herokuapp.com/images/ecommerce/11461225529845-Antony-Morato-Men-Tshirts-8781461225528839-2.jpg"
-            2 -> "https://niksdevelop.herokuapp.com/images/ecommerce/11461226111809-Antony-Morato-Navy-Polo-T-shirt-7711461226111027-1.jpg"
-            3 -> "https://niksdevelop.herokuapp.com/images/ecommerce/11467807016267-AKS-Red-Printed-Anarkali-Kurta-1501467807016047-2.jpg"
-            4 -> "https://niksdevelop.herokuapp.com/images/ecommerce/11467807016203-AKS-Red-Printed-Anarkali-Kurta-1501467807016047-5.jpg"
-            5 -> "https://niksdevelop.herokuapp.com/images/ecommerce/11467807016293-AKS-Red-Printed-Anarkali-Kurta-1501467807016047-1.jpg"
-            else -> "https://niksdevelop.herokuapp.com/images/ecommerce/11461226111575-Antony-Morato-Navy-Polo-T-shirt-7711461226111027-3.jpg"
+        return when ((0..9).random()) {
+            0 -> "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
+            1 -> "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg"
+            2 -> "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg"
+            3 -> "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg"
+            4 -> "https://fakestoreapi.com/img/71z3kpMAYsL._AC_UY879_.jpg"
+            5 -> "https://fakestoreapi.com/img/61sbMiUnoGL._AC_UL640_QL65_ML3_.jpg"
+            6 -> "https://fakestoreapi.com/img/81XH0e8fefL._AC_UY879_.jpg"
+            7 -> "https://fakestoreapi.com/img/51UDEzMJVpL._AC_UL640_QL65_ML3_.jpg"
+            8 -> "https://fakestoreapi.com/img/71HblAHs5xL._AC_UY879_-2.jpg"
+            9 -> "https://fakestoreapi.com/img/51Y5NI-I5jL._AC_UX679_.jpg"
+            else -> "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
         }
     }
 
     fun getBannerImage(index: Int): String {
         return when ((1..2).random()) {
-            1 -> "http://niksdevelop.herokuapp.com/images/SizeD1200X400.jpg"
-            else -> "http://niksdevelop.herokuapp.com/images/womens_wear_resized1.jpg"
+            1 -> "$BASE_IMAGE_SERVER_URL/images/SizeD1200X400.jpg"
+            else -> "$BASE_IMAGE_SERVER_URL/images/womens_wear_resized1.jpg"
         }
     }
 

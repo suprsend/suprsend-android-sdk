@@ -17,7 +17,7 @@ class InboxMenuHandler(
 
     init {
         try {
-            inboxBellView = item.actionView.findViewById(R.id.inboxBellView)
+            inboxBellView = item.actionView?.findViewById(R.id.inboxBellView)
             inboxBellView
                 ?.initialize(
                     distinctId = distinctId,
