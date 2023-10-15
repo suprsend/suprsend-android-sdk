@@ -17,11 +17,11 @@ internal object ConfigHelper {
     }
 
     fun addOrUpdate(key: String, value: Int) {
-        SdkAndroidCreator.sqlDataHelper.insert_configByKey(Config_Model(key = key, value = value.toString()))
+        SdkAndroidCreator.sqlDataHelper.insertConfigByKey(Config_Model(key = key, value = value.toString()))
     }
 
     fun getInt(key: String): Int? {
-        return SdkAndroidCreator.sqlDataHelper.getconfigByKey(key)?.value?.toInt()
+        return SdkAndroidCreator.sqlDataHelper.getConfigByKey(key)?.value?.toInt()
     }
 
     fun addOrUpdate(key: String, value: Boolean) {

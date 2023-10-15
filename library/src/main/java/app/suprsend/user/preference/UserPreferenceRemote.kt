@@ -8,11 +8,11 @@ import app.suprsend.base.getDate
 import app.suprsend.base.httpCall
 import app.suprsend.config.ConfigHelper
 import app.suprsend.event.EventFlushHandler
-import app.suprsend.event.HttPResponse
+import app.suprsend.base.HttPResponse
 import org.json.JSONArray
 import org.json.JSONObject
 
-object UserPreferenceRemote {
+internal object UserPreferenceRemote {
 
     fun preference(tenantId: String?): HttPResponse {
         return callApi(

@@ -11,7 +11,7 @@ import app.suprsend.base.safeBoolean
 import app.suprsend.base.safeJsonArray
 import app.suprsend.base.safeString
 import app.suprsend.base.safeStringDefault
-import app.suprsend.event.HttPResponse
+import app.suprsend.base.HttPResponse
 import org.json.JSONArray
 import org.json.JSONObject
 

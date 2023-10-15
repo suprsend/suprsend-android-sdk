@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import app.suprsend.base.BasicDetails
 import app.suprsend.base.LogLevel
-import app.suprsend.base.Logger
 import app.suprsend.base.PeriodicFlush
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator

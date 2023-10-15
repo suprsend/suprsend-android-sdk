@@ -156,9 +156,4 @@ class SSUserApi : UserApiInternalContract {
     override fun getPreferences(): Preferences {
         return preference
     }
-    override fun notificationClicked(id: String, actionId: String?) {
-        executorService.execute {
-            SSInternalUser.notificationClicked(id, actionId)
-        }
-    }
 }

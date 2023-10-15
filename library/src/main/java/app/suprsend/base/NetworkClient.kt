@@ -3,7 +3,7 @@ package app.suprsend.base
 import app.suprsend.config.ConfigHelper
 import app.suprsend.event.Algo
 import app.suprsend.event.EventFlushHandler
-import app.suprsend.event.HttPResponse
+import app.suprsend.base.HttPResponse
 import app.suprsend.event.toMD5
 import java.io.BufferedReader
 import java.io.DataOutputStream
