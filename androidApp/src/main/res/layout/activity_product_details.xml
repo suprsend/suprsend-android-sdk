@@ -14,15 +14,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <app.suprsend.inbox.InboxBellView
-            android:id="@+id/inboxBellView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:padding="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageIV"
             android:layout_width="match_parent"
@@ -57,6 +48,8 @@
             android:id="@+id/likeDislikeLL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#95A1E2"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -75,6 +68,15 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="10dp"
                 android:src="@drawable/thumb_down" />
+
+            <app.suprsend.inbox.InboxBellView
+                android:id="@+id/inboxBellView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:padding="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -83,6 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="@dimen/margin_10"
             android:text="Buy Now"
             android:textSize="21sp"
             app:layout_constraintStart_toStartOf="parent"

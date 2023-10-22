@@ -89,20 +89,6 @@ internal data class RawNotification(
                 sound = sound
             ),
             actions = actions
-                ?.mapIndexed { index, notificationActionVo ->
-                    if (notificationActionVo.id == null)
-                        notificationActionVo
-                            .copy(
-                                id = (index + 1).toString(),
-                                notificationId = id,
-                                notificationActionType = NotificationActionType.BUTTON
-                            )
-                    else notificationActionVo
-                        .copy(
-                            notificationId = id,
-                            notificationActionType = NotificationActionType.BUTTON
-                        )
-                }
         )
 
         notificationVo = if (!imageUrl.isNullOrBlank()) {
@@ -142,23 +128,18 @@ internal data class NotificationVo(
 ) {
     fun getNotificationBodyActionVo(): NotificationActionVo {
         val deeplink = notificationBasicVo.deeplink
-        return NotificationActionVo(id = id, link = deeplink, notificationId = id, notificationActionType = NotificationActionType.BODY)
+        return NotificationActionVo(link = deeplink, notificationId = id, notificationActionType = NotificationActionType.BODY)
     }
 }
 
 internal data class NotificationActionVo(
-    val id: String?,
-    val title: String? = null,
+    val actionId: String?="",
+    val title: String ="",
     val link: String? = null,
     val iconDrawableName: String? = null,
-    val notificationId: String? = null,
+    val notificationId: String,
     val notificationActionType: NotificationActionType? = null
-) : Serializable {
-
-    fun actionId(): String? {
-        return if (notificationId != id) id else null
-    }
-}
+) : Serializable
 
 internal enum class NotificationActionType {
     BODY, BUTTON

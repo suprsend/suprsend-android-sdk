@@ -52,16 +52,13 @@ class NotificationRedirectionActivity : Activity() {
         notificationActionVo ?: return
 
         val instance = SSApi.getInstance()
-        SSInternalUser.notificationClicked(
-            id = notificationActionVo.notificationId ?: "",
-            actionId = notificationActionVo.actionId()
-        )
+        SSInternalUser.notificationClicked(notificationActionVo)
         instance.flush()
 
         // Remove notification
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as? NotificationManager
         if (notificationActionVo.notificationActionType == NotificationActionType.BUTTON)
-            notificationManager?.cancel((notificationActionVo.notificationId ?: "").hashCode())
+            notificationManager?.cancel(notificationActionVo.notificationId.hashCode())
 
         // Target intent
         val link = notificationActionVo.link

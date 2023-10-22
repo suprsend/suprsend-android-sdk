@@ -14,6 +14,8 @@ import app.suprsend.config.ConfigHelper
 import app.suprsend.event.EventFlushHandler
 import app.suprsend.event.PayloadCreator
 import app.suprsend.log.LoggerCallback
+import app.suprsend.notification.NotificationActionType
+import app.suprsend.notification.NotificationActionVo
 import app.suprsend.sprop.SuperPropertiesLocalDataSource
 import app.suprsend.user.UserLocalDatasource
 import app.suprsend.user.api.SSInternalUser
@@ -248,7 +250,7 @@ internal object SSApiInternal {
         return ConfigHelper.get(SSConstants.CONFIG_API_BASE_URL) ?: SSConstants.DEFAULT_BASE_API_URL
     }
 
-    fun inBoxNotificationClicked(nID: String) {
+    fun inBoxNotificationClicked(notificationId: String) {
 
         executorService.execute {
             ConfigHelper.get(SSConstants.INBOX_RESPONSE)
@@ -257,14 +259,14 @@ internal object SSApiInternal {
             for (i in 0 until jsonArray.length()) {
                 val notificationJo = jsonArray.getJSONObject(i)
                 val id = notificationJo.safeString("n_id") ?: ""
-                if (id == nID) {
+                if (id == notificationId) {
                     notificationJo.put("seen_on", System.currentTimeMillis())
                     jsonArray.put(i, notificationJo)
                     break
                 }
             }
             ConfigHelper.addOrUpdate(SSConstants.INBOX_RESPONSE, jsonArray.toString())
-            SSInternalUser.notificationClicked(id = nID)
+            SSInternalUser.notificationClicked(NotificationActionVo(notificationId = notificationId))
         }
     }
 

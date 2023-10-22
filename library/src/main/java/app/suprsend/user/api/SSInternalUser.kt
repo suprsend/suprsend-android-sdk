@@ -11,6 +11,7 @@ import app.suprsend.base.isMobileNumberValid
 import app.suprsend.base.isValidEmail
 import app.suprsend.base.size
 import app.suprsend.event.PayloadCreator
+import app.suprsend.notification.NotificationActionVo
 import app.suprsend.user.UserLocalDatasource
 import org.json.JSONArray
 import org.json.JSONObject
@@ -245,13 +246,14 @@ internal object SSInternalUser {
             operator = SSConstants.SET
         )
     }
-    fun notificationClicked(id: String, actionId: String? = null) {
+
+    fun notificationClicked(notificationActionVo: NotificationActionVo) {
         SSApiInternal.saveTrackEventPayload(
             eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
             propertiesJO = JSONObject().apply {
-                put("id", id)
-                if (actionId != null) {
-                    put("label_id", actionId)
+                put("id", notificationActionVo.notificationId)
+                if (!notificationActionVo.actionId.isNullOrBlank()) {
+                    put("label_id", notificationActionVo.actionId)
                 }
             }
         )

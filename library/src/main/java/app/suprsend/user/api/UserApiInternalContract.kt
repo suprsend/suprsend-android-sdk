@@ -40,5 +40,5 @@ interface UserApiInternalContract {
     fun setPreferredLanguage(languageCode: String)
     fun getPreferences(): Preferences
 
-    fun notificationClicked(id: String, actionId: String? = null)
+    fun notificationClicked(notificationId: String, actionId: String? = null)
 }

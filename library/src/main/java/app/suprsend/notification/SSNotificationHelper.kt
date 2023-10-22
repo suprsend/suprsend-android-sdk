@@ -11,7 +11,6 @@ import android.graphics.Color
 import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import app.suprsend.BuildConfig
@@ -29,6 +28,7 @@ import app.suprsend.base.safeBoolean
 import app.suprsend.base.safeJsonArray
 import app.suprsend.base.safeLong
 import app.suprsend.base.safeString
+import app.suprsend.base.safeStringDefault
 import app.suprsend.base.toKotlinJsonObject
 import app.suprsend.config.ConfigHelper
 import app.suprsend.fcm.SSFirebaseMessagingService
@@ -572,11 +572,11 @@ private fun String?.getRawNotification(): RawNotification {
 
         localOnly = notificationPayloadJO.safeBoolean("localOnly"),
 
-        actions = getActions(notificationPayloadJO)
+        actions = getActions(notificationPayloadJO,id)
     )
 }
 
-private fun getActions(notificationPayloadJO: JSONObject): List<NotificationActionVo>? {
+private fun getActions(notificationPayloadJO: JSONObject,notificationID:String): List<NotificationActionVo>? {
     val safeActions = notificationPayloadJO.safeJsonArray("actions")
     safeActions ?: return null
     val actionsList = arrayListOf<NotificationActionVo>()
@@ -584,12 +584,12 @@ private fun getActions(notificationPayloadJO: JSONObject): List<NotificationActi
         val actionObj = safeActions.getJSONObject(i)
         actionsList.add(
             NotificationActionVo(
-                id = actionObj.safeString("id"),
-                title = actionObj.safeString("title"),
+                actionId = actionObj.safeStringDefault("id",(i+1).toString()),
+                title = actionObj.safeStringDefault("title",""),
                 link = actionObj.safeString("link"),
                 iconDrawableName = actionObj.safeString("iconIdentifierName"),
-                notificationId = actionObj.safeString("notificationId"),
-                notificationActionType = actionObj.safeString("notificationActionType").mapToEnum<NotificationActionType>()
+                notificationId = notificationID,
+                notificationActionType = NotificationActionType.BUTTON
             )
         )
     }
