@@ -1,7 +1,6 @@
 package app.suprsend.base
 
 import app.suprsend.event.Algo
-import app.suprsend.event.toMD5
 import org.junit.Assert
 import org.junit.Test
 

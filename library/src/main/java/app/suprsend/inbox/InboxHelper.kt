@@ -2,12 +2,12 @@ package app.suprsend.inbox
 
 import android.util.Log
 import app.suprsend.BuildConfig
+import app.suprsend.SSApiInternal
+import app.suprsend.base.*
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
 import app.suprsend.base.appExecutorService
-import app.suprsend.base.generateSignature
-import app.suprsend.base.makeHttpRequest
 import app.suprsend.base.safeJSONObject
 import app.suprsend.base.safeString
 import app.suprsend.config.ConfigHelper
@@ -40,14 +40,14 @@ object InboxHelper {
             var after = System.currentTimeMillis() - (30 * dayTime)
             try {
                 do {
-                    val baseUrl = ConfigHelper.get(SSConstants.CONFIG_API_BASE_URL) ?: SSConstants.DEFAULT_BASE_API_URL
+                    val baseUrl = SSApiInternal.getBaseUrl()
                     val route = "/inbox/fetch/?after=$after&distinct_id=$distinctId&subscriber_id=$subscriberId"
                     val envKey = ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""
                     val date = Date().toString()
-                    val signature = generateSignature(method = "GET", route = route, date = date)
+                    val signature = createAuthorization(requestMethod = "GET", requestURI = route, date = date)
 
-                    val httpResponse = makeHttpRequest(
-                        method = "GET",
+                    val httpResponse = httpCall(
+                        requestMethod = "GET",
                         urL = "$baseUrl$route",
                         authorization = "$envKey:$signature",
                         date = date
@@ -92,7 +92,7 @@ object InboxHelper {
     }
 
     private fun bellClicked(distinctId: String, subscriberId: String) {
-        val baseUrl = ConfigHelper.get(SSConstants.CONFIG_API_BASE_URL) ?: SSConstants.DEFAULT_BASE_API_URL
+        val baseUrl =  SSApiInternal.getBaseUrl()
         val route = "/inbox/bell-clicked/"
         val envKey = ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""
         val date = Date()
@@ -101,13 +101,13 @@ object InboxHelper {
             put("distinct_id", distinctId)
             put("subscriber_id", subscriberId)
         }.toString()
-        val signature = generateSignature(body = body, method = "POST", route = route, date = date.toString())
+        val signature = createAuthorization(requestJson = body, requestMethod = "POST", requestURI = route, date = date.toString())
 
-        val httpResponse = makeHttpRequest(
-            method = "POST",
+        val httpResponse = httpCall(
+            requestMethod = "POST",
             urL = "$baseUrl$route",
             authorization = "$envKey:$signature",
-            body = body,
+            requestJson = body,
             date = date.toString()
         )
 

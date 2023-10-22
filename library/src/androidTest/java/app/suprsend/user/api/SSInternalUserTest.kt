@@ -554,7 +554,6 @@ class SSInternalUserTest : BaseTest() {
         assertEquals(SSConstants.PUSH_VENDOR_XIAOMI, propertiesPayload.get(SSConstants.PUSH_VENDOR))
         assertEquals("D1", propertiesPayload.get(SSConstants.DEVICE_ID))
     }
-}
 
     @Test
     fun testCorrectSetPreferredLanguage() {
