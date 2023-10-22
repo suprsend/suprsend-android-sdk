@@ -61,7 +61,7 @@ class InboxBellView : FrameLayout {
                         Logger.i(SSInboxActivity.TAG, "Bell : Periodic fetch inbox messages")
                         val safeSubscriberId = this@InboxBellView.subscriberId ?: return
                         val safeDistinctId = this@InboxBellView.distinctId ?: return
-                        SSInbox.fetchFromRemote(subscriberId = safeSubscriberId, distinctId = safeDistinctId) { _, showNewUpdatesAvailable ->
+                        SSInboxApi.fetchFromRemote(subscriberId = safeSubscriberId, distinctId = safeDistinctId) { _, showNewUpdatesAvailable ->
                             try {
                                 post {
                                     try {
@@ -101,7 +101,7 @@ class InboxBellView : FrameLayout {
     @SuppressLint("SetTextI18n")
     private fun syncCount(showNewUpdatesAvailable: Boolean = false) {
         val countTv = bellView.findViewById<TextView>(R.id.messagesCountTv)
-        val count = SSInbox.getUnReadMessagesCount()
+        val count = SSInboxApi.getUnReadMessagesCount()
         val countPB = bellView.findViewById<ProgressBar>(R.id.messagesCountPB)
         countPB.visibility = if (count == null) { View.VISIBLE } else { View.GONE }
         val safeCount = count ?: 0

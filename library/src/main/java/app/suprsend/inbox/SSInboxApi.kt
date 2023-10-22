@@ -16,7 +16,7 @@ import org.json.JSONObject
 
 typealias UpdateInboxUi = (isConnected: Boolean, showNewUpdatesAvailable: Boolean) -> Unit
 
-object SSInbox {
+object SSInboxApi {
 
     var isFetching = false
 
