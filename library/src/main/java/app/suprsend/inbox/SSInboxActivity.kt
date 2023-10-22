@@ -5,12 +5,12 @@ import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import app.suprsend.R
+import app.suprsend.base.Logger
 import app.suprsend.base.safeDrawable
 
 class SSInboxActivity : FragmentActivity() {
@@ -53,7 +53,7 @@ class SSInboxActivity : FragmentActivity() {
                 .add(R.id.fragmentContainer, ssNotificationListFragment, "inbox_list_fragment")
                 .commit()
         } catch (e: Exception) {
-            Log.e(TAG, "", e)
+            Logger.e(TAG, "", e)
         }
     }
 

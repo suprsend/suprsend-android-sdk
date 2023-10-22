@@ -1,6 +1,5 @@
 package app.suprsend.inbox
 
-import android.util.Log
 import app.suprsend.BuildConfig
 import app.suprsend.SSApiInternal
 import app.suprsend.base.*
@@ -15,23 +14,23 @@ import java.util.Date
 import org.json.JSONArray
 import org.json.JSONObject
 
-private typealias UpdateInboxUi = (isConnected: Boolean, showNewUpdatesAvailable: Boolean) -> Unit
+typealias UpdateInboxUi = (isConnected: Boolean, showNewUpdatesAvailable: Boolean) -> Unit
 
-object InboxHelper {
+object SSInbox {
 
-    var fetchInboxMessages = false
+    var isFetching = false
 
-    fun fetchApiCall(distinctId: String, subscriberId: String, messagesSeen: Boolean = false, updateUI: UpdateInboxUi? = null) {
+    fun fetchFromRemote(distinctId: String, subscriberId: String, messagesSeen: Boolean = false, updateUI: UpdateInboxUi? = null) {
         if (!SdkAndroidCreator.networkInfo.isConnected()) {
             updateUI?.invoke(false, false)
             return
         }
-        if (fetchInboxMessages) {
+        if (isFetching) {
             Logger.i(SSInboxActivity.TAG, "Fetch inbox messages already in progress")
             return
         }
         appExecutorService.execute {
-            fetchInboxMessages = true
+            isFetching = true
             if (messagesSeen)
                 bellClicked(distinctId = distinctId, subscriberId = subscriberId)
             var fetchNext = false
@@ -72,7 +71,7 @@ object InboxHelper {
                         false
                     }
                     if (BuildConfig.DEBUG) {
-                        Log.i(
+                        Logger.i(
                             SSInboxActivity.TAG, "Fetch Inbox Messages :\n$route" +
                                 "\ndistinctId:$distinctId" +
                                 "\nsubscriberId:$subscriberId" +
@@ -81,15 +80,13 @@ object InboxHelper {
                     }
                 } while (fetchNext)
             } catch (e: Exception) {
-                Log.e(SSInboxActivity.TAG, "fetchApiCall", e)
+                Logger.e(SSInboxActivity.TAG, "fetchApiCall", e)
             }
-            fetchInboxMessages = false
+            isFetching = false
         }
     }
 
-    fun getUnReadMessagesCount(): Int {
-        return ConfigHelper.get(SSConstants.INBOX_MESSAGE_UNREAD_COUNT)?.toInt() ?: 0
-    }
+    fun getUnReadMessagesCount(): Int?  =  ConfigHelper.get(SSConstants.INBOX_MESSAGE_UNREAD_COUNT)?.toInt()
 
     private fun bellClicked(distinctId: String, subscriberId: String) {
         val baseUrl =  SSApiInternal.getBaseUrl()
@@ -112,7 +109,7 @@ object InboxHelper {
         )
 
         if (BuildConfig.DEBUG) {
-            Log.i(
+            Logger.i(
                 SSInboxActivity.TAG, "Bell Clicked Response :\n$route" +
                     "\ndistinctId:$distinctId" +
                     "\nsubscriberId:$subscriberId" +
@@ -136,7 +133,7 @@ object InboxHelper {
             prevJA.put(latestJA.getJSONObject(i))
         }
         ConfigHelper.addOrUpdate(SSConstants.INBOX_RESPONSE, prevJA.toString())
-        Log.i(SSInboxActivity.TAG, "Merged items Total : ${prevJA.length()}")
+        Logger.i(SSInboxActivity.TAG, "Merged items Total : ${prevJA.length()}")
     }
 
     fun getInboxItems(): List<SSInboxItemVo> {

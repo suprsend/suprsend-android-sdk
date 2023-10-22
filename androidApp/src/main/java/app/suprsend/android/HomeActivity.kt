@@ -122,16 +122,3 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 }
-
-fun Activity.getThemeJson(): JSONObject? {
-    return try {
-        defaultSharedPreferences.getString(SettingsActivity.APP_INBOX_THEME, "")?.let {
-            if (it.isBlank())
-                null
-            else
-                JSONObject(it)
-        }
-    } catch (e: Exception) {
-        null
-    }
-}

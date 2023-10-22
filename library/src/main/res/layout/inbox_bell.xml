@@ -10,6 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:paddingEnd="2dp"
+        android:paddingTop="2dp"
         android:src="@drawable/ic_notification"
         android:tint="#000" />
 
@@ -17,6 +19,7 @@
         android:id="@+id/messagesCountTv"
         android:layout_width="13dp"
         android:layout_height="13dp"
+        android:visibility="gone"
         android:layout_alignTop="@id/notificationIv"
         android:layout_alignEnd="@id/notificationIv"
         android:background="@drawable/ic_unread_circle"
@@ -24,4 +27,12 @@
         android:textColor="#FFF"
         android:textSize="6sp"
         tools:text="99+" />
+
+    <ProgressBar
+        android:id="@+id/messagesCountPB"
+        android:layout_width="wrap_content"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_alignTop="@id/notificationIv"
+        android:layout_alignEnd="@id/notificationIv"
+        android:layout_height="wrap_content"/>
 </RelativeLayout>

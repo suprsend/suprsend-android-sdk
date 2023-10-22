@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +14,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import app.suprsend.R
 import app.suprsend.SSApiInternal
+import app.suprsend.base.Logger
 import app.suprsend.base.getDrawableIdFromName
 import app.suprsend.base.safeIntent
 import com.bumptech.glide.Glide
@@ -132,7 +132,7 @@ constructor(
                     holder.timeTv.alpha = 0.7f
                 }
             } catch (e: Exception) {
-                Log.e(SSInboxActivity.TAG, "", e)
+                Logger.e(SSInboxActivity.TAG, "", e)
             }
         }
 

@@ -6,8 +6,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
 import app.suprsend.BuildConfig
-import java.util.Locale
 import org.json.JSONObject
+import java.util.Locale
 
 internal class DeviceInfo {
     fun getDeviceInfoProperties(): JSONObject {
@@ -19,7 +19,7 @@ internal class DeviceInfo {
         jsonObject.put(SSConstants.BRAND, brand())
         jsonObject.put(SSConstants.MODEL, model())
         jsonObject.put(SSConstants.DEVICE_ID, getDeviceId())
-        val ssSdkVersion = "android-" + BuildConfig.SS_SDK_TYPE.toLowerCase(Locale.getDefault()) + "/" + BuildConfig.SS_SDK_VERSION_NAME
+        val ssSdkVersion  = "android-"+BuildConfig.SS_SDK_TYPE.toLowerCase(Locale.getDefault())+"/"+BuildConfig.SS_SDK_VERSION_NAME
         jsonObject.put(SSConstants.SS_SDK_VERSION, ssSdkVersion)
         val networkInfo = SdkAndroidCreator.networkInfo
         jsonObject.put(SSConstants.NETWORK, networkInfo.getNetworkType().readableName)
