@@ -2,6 +2,7 @@ package app.suprsend.base
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import app.suprsend.database.SQLDataHelper
 import app.suprsend.event.EventLocalDatasource
 import com.google.i18n.phonenumbers.PhoneNumberUtil
@@ -25,6 +26,10 @@ internal object SdkAndroidCreator {
 
     val eventLocalDatasource: EventLocalDatasource by lazy { EventLocalDatasource() }
     val sqlDataHelper: SQLDataHelper by lazy { SQLDataHelper(context) }
+
+    internal fun getSharedPreference(key:String): SharedPreferences {
+        return context.getSharedPreferences(key,Context.MODE_PRIVATE)
+    }
 }
 
 @SuppressLint("SimpleDateFormat")

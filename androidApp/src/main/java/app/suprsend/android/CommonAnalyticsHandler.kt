@@ -97,8 +97,8 @@ object CommonAnalyticsHandler {
         mixpanelAPI.people.unset(key)
     }
 
-    fun reset() {
-        ssApi.reset()
+    fun reset(unSubscribeNotification: Boolean) {
+        ssApi.reset(unSubscribeNotification)
         mixpanelAPI.reset()
     }
 
@@ -125,6 +125,10 @@ object CommonAnalyticsHandler {
     fun unSetSuperProperties(key: String) {
         ssApi.unSetSuperProperty(key)
         mixpanelAPI.unregisterSuperProperty(key)
+    }
+
+    fun setPreferredLanguage(languageCode: String) {
+        ssApi.getUser().setPreferredLanguage(languageCode)
     }
 
     fun purchaseMade(properties: JSONObject) {

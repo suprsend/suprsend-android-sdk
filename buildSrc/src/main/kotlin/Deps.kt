@@ -8,10 +8,10 @@ object Deps {
     private const val MAJOR_VERSION = 1
     private const val MINOR_VERSION = 0
     private const val PATCH_VERSION = 4
-    const val SNAPSHOT = 1
+    const val SNAPSHOT = -1
     val BUILD_TYPE = BuildType.NATIVE
     private const val ISPROD = false
-    const val RUN_LIB = true
+    const val RUN_LIB = false
 
     const val SDK_VERSION_CODE = MAJOR_VERSION * 1000 + (MINOR_VERSION * 100) + PATCH_VERSION
     var SDK_VERSION_NAME = if (SNAPSHOT != -1) {
@@ -29,10 +29,9 @@ object Deps {
 
     //Prod
     var SS_API_BASE_URL = if (ISPROD) "https://hub.suprsend.com" else "https://collector-staging.suprsend.workers.dev"
-
+    val SS_TENANT_ID = "null"
     var SS_TOKEN = "XXXX"
     var SS_SECRET = "XXXX"
-    val SS_TENANT_ID = "XXXX"
     var INBOX_SECRET = "XXXX"
 
     const val XIAOMI_APP_ID = "XXXX"
@@ -78,6 +77,10 @@ object Deps {
             const val VERSION = "1.3.72"
         }
     }
+    object Firebase {
+        const val messaging = "20.2.4"
+    }
+    const val material = "1.4.0"
 }
 
 fun String.execute(): Process = ProcessGroovyMethods.execute(this)

@@ -40,17 +40,19 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    testOptions{
+        unitTests.isReturnDefaultValues = true
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
-
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.3.72")
-    implementation("com.google.firebase:firebase-messaging:20.2.4")
-    implementation(files("libs/MiPush_SDK_Client_4_8_3.jar"))
+    compileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar","*.aar"))))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:${Deps.JetBrains.Kotlin.VERSION}")
+    implementation("com.google.firebase:firebase-messaging:${Deps.Firebase.messaging}")
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.38")
 
-
-//    implementation("androidx.core:core:1.3.0")
+    //    implementation("androidx.core:core:1.3.0")
 //    implementation("androidx.viewpager:viewpager:1.0.0")
 //    implementation("androidx.fragment:fragment:1.1.0")
 //    implementation("com.google.android.material:material:1.2.1")
@@ -59,9 +61,12 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.11.0")
 
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20230227")
+    testImplementation("org.robolectric:robolectric:4.10.3")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+
 
 }
 

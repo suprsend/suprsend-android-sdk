@@ -10,7 +10,6 @@ import androidx.core.content.res.ResourcesCompat
 import app.suprsend.config.ConfigHelper
 import app.suprsend.event.Algo
 import app.suprsend.event.EventFlushHandler
-import app.suprsend.event.toMD5
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.IOException
@@ -22,13 +21,16 @@ import java.util.Locale
 import org.json.JSONArray
 import org.json.JSONObject
 
+import java.net.URLEncoder
+import java.security.MessageDigest
+
 internal inline fun <reified T : Enum<T>> String?.mapToEnum(defaultValue: T): T {
     return mapToEnum<T>() ?: defaultValue
 }
 
-internal inline fun <reified T : Enum<T>> String?.mapToEnum(): T? {
+internal inline fun <reified T : Enum<T>> String?.mapToEnum(ignoreCase: Boolean = false): T? {
     this ?: return null
-    return enumValues<T>().find { value -> value.name == this }
+    return enumValues<T>().find { value -> value.name.equals(this, ignoreCase) }
 }
 
 internal fun String?.toKotlinJsonObject(): JSONObject {
@@ -93,11 +95,20 @@ internal fun JSONObject.safeString(key: String): String? {
     else null
 }
 
+internal fun JSONObject.safeStringDefault(key: String, default: String = ""): String {
+    return safeString(key) ?: default
+}
+
 internal fun JSONObject.safeBoolean(key: String): Boolean? {
     return if (!isNull(key))
         getBoolean(key)
     else null
 }
+
+internal fun JSONObject.safeBooleanDefault(key: String, default: Boolean = false): Boolean {
+    return safeBoolean(key) ?: default
+}
+
 
 internal fun JSONObject.safeLong(key: String): Long? {
     return if (!isNull(key))
@@ -214,4 +225,46 @@ internal fun generateSignature(
         date + "\n" +
         route
     return Algo.base64(Algo.generateHashWithHmac256(secret, stringToSign))
+}
+
+internal fun String.toMD5(): String {
+    val bytes = MessageDigest.getInstance("MD5").digest(this.toByteArray(Charsets.UTF_8))
+    return bytes.toHex()
+}
+
+private fun ByteArray.toHex(): String {
+    return joinToString("") { "%02x".format(it) }
+}
+
+internal fun JSONArray.forEach(call: (jo: JSONObject) -> Boolean?) {
+    for (i in 0 until length()) {
+        val jo = getJSONObject(i)
+        val shouldBreak = call(jo) ?: false
+        if (shouldBreak) {
+            break
+        }
+    }
+}
+
+internal fun JSONArray.forEachIndexed(call: (index:Int,jo: JSONObject) -> Boolean?) {
+    for (i in 0 until length()) {
+        val jo = getJSONObject(i)
+        val shouldBreak = call(i,jo) ?: false
+        if (shouldBreak) {
+            break
+        }
+    }
+}
+
+internal fun <T> JSONArray.map(mapper: (jo: JSONObject) -> T): List<T> {
+    val list = arrayListOf<T>()
+    for (i in 0 until length()) {
+        val jo = getJSONObject(i)
+        list.add(mapper(jo))
+    }
+    return list
+}
+
+internal fun urlEncode(value:String): String {
+    return URLEncoder.encode(value,"utf-8")
 }

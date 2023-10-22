@@ -26,7 +26,7 @@ class CommonTests {
 
     @Test
     fun testSignatureToSign() {
-        val httpVerb = "POST"
+        val requestMethod = "POST"
         val contentMd5 = "ABC".toMD5()
         val contentType = "application/json"
         val date = "123"
@@ -34,7 +34,7 @@ class CommonTests {
         val envKey = "envKey"
         val secret = "secret"
 
-        val stringToSign = httpVerb + "\n" +
+        val stringToSign = requestMethod + "\n" +
             contentMd5 + "\n" +
             contentType + "\n" +
             date + "\n" +

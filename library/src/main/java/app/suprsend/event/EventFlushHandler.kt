@@ -1,53 +1,34 @@
 package app.suprsend.event
 
-import app.suprsend.BuildConfig
+import app.suprsend.SSApiInternal
+import app.suprsend.base.HttPResponse
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
-import app.suprsend.base.generateSignature
-import app.suprsend.base.makeHttpRequest
+import app.suprsend.base.createAuthorization
+import app.suprsend.base.getDate
+import app.suprsend.base.httpCall
 import app.suprsend.base.toKotlinJsonObject
-import app.suprsend.config.ConfigHelper
 import app.suprsend.database.Event_Model
-import java.security.MessageDigest
-import java.util.Date
 import org.json.JSONArray
+import java.security.MessageDigest
 
 internal object EventFlushHandler {
     const val TAG = "flush"
 
-    fun flushEvents() {
+    fun flush() {
+
         val eventLocalDatasource = SdkAndroidCreator.eventLocalDatasource
         var eventModelList: List<Event_Model> = eventLocalDatasource.getEvents(SSConstants.FLUSH_EVENT_PAYLOAD_SIZE)
         if (eventModelList.isEmpty()) {
             Logger.i(TAG, "No events found")
             return
         }
-        val baseUrl = ConfigHelper.get(SSConstants.CONFIG_API_BASE_URL) ?: SSConstants.DEFAULT_BASE_API_URL
+
         while (eventModelList.isNotEmpty()) {
 
-            val jsonArray = JSONArray()
-            eventModelList.forEach { eventModel ->
-                jsonArray.put(eventModel.value.toKotlinJsonObject())
-            }
-            val route = "/event/"
-            val envKey = ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""
-            val body = jsonArray.toString()
-            val date = Date().toString()
-            val signature = generateSignature(body = body, method = "POST", route = route, date = date)
+            val httpResponse = flushEvents(eventModelList)
 
-            val httpResponse = makeHttpRequest(
-                method = "POST",
-                urL = "$baseUrl$route",
-                authorization = "$envKey:$signature",
-                body = body,
-                date = date
-            )
-            if (httpResponse.statusCode != 202 || BuildConfig.DEBUG) {
-                Logger.i(TAG, "${httpResponse.statusCode} \n$body \n${httpResponse.response}")
-            } else {
-                Logger.i(TAG, "statusCode:${httpResponse.statusCode}")
-            }
             if (httpResponse.statusCode == 202) {
                 eventLocalDatasource.delete(eventModelList.map { event -> event.id!! }.joinToString())
                 eventModelList = eventLocalDatasource.getEvents(SSConstants.FLUSH_EVENT_PAYLOAD_SIZE)
@@ -57,13 +38,37 @@ internal object EventFlushHandler {
             }
         }
     }
-}
 
-internal fun String.toMD5(): String {
-    val bytes = MessageDigest.getInstance("MD5").digest(this.toByteArray(Charsets.UTF_8))
-    return bytes.toHex()
-}
+    fun flushEvents(eventModelList: List<Event_Model>): HttPResponse {
+        val requestJson = eventModelList.toJsonArray().toString()
 
-private fun ByteArray.toHex(): String {
-    return joinToString("") { "%02x".format(it) }
+        val requestURI = "/event/"
+        val date = getDate()
+
+        val authorization = createAuthorization(
+            requestJson = requestJson,
+            requestURI = requestURI,
+            date = date
+        )
+        val baseUrl = SSApiInternal.getBaseUrl()
+        val httpResponse = httpCall(
+            urL = "$baseUrl$requestURI",
+            authorization = authorization,
+            requestJson = requestJson,
+            date = date
+        )
+
+        Logger.i(TAG, "${httpResponse.statusCode} \n$requestJson \n${httpResponse.response}")
+        return httpResponse
+    }
+
+    private fun List<Event_Model>.toJsonArray(): JSONArray {
+        val jsonArray = JSONArray()
+        forEach { eventModel ->
+            jsonArray.put(eventModel.value.toKotlinJsonObject())
+        }
+        return jsonArray
+    }
+
+
 }

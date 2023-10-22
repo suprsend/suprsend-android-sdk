@@ -6,6 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.android.databinding.ActivitySettingsBinding
 import app.suprsend.inbox.SSInboxConfig
+import app.suprsend.android.preference.UserPreferenceActivity
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -15,6 +16,7 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        title = "Settings"
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -65,13 +67,30 @@ class SettingsActivity : AppCompatActivity() {
             CommonAnalyticsHandler.unSetSuperProperties(binding.setSuprPropertyKey.text.toString())
         }
 
-        binding.logoutTv.clickWithThrottle {
-            CommonAnalyticsHandler.unset("choices")
-            CommonAnalyticsHandler.reset()
-            startActivity(Intent(this, WelcomeActivity::class.java))
-            finishAffinity()
-            AppCreator.setEmail(this, "")
+        binding.preferredLanguageTv.clickWithThrottle {
+            CommonAnalyticsHandler.setPreferredLanguage(binding.preferredLanguageEt.text.toString())
         }
+
+        binding.logoutTv.clickWithThrottle {
+            logout(false)
+        }
+
+        binding.logoutUnSubTv.clickWithThrottle {
+            logout(true)
+        }
+
+        binding.userPreference.clickWithThrottle {
+            val intent = Intent(this, UserPreferenceActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun logout(unSubscribeNotification: Boolean) {
+        CommonAnalyticsHandler.unset("choices")
+        CommonAnalyticsHandler.reset(unSubscribeNotification)
+        startActivity(Intent(this, WelcomeActivity::class.java))
+        finishAffinity()
+        AppCreator.setEmail(this, "")
     }
 
     companion object {

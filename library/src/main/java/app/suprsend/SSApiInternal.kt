@@ -13,10 +13,12 @@ import app.suprsend.base.uuid
 import app.suprsend.config.ConfigHelper
 import app.suprsend.event.EventFlushHandler
 import app.suprsend.event.PayloadCreator
+import app.suprsend.log.LoggerCallback
 import app.suprsend.sprop.SuperPropertiesLocalDataSource
 import app.suprsend.user.UserLocalDatasource
 import app.suprsend.user.api.SSInternalUser
 import org.json.JSONArray
+import app.suprsend.user.preference.SSInternalUserPreference
 import org.json.JSONObject
 
 internal object SSApiInternal {
@@ -24,6 +26,8 @@ internal object SSApiInternal {
     var isFlushing = false
 
     val userLocalDatasource = UserLocalDatasource()
+
+    var loggerCallback:LoggerCallback? = null
 
     fun identify(uniqueId: String) {
         if (userLocalDatasource.getIdentity() == uniqueId) {
@@ -109,7 +113,7 @@ internal object SSApiInternal {
         flushExecutorService.execute {
             Logger.i(EventFlushHandler.TAG, "Flush event started")
             try {
-                EventFlushHandler.flushEvents()
+                EventFlushHandler.flush()
             } catch (e: Exception) {
                 Logger.e(EventFlushHandler.TAG, "Error occurred while flushing", e)
             }
@@ -118,12 +122,15 @@ internal object SSApiInternal {
         }
     }
 
-    fun reset() {
+    fun reset(unSubscribeNotification:Boolean) {
         val newID = uuid()
         val userId = userLocalDatasource.getIdentity()
         Logger.i(TAG, "reset : Current : $userId New : $newID")
         saveTrackEventPayload(SSConstants.S_EVENT_USER_LOGOUT)
+        if (unSubscribeNotification)
+            removeNotificationToken()
         SuperPropertiesLocalDataSource().removeAll()
+        SSInternalUserPreference.clearUserPreference()
         ConfigHelper.addOrUpdate(SSConstants.INBOX_RESPONSE, "[]")
         userLocalDatasource.identify(newID)
         appendNotificationToken()
@@ -167,6 +174,26 @@ internal object SSApiInternal {
             jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_XIAOMI)
             jsonObject.put(SSConstants.DEVICE_ID, getDeviceID())
             SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.APPEND)
+        }
+    }
+
+    private fun removeNotificationToken() {
+        val fcmToken = getFcmToken()
+        if (fcmToken.isNotBlank()) {
+            val jsonObject = JSONObject()
+            jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, fcmToken)
+            jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_FCM)
+            jsonObject.put(SSConstants.DEVICE_ID, getDeviceID())
+            SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.REMOVE)
+        }
+
+        val xiaomiToken = getXiaomiToken()
+        if (xiaomiToken.isNotBlank()) {
+            val jsonObject = JSONObject()
+            jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, xiaomiToken)
+            jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_XIAOMI)
+            jsonObject.put(SSConstants.DEVICE_ID, getDeviceID())
+            SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.REMOVE)
         }
     }
 
@@ -215,6 +242,10 @@ internal object SSApiInternal {
 
     fun getCachedApiKey(): String {
         return ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""
+    }
+
+    fun getBaseUrl(): String {
+        return ConfigHelper.get(SSConstants.CONFIG_API_BASE_URL) ?: SSConstants.DEFAULT_BASE_API_URL
     }
 
     fun inBoxNotificationClicked(nID: String) {

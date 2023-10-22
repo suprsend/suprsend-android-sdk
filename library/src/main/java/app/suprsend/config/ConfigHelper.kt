@@ -9,27 +9,27 @@ import app.suprsend.database.Config_Model
 internal object ConfigHelper {
 
     fun addOrUpdate(key: String, value: String) {
-        SdkAndroidCreator.sqlDataHelper.insert_configByKey(Config_Model(key = key, value = value))
+        SdkAndroidCreator.sqlDataHelper.insertConfigByKey(Config_Model(key = key, value = value))
     }
 
     fun get(key: String): String? {
-        return SdkAndroidCreator.sqlDataHelper.getconfigByKey(key)?.value
+        return SdkAndroidCreator.sqlDataHelper.getConfigByKey(key)?.value
     }
 
     fun addOrUpdate(key: String, value: Int) {
-        SdkAndroidCreator.sqlDataHelper.insert_configByKey(Config_Model(key = key, value = value.toString()))
+        SdkAndroidCreator.sqlDataHelper.insertConfigByKey(Config_Model(key = key, value = value.toString()))
     }
 
     fun getInt(key: String): Int? {
-        return SdkAndroidCreator.sqlDataHelper.getconfigByKey(key)?.value?.toInt()
+        return SdkAndroidCreator.sqlDataHelper.getConfigByKey(key)?.value?.toInt()
     }
 
     fun addOrUpdate(key: String, value: Boolean) {
-        SdkAndroidCreator.sqlDataHelper.insert_configByKey(Config_Model(key = key, value = getBooleanToString(value)))
+        SdkAndroidCreator.sqlDataHelper.insertConfigByKey(Config_Model(key = key, value = getBooleanToString(value)))
     }
 
     fun getBoolean(key: String): Boolean? {
-        return getStringToBoolean(SdkAndroidCreator.sqlDataHelper.getconfigByKey(key)?.value)
+        return getStringToBoolean(SdkAndroidCreator.sqlDataHelper.getConfigByKey(key)?.value)
     }
 
     private fun getStringToBoolean(value: String?): Boolean? {
