@@ -90,10 +90,6 @@ constructor(
                                 .error(holder.context.getDrawableIdFromName("ic_ss_image") ?: -1)
                         )
                         .into(holder.imageView)
-
-                    holder.imageView.setOnClickListener {
-                        launchUrl(holder, url)
-                    }
                 } else {
                     holder.imageView.visibility = View.GONE
                 }
@@ -107,13 +103,11 @@ constructor(
                     holder.descriptionTv.visibility = View.GONE
                 }
 
-                if (!url.isNullOrBlank()) {
-                    holder.itemContainer.setOnClickListener {
-                        trackInboxNotificationClick(ssInboxItemVo, holder)
+                holder.itemContainer.setOnClickListener {
+                    trackInboxNotificationClick(ssInboxItemVo, holder)
+                    if (!url.isNullOrBlank()) {
                         launchUrl(holder, url)
                     }
-                } else {
-                    holder.itemContainer.setOnClickListener(null)
                 }
 
                 holder.readStatusIv.visibility = if (ssInboxItemVo.seenOn == null) View.VISIBLE else View.GONE

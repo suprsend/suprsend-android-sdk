@@ -17,6 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
+        android:clickable="false"
         android:textSize="16sp"
         android:textStyle="bold"
         tools:text="This is the header"
@@ -29,6 +30,7 @@
         android:layout_below="@id/headerTv"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="8dp"
+        android:clickable="false"
         android:scaleType="fitXY"
         android:textSize="14sp"
         android:visibility="gone"
@@ -43,6 +45,7 @@
         android:layout_marginEnd="8dp"
         android:layout_toStartOf="@id/readStatusIv"
         android:layout_toEndOf="@id/imageView"
+        android:clickable="false"
         android:gravity="start"
         tools:background="#FFF"
         tools:text="Seen Message Message Message Message Message Message Message Message Message Message" />
@@ -54,6 +57,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_gravity="center_vertical"
+        android:clickable="false"
         android:src="@drawable/ic_unread_circle"
         android:visibility="visible" />
 
@@ -63,6 +67,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/descriptionText"
         android:layout_marginTop="4dp"
+        android:clickable="false"
         android:text="17/05/2022 at 10:43 AM" />
 
 
