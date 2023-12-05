@@ -1,7 +1,6 @@
 package app.suprsend.base
 
 import app.suprsend.event.Algo
-import app.suprsend.event.toMD5
 import org.junit.Assert
 import org.junit.Test
 
@@ -41,7 +40,7 @@ class CommonTests {
             requestURI
 
         val hmac = Algo.generateHashWithHmac256(secret, stringToSign)
-        //Hex - 1fd8bb8dee0abdc62c728874aa2c33b366060deb1ed554a3a3c3d27729316461
+        // Hex - 1fd8bb8dee0abdc62c728874aa2c33b366060deb1ed554a3a3c3d27729316461
         val signature = Algo.base64(hmac)
         Assert.assertEquals(
             signature,

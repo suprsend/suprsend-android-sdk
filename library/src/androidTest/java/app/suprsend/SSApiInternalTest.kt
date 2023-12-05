@@ -5,7 +5,6 @@ import app.suprsend.base.SSConstants
 import app.suprsend.base.size
 import app.suprsend.base.toKotlinJsonObject
 import app.suprsend.event.EventLocalDatasource
-import app.suprsend.sprop.SuperPropertiesLocalDataSource
 import app.suprsend.user.UserLocalDatasource
 import org.json.JSONObject
 import org.junit.Assert
@@ -25,25 +24,24 @@ class SSApiInternalTest : BaseTest() {
 
     @Test
     fun testIgnoreIdentifyIfAlreadyIdentified() {
-        //Initially identify got called
+        // Initially identify got called
         SSApiInternal.identify("U1")
         Assert.assertEquals("U1", UserLocalDatasource().getIdentity())
         val eventLocalDatasource = EventLocalDatasource()
 
-        //Cleaning just to fake like event got flush
+        // Cleaning just to fake like event got flush
         deleteAllEvents()
 
-        //Again identify is called with same user id
+        // Again identify is called with same user id
         SSApiInternal.identify("U1")
         Assert.assertEquals("U1", UserLocalDatasource().getIdentity())
         val eventsList = eventLocalDatasource.getEvents(10)
-        //Verify no events are generated as identify is ignored
+        // Verify no events are generated as identify is ignored
         Assert.assertEquals(0, eventsList.size)
     }
 
     @Test
     fun testIdentityWithFCMPush() {
-
         SSApiInternal.setDeviceId("DEV1")
         SSApiInternal.setXiaomiToken("XIAOMI_TOKEN")
         SSApiInternal.identify("U1")
@@ -65,7 +63,6 @@ class SSApiInternalTest : BaseTest() {
 
     @Test
     fun testIdentityWithXiaomiPush() {
-
 
         SSApiInternal.setDeviceId("DEV1")
         SSApiInternal.setFcmToken("FCM_TOKEN")
@@ -89,7 +86,6 @@ class SSApiInternalTest : BaseTest() {
     @Test
     fun testSetSuperPropertyKeyValue() {
 
-
         SSApiInternal.setSuperProperty("Product Name", "Cycle 123")
         SSApiInternal.track("ABC")
 
@@ -101,8 +97,6 @@ class SSApiInternalTest : BaseTest() {
 
     @Test
     fun testSetSuperPropertiesJson() {
-
-
         SSApiInternal.setSuperProperties(JSONObject().apply {
             put("Product Name 1", "Cycle 1")
             put("Product Name 2", "Cycle 2")
@@ -117,10 +111,8 @@ class SSApiInternalTest : BaseTest() {
         Assert.assertEquals("Cycle 2", eventPayload.getJSONObject(SSConstants.PROPERTIES).get("Product Name 2"))
     }
 
-
     @Test
     fun testRemoveSuperProperty() {
-
 
         SSApiInternal.setSuperProperties(JSONObject().apply {
             put("Product Name 1", "Cycle 1")
@@ -136,13 +128,10 @@ class SSApiInternalTest : BaseTest() {
         Assert.assertEquals("ABC", eventPayload.getString(SSConstants.EVENT))
         Assert.assertEquals(false, eventPayload.getJSONObject(SSConstants.PROPERTIES).has("Product Name 1"))
         Assert.assertEquals(true, eventPayload.getJSONObject(SSConstants.PROPERTIES).has("Product Name 2"))
-
     }
 
     @Test
     fun testTrackEvent() {
-
-
         SSApiInternal.track("ABC")
 
         val eventsList = EventLocalDatasource().getEvents(10)
@@ -176,7 +165,6 @@ class SSApiInternalTest : BaseTest() {
 
     @Test
     fun testTrackEventWithReservedKeys() {
-
         SSApiInternal.track("ABC", properties = JSONObject().apply {
             put("Product ID", 1)
             put("Product Name", "Abc Title")
@@ -201,7 +189,6 @@ class SSApiInternalTest : BaseTest() {
 
     @Test
     fun testTrackEventWithProperties() {
-
         SSApiInternal.track("ABC", properties = JSONObject().apply {
             put("Product ID", 1)
             put("Product Name", "Abc Title")
@@ -223,7 +210,6 @@ class SSApiInternalTest : BaseTest() {
 
     @Test
     fun testPurchaseMadeProperties() {
-
         SSApiInternal.purchaseMade(properties = JSONObject().apply {
             put("Product ID", 1)
             put("Product Name", "Abc Title")

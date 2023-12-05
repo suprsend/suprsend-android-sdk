@@ -1,8 +1,10 @@
 package app.suprsend.android
 
+import android.app.Activity
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import org.json.JSONObject
 
 fun View.layoutInflater(): LayoutInflater {
     return LayoutInflater.from(context)
@@ -28,4 +30,18 @@ fun <T> List<T>.isLast(index: Int): Boolean {
 
 fun logInfo(message: String) {
     Log.i("yep", message)
+}
+
+
+fun Activity.getThemeJson(): JSONObject? {
+    return try {
+        defaultSharedPreferences.getString(SettingsActivity.APP_INBOX_THEME, "")?.let {
+            if (it.isBlank())
+                null
+            else
+                JSONObject(it)
+        }
+    } catch (e: Exception) {
+        null
+    }
 }

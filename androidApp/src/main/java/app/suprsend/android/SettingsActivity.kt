@@ -5,11 +5,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.android.databinding.ActivitySettingsBinding
+import app.suprsend.inbox.SSInboxConfig
 import app.suprsend.android.preference.UserPreferenceActivity
 
 class SettingsActivity : AppCompatActivity() {
 
     lateinit var binding: ActivitySettingsBinding
+
+    var ssInboxConfig: SSInboxConfig? = SSInboxConfig()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,42 +20,42 @@ class SettingsActivity : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.emailEt.setText(getValue("email", "nikhilesh@suprsend.com"))
+        binding.emailEt.setText(getFromSp("email", "nikhilesh@suprsend.com"))
         binding.emailTv.clickWithThrottle {
             val email = binding.emailEt.text.toString()
             CommonAnalyticsHandler.setEmail(email)
-            storeValue("email", email)
+            storeInSp("email", email)
         }
         binding.unSetEmailTv.clickWithThrottle {
             val email = binding.emailEt.text.toString()
             CommonAnalyticsHandler.unSetEmail(email)
-            storeValue("email", "")
+            storeInSp("email", "")
             binding.emailEt.setText("")
         }
 
-        binding.smsEt.setText(getValue("sms", "+918983364103"))
+        binding.smsEt.setText(getFromSp("sms", "+918983364103"))
         binding.smsTv.clickWithThrottle {
             val sms = binding.smsEt.text.toString()
             CommonAnalyticsHandler.setSms(sms)
-            storeValue("sms", sms)
+            storeInSp("sms", sms)
         }
         binding.unSetSmsTv.clickWithThrottle {
             val sms = binding.smsEt.text.toString()
             CommonAnalyticsHandler.unSetSms(sms)
-            storeValue("sms", "")
+            storeInSp("sms", "")
             binding.smsEt.setText("")
         }
 
-        binding.whatsAppEt.setText(getValue("whatsapp", "+918983364103"))
+        binding.whatsAppEt.setText(getFromSp("whatsapp", "+918983364103"))
         binding.whatsAppTv.clickWithThrottle {
             val whatsapp = binding.whatsAppEt.text.toString()
             CommonAnalyticsHandler.setWhatsApp(whatsapp)
-            storeValue("whatsapp", whatsapp)
+            storeInSp("whatsapp", whatsapp)
         }
         binding.unSetWhatsAppTv.clickWithThrottle {
             val email = binding.whatsAppEt.text.toString()
             CommonAnalyticsHandler.unSetWhatsApp(email)
-            storeValue("whatsapp", "")
+            storeInSp("whatsapp", "")
             binding.whatsAppEt.setText("")
         }
 
@@ -90,14 +93,8 @@ class SettingsActivity : AppCompatActivity() {
         AppCreator.setEmail(this, "")
     }
 
-    private fun getValue(key: String, default: String = ""): String {
-        return defaultSharedPreferences.getString(key, default) ?: ""
-    }
-
-    private fun storeValue(key: String, value: String) {
-        defaultSharedPreferences.Edit {
-            putString(key, value)
-        }
+    companion object {
+        const val APP_INBOX_THEME = "inbox_theme"
     }
 }
 

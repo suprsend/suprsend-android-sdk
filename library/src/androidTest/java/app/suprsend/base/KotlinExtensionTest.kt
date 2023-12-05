@@ -56,7 +56,6 @@ class KotlinExtensionTest {
         assertEquals(721.45, newJsonObject["discount"])
     }
 
-
     @Test
     fun testRandomFunctionLength() {
         assertEquals(1, getRandomString(1).length)

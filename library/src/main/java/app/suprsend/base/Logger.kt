@@ -22,5 +22,4 @@ internal object Logger {
     private fun isLogAllowed(level: Int): Boolean {
         return logLevel.num <= level
     }
-
 }

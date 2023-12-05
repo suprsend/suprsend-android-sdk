@@ -1,6 +1,7 @@
 package app.suprsend.user.preference
 
 import app.suprsend.SSApiInternal
+import app.suprsend.base.HttPResponse
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.createAuthorization
@@ -8,7 +9,6 @@ import app.suprsend.base.getDate
 import app.suprsend.base.httpCall
 import app.suprsend.config.ConfigHelper
 import app.suprsend.event.EventFlushHandler
-import app.suprsend.event.HttPResponse
 import org.json.JSONArray
 import org.json.JSONObject
 

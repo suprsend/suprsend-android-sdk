@@ -11,6 +11,7 @@ import app.suprsend.base.isMobileNumberValid
 import app.suprsend.base.isValidEmail
 import app.suprsend.base.size
 import app.suprsend.event.PayloadCreator
+import app.suprsend.notification.NotificationActionVo
 import app.suprsend.user.UserLocalDatasource
 import org.json.JSONArray
 import org.json.JSONObject
@@ -122,7 +123,6 @@ internal object SSInternalUser {
         } else {
             Logger.e(TAG, "Email is not valid : $email")
         }
-
     }
 
     fun unSetEmail(email: String) {
@@ -247,6 +247,18 @@ internal object SSInternalUser {
         )
     }
 
+    fun notificationClicked(notificationActionVo: NotificationActionVo) {
+        SSApiInternal.saveTrackEventPayload(
+            eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
+            propertiesJO = JSONObject().apply {
+                put("id", notificationActionVo.notificationId)
+                if (!notificationActionVo.actionId.isNullOrBlank()) {
+                    put("label_id", notificationActionVo.actionId)
+                }
+            }
+        )
+    }
+
     fun storeOperatorPayload(properties: JSONObject? = null, operator: String, setPropertiesArray: JSONArray? = null) {
 
         SdkAndroidCreator
@@ -271,7 +283,6 @@ internal object SSInternalUser {
             return
         }
         storeOperatorPayload(properties = filteredProperties, operator = operator)
-
     }
 
     const val TAG = SSApiInternal.TAG

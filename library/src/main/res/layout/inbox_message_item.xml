@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itemContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="5dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginEnd="5dp"
+    android:background="@drawable/inbox_message_item_bg"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:layout_margin="@dimen/margin_10">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/headerTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:clickable="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="This is the header"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imageView"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_below="@id/headerTv"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="8dp"
+        android:clickable="false"
+        android:scaleType="fitXY"
+        android:textSize="14sp"
+        android:visibility="gone"
+        tools:background="#EFD2D2"
+        tools:visibility="gone" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/descriptionText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/headerTv"
+        android:layout_marginEnd="8dp"
+        android:layout_toStartOf="@id/readStatusIv"
+        android:layout_toEndOf="@id/imageView"
+        android:clickable="false"
+        android:gravity="start"
+        tools:background="#FFF"
+        tools:text="Seen Message Message Message Message Message Message Message Message Message Message" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/readStatusIv"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:clickable="false"
+        android:src="@drawable/ic_unread_circle"
+        android:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/timeTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/descriptionText"
+        android:layout_marginTop="4dp"
+        android:clickable="false"
+        android:text="17/05/2022 at 10:43 AM" />
+
+
+</RelativeLayout>

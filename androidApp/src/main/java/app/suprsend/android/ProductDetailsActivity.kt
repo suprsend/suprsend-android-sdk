@@ -4,17 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.android.databinding.ActivityProductDetailsBinding
+import app.suprsend.inbox.SSInboxActivity
+import app.suprsend.inbox.SSInboxConfig
 import org.json.JSONObject
 
 class ProductDetailsActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityProductDetailsBinding
-
     lateinit var productVo: ProductVo
+    lateinit var ssInboxConfig: SSInboxConfig
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        ssInboxConfig = getThemeJson()?.let { SSInboxConfig(it) } ?: SSInboxConfig()
         if (AppCreator.getEmail(this).isBlank()) {
             startActivity(Intent(this, WelcomeActivity::class.java))
             finishAffinity()
@@ -46,6 +48,36 @@ class ProductDetailsActivity : AppCompatActivity() {
             myToast("Called : remove : choices")
             CommonAnalyticsHandler.remove("choices", productVo.title)
         }
+
+        binding
+            .inboxBellView
+            .initialize(
+                distinctId = AppCreator.getEmail(this),
+                // This is generated here just for testing purpose we do not recommend doing this in mobile app instead this should be generated on server
+                // We should not keep inbox secret at mobile end
+                subscriberId = HmacGeneratation()
+                    .hmacRawURLSafeBase64String(
+                        AppCreator.getEmail(this),
+                        BuildConfig.INBOX_SECRET
+                    ),
+                ssInboxConfig = ssInboxConfig
+            )
+        binding
+            .inboxBellView
+            .setOnClickListener {
+                val intent = Intent(this, SSInboxActivity::class.java)
+                intent.putExtra(SSInboxActivity.DISTINCT_ID, AppCreator.getEmail(this))
+                intent.putExtra(
+                    SSInboxActivity.SUBSCRIBER_ID,
+                    HmacGeneratation()
+                        .hmacRawURLSafeBase64String(
+                            AppCreator.getEmail(this),
+                            BuildConfig.INBOX_SECRET
+                        )
+                )
+                intent.putExtra(SSInboxActivity.CONFIG, ssInboxConfig)
+                startActivity(intent)
+            }
     }
 
     override fun onNewIntent(newIntent: Intent?) {
@@ -57,6 +89,16 @@ class ProductDetailsActivity : AppCompatActivity() {
         }
 
         loadProduct(productId)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        binding.inboxBellView.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        binding.inboxBellView.onStop()
     }
 
     private fun loadProduct(productId: String) {

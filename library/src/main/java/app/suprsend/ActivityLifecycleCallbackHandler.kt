@@ -5,8 +5,7 @@ import android.app.Application
 import android.os.Bundle
 import app.suprsend.base.Logger
 
-internal class ActivityLifecycleCallbackHandler(
-) : Application.ActivityLifecycleCallbacks {
+internal class ActivityLifecycleCallbackHandler() : Application.ActivityLifecycleCallbacks {
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
     }
 

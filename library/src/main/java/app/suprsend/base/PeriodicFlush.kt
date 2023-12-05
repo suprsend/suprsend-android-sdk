@@ -29,7 +29,6 @@ internal object PeriodicFlush {
         handler.removeCallbacks(runnable)
     }
 
-
     private val runnable = Runnable {
         SSApiInternal.flush()
         if (startPeriodicFlush) {
@@ -41,6 +40,4 @@ internal object PeriodicFlush {
         val time = SSConstants.PERIODIC_FLUSH_EVENT_IN_SEC * 1000L
         handler.postDelayed(runnable, time)
     }
-
-
 }

@@ -1,6 +1,5 @@
 package app.suprsend.base
 
-
 internal class BasicDetails(
     val apiKey: String,
     val apiSecret: String,

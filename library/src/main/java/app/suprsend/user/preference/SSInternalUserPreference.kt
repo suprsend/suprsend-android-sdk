@@ -1,6 +1,7 @@
 package app.suprsend.user.preference
 
 import android.annotation.SuppressLint
+import app.suprsend.base.HttPResponse
 import app.suprsend.base.Response
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
@@ -11,7 +12,7 @@ import app.suprsend.base.safeBoolean
 import app.suprsend.base.safeJsonArray
 import app.suprsend.base.safeString
 import app.suprsend.base.safeStringDefault
-import app.suprsend.event.HttPResponse
+import app.suprsend.base.toResponse
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -296,14 +297,6 @@ internal object SSInternalUserPreference {
             null
         } else {
             JSONObject(response)
-        }
-    }
-
-    private fun HttPResponse.toResponse(): Response<JSONObject> {
-        return if (ok()) {
-            Response.Success(JSONObject(response ?: ""))
-        } else {
-            Response.Error(IllegalStateException("Something went wrong $statusCode"))
         }
     }
 

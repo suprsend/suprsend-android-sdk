@@ -3,8 +3,6 @@ package app.suprsend.base
 import app.suprsend.config.ConfigHelper
 import app.suprsend.event.Algo
 import app.suprsend.event.EventFlushHandler
-import app.suprsend.event.HttPResponse
-import app.suprsend.event.toMD5
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.IOException
@@ -12,6 +10,7 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.security.MessageDigest
 import java.util.Date
 
 internal fun httpCall(
@@ -92,6 +91,15 @@ internal fun createAuthorization(
     val signature = Algo.base64(Algo.generateHashWithHmac256(secret, stringToSign))
 
     return "$envKey:$signature"
+}
+
+internal fun String.toMD5(): String {
+    val bytes = MessageDigest.getInstance("MD5").digest(this.toByteArray(Charsets.UTF_8))
+    return bytes.toHex()
+}
+
+private fun ByteArray.toHex(): String {
+    return joinToString("") { "%02x".format(it) }
 }
 
 fun getDate(): String {

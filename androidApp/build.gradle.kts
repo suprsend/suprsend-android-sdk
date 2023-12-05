@@ -22,6 +22,9 @@ android {
         multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
     signingConfigs {
         getByName("debug") {
@@ -48,8 +51,9 @@ android {
             buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
             buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
             buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
-            buildConfigField("String", "SS_TENANT_ID", "${Deps.SS_TENANT_ID}")
             buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
+            buildConfigField("String", "SS_TENANT_ID", "${Deps.SS_TENANT_ID}")
+            buildConfigField("String", "INBOX_SECRET", "\"${Deps.INBOX_SECRET}\"")
             versionNameSuffix = "(d)"
             isDebuggable = true
             isCrunchPngs = false
@@ -61,8 +65,9 @@ android {
             buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
             buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
             buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
-            buildConfigField("String", "SS_TENANT_ID", "${Deps.SS_TENANT_ID}")
             buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
+            buildConfigField("String", "SS_TENANT_ID", "${Deps.SS_TENANT_ID}")
+            buildConfigField("String", "INBOX_SECRET", "\"${Deps.INBOX_SECRET}\"")
             signingConfig = signingConfigs.getByName("release")
             isDebuggable = false
             isMinifyEnabled = true

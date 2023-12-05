@@ -14,4 +14,4 @@ internal fun isMobileNumberValid(mobile: String): Boolean {
         false
 }
 
-fun CharSequence?.isValidEmail() = !isNullOrEmpty() && Patterns.EMAIL_ADDRESS.matcher(this?:"").matches()
+fun CharSequence?.isValidEmail() = !isNullOrEmpty() && Patterns.EMAIL_ADDRESS.matcher(this ?: "").matches()

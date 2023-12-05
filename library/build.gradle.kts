@@ -5,6 +5,10 @@ plugins {
     id("signing")
 }
 
+apply {
+    from("$rootDir/ktlint.gradle")
+}
+
 android {
     compileSdkVersion(Deps.Android.compileSdk)
     buildToolsVersion(Deps.Android.buildToolsVersion)
@@ -48,12 +52,21 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging:${Deps.Firebase.messaging}")
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.38")
 
+    //    implementation("androidx.core:core:1.3.0")
+//    implementation("androidx.viewpager:viewpager:1.0.0")
+//    implementation("androidx.fragment:fragment:1.1.0")
+//    implementation("com.google.android.material:material:1.2.1")
+    implementation("androidx.appcompat:appcompat:1.2.0")
+    implementation("androidx.recyclerview:recyclerview:1.1.0")
+    implementation("com.github.bumptech.glide:glide:4.11.0")
+
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20230227")
     testImplementation("org.robolectric:robolectric:4.10.3")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+
 
 }
 

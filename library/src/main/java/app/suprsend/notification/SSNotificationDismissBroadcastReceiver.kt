@@ -62,7 +62,7 @@ class SSNotificationDismissBroadcastReceiver : BroadcastReceiver() {
 
     companion object {
         const val TAG = "NDR"
-        fun notificationDismissIntent(context: Context, notificationDismissVo: NotificationDismissVo): Intent {
+        internal fun notificationDismissIntent(context: Context, notificationDismissVo: NotificationDismissVo): Intent {
             val bundle = Bundle()
             bundle.putString(NotificationRedirection.FLOW_NAME, NotificationRedirection.NOTIFICATION_DISMISS.name)
             bundle.putSerializable(NotificationRedirection.FLOW_PAYLOAD, notificationDismissVo)

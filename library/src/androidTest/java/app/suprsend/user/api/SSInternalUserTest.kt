@@ -33,7 +33,6 @@ class SSInternalUserTest : BaseTest() {
             assertEquals(1, propertiesPayload.size())
             assertEquals(propertyValue, propertiesPayload.get(propertyName))
         }
-
     }
 
     @Test
@@ -46,7 +45,6 @@ class SSInternalUserTest : BaseTest() {
         eventsList = EventLocalDatasource().getEvents(10)
         assertEquals(0, eventsList.size)
     }
-
 
     @Test
     fun testSetJsonOperator() {
@@ -62,7 +60,6 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(5, propertiesPayload.size())
         verifyProductProperties(propertiesPayload)
-
     }
 
     @Test
@@ -95,7 +92,6 @@ class SSInternalUserTest : BaseTest() {
             assertEquals(1, propertiesPayload.size())
             assertEquals(propertyValue, propertiesPayload.get(propertyName))
         }
-
     }
 
     @Test
@@ -124,7 +120,6 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(5, propertiesPayload.size())
         verifyProductProperties(propertiesPayload)
-
     }
 
     @Test
@@ -163,7 +158,6 @@ class SSInternalUserTest : BaseTest() {
             assertEquals(1, propertiesPayload.size())
             assertEquals(propertyValue, propertiesPayload.get(propertyName))
         }
-
     }
 
     @Test
@@ -200,7 +194,6 @@ class SSInternalUserTest : BaseTest() {
         assertEquals(43.1, propertiesPayload.getDouble("Product Price"), 0.0)
         assertEquals(10, propertiesPayload.getInt("Product Quantity"))
         assertEquals(9999999999999L, propertiesPayload.getLong("Product Sold"))
-
     }
 
     @Test
@@ -235,7 +228,6 @@ class SSInternalUserTest : BaseTest() {
             assertEquals(1, propertiesPayload.size())
             assertEquals(propertyValue, propertiesPayload.get(propertyName))
         }
-
     }
 
     @Test
@@ -264,7 +256,6 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(5, propertiesPayload.size())
         verifyProductProperties(propertiesPayload)
-
     }
 
     @Test
@@ -297,7 +288,6 @@ class SSInternalUserTest : BaseTest() {
             assertEquals(1, propertiesPayload.size())
             assertEquals(propertyValue, propertiesPayload.get(propertyName))
         }
-
     }
 
     @Test
@@ -326,7 +316,6 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(5, propertiesPayload.size())
         verifyProductProperties(propertiesPayload)
-
     }
 
     @Test
@@ -344,7 +333,6 @@ class SSInternalUserTest : BaseTest() {
 
         val operator = SSConstants.UNSET
 
-
         SSInternalUser.unSet("Product Name")
 
         val eventsList = EventLocalDatasource().getEvents(10)
@@ -355,7 +343,6 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(1, propertiesPayload.length())
         assertEquals("Product Name", propertiesPayload.get(0))
-
     }
 
     @Test
@@ -374,7 +361,6 @@ class SSInternalUserTest : BaseTest() {
         assertEquals(2, propertiesPayload.length())
         assertEquals("P1", propertiesPayload.get(0))
         assertEquals("P2", propertiesPayload.get(1))
-
     }
 
     @Test
@@ -393,7 +379,6 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(1, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.EMAIL))
-
     }
 
     @Test
@@ -412,7 +397,6 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(1, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.EMAIL))
-
     }
 
     @Test
@@ -431,7 +415,6 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(1, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.SMS))
-
     }
 
     @Test
@@ -450,7 +433,6 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(1, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.SMS))
-
     }
 
     @Test
@@ -469,7 +451,6 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(1, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.WHATS_APP))
-
     }
 
     @Test
@@ -488,7 +469,6 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(1, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.WHATS_APP))
-
     }
 
     @Test
@@ -510,7 +490,6 @@ class SSInternalUserTest : BaseTest() {
         assertEquals(testValue, propertiesPayload.get(SSConstants.PUSH_ANDROID_TOKEN))
         assertEquals(SSConstants.PUSH_VENDOR_FCM, propertiesPayload.get(SSConstants.PUSH_VENDOR))
         assertEquals("D1", propertiesPayload.get(SSConstants.DEVICE_ID))
-
     }
 
     @Test
@@ -532,7 +511,6 @@ class SSInternalUserTest : BaseTest() {
         assertEquals(testValue, propertiesPayload.get(SSConstants.PUSH_ANDROID_TOKEN))
         assertEquals(SSConstants.PUSH_VENDOR_FCM, propertiesPayload.get(SSConstants.PUSH_VENDOR))
         assertEquals("D1", propertiesPayload.get(SSConstants.DEVICE_ID))
-
     }
 
     @Test
@@ -554,7 +532,6 @@ class SSInternalUserTest : BaseTest() {
         assertEquals(testValue, propertiesPayload.get(SSConstants.PUSH_ANDROID_TOKEN))
         assertEquals(SSConstants.PUSH_VENDOR_XIAOMI, propertiesPayload.get(SSConstants.PUSH_VENDOR))
         assertEquals("D1", propertiesPayload.get(SSConstants.DEVICE_ID))
-
     }
 
     @Test
@@ -576,7 +553,6 @@ class SSInternalUserTest : BaseTest() {
         assertEquals(testValue, propertiesPayload.get(SSConstants.PUSH_ANDROID_TOKEN))
         assertEquals(SSConstants.PUSH_VENDOR_XIAOMI, propertiesPayload.get(SSConstants.PUSH_VENDOR))
         assertEquals("D1", propertiesPayload.get(SSConstants.DEVICE_ID))
-
     }
 
     @Test

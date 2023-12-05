@@ -3,19 +3,23 @@ package app.suprsend
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
+import app.suprsend.base.executorService
 import app.suprsend.base.filterSSReservedKeys
 import app.suprsend.base.flushExecutorService
 import app.suprsend.base.isInValidKey
+import app.suprsend.base.safeString
 import app.suprsend.base.size
-
 import app.suprsend.base.uuid
 import app.suprsend.config.ConfigHelper
 import app.suprsend.event.EventFlushHandler
 import app.suprsend.event.PayloadCreator
 import app.suprsend.log.LoggerCallback
+import app.suprsend.notification.NotificationActionType
+import app.suprsend.notification.NotificationActionVo
 import app.suprsend.sprop.SuperPropertiesLocalDataSource
 import app.suprsend.user.UserLocalDatasource
 import app.suprsend.user.api.SSInternalUser
+import org.json.JSONArray
 import app.suprsend.user.preference.SSInternalUserPreference
 import org.json.JSONObject
 
@@ -53,7 +57,7 @@ internal object SSApiInternal {
     }
 
     fun setSuperProperties(properties: JSONObject) {
-        if(properties.size()==0){
+        if (properties.size() == 0) {
             return
         }
         Logger.i(TAG, "Setting super properties $properties")
@@ -83,17 +87,17 @@ internal object SSApiInternal {
         saveTrackEventPayload(eventName = SSConstants.S_EVENT_PURCHASE_MADE, propertiesJO = properties)
     }
 
-    //Todo : Need clarity cover test cases
+    // Todo : Need clarity cover test cases
     fun notificationSubscribed() {
         saveTrackEventPayload(eventName = SSConstants.S_EVENT_NOTIFICATION_SUBSCRIBED)
     }
 
-    //Todo : Need clarity cover test cases
+    // Todo : Need clarity cover test cases
     fun notificationUnSubscribed() {
         saveTrackEventPayload(eventName = SSConstants.S_EVENT_NOTIFICATION_UNSUBSCRIBED)
     }
 
-    //Todo : Need clarity cover test cases
+    // Todo : Need clarity cover test cases
     fun pageVisited() {
         saveTrackEventPayload(eventName = SSConstants.S_EVENT_PAGE_VISITED)
     }
@@ -112,8 +116,8 @@ internal object SSApiInternal {
             Logger.i(EventFlushHandler.TAG, "Flush event started")
             try {
                 EventFlushHandler.flush()
-            }catch (e:Exception){
-                Logger.e(EventFlushHandler.TAG, "Error occurred while flushing",e)
+            } catch (e: Exception) {
+                Logger.e(EventFlushHandler.TAG, "Error occurred while flushing", e)
             }
             isFlushing = false
             Logger.i(EventFlushHandler.TAG, "Flush event completed")
@@ -129,6 +133,7 @@ internal object SSApiInternal {
             removeNotificationToken()
         SuperPropertiesLocalDataSource().removeAll()
         SSInternalUserPreference.clearUserPreference()
+        ConfigHelper.addOrUpdate(SSConstants.INBOX_RESPONSE, "[]")
         userLocalDatasource.identify(newID)
         appendNotificationToken()
     }
@@ -152,9 +157,7 @@ internal object SSApiInternal {
                 ).toString(),
                 isDirty = true
             )
-
     }
-
 
     private fun appendNotificationToken() {
         val fcmToken = getFcmToken()
@@ -245,6 +248,26 @@ internal object SSApiInternal {
 
     fun getBaseUrl(): String {
         return ConfigHelper.get(SSConstants.CONFIG_API_BASE_URL) ?: SSConstants.DEFAULT_BASE_API_URL
+    }
+
+    fun inBoxNotificationClicked(notificationId: String) {
+
+        executorService.execute {
+            ConfigHelper.get(SSConstants.INBOX_RESPONSE)
+            val response = ConfigHelper.get(SSConstants.INBOX_RESPONSE) ?: "[]"
+            val jsonArray = JSONArray(response)
+            for (i in 0 until jsonArray.length()) {
+                val notificationJo = jsonArray.getJSONObject(i)
+                val id = notificationJo.safeString("n_id") ?: ""
+                if (id == notificationId) {
+                    notificationJo.put("seen_on", System.currentTimeMillis())
+                    jsonArray.put(i, notificationJo)
+                    break
+                }
+            }
+            ConfigHelper.addOrUpdate(SSConstants.INBOX_RESPONSE, jsonArray.toString())
+            SSInternalUser.notificationClicked(NotificationActionVo(notificationId = notificationId))
+        }
     }
 
     const val TAG = "ssinternal"

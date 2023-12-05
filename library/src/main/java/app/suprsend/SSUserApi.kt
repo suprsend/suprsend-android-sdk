@@ -1,6 +1,7 @@
 package app.suprsend
 
 import app.suprsend.base.executorService
+import app.suprsend.notification.NotificationActionVo
 import app.suprsend.user.api.SSInternalUser
 import app.suprsend.user.api.UserApiInternalContract
 import app.suprsend.user.preference.Preferences
@@ -155,5 +156,10 @@ class SSUserApi : UserApiInternalContract {
 
     override fun getPreferences(): Preferences {
         return preference
+    }
+    override fun notificationClicked(notificationId: String, actionId: String?) {
+        executorService.execute {
+            SSInternalUser.notificationClicked(NotificationActionVo(notificationId =notificationId))
+        }
     }
 }

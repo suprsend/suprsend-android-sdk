@@ -4,14 +4,12 @@ import android.app.Activity
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import app.suprsend.SSApi
-import app.suprsend.SSApiInternal
 import app.suprsend.base.Logger
-import app.suprsend.base.SSConstants
 import app.suprsend.base.mapToEnum
-import org.json.JSONObject
+import app.suprsend.base.safeIntent
+import app.suprsend.user.api.SSInternalUser
 import java.io.Serializable
 
 class NotificationRedirectionActivity : Activity() {
@@ -48,49 +46,36 @@ class NotificationRedirectionActivity : Activity() {
         }
     }
 
-
     private fun handleNotificationActionClicked(activityExtras: Bundle) {
         Logger.i(TAG, "Notification Clicked")
         val notificationActionVo = getNotificationActionVo(activityExtras)
         notificationActionVo ?: return
 
-        val instance = SSApi.getInstanceFromCachedApiKey()
-        SSApiInternal.saveTrackEventPayload(
-            eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
-            propertiesJO = JSONObject().apply {
-                put("id", notificationActionVo.notificationId)
-                if(notificationActionVo.notificationActionType == NotificationActionType.BUTTON) {
-                    put("label_id", notificationActionVo.id)
-                }
-            }
-        )
+        val instance = SSApi.getInstance()
+        SSInternalUser.notificationClicked(notificationActionVo)
         instance.flush()
 
         // Remove notification
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as? NotificationManager
         if (notificationActionVo.notificationActionType == NotificationActionType.BUTTON)
-            notificationManager?.cancel((notificationActionVo.notificationId ?: "").hashCode())
+            notificationManager?.cancel(notificationActionVo.notificationId.hashCode())
 
         // Target intent
         val link = notificationActionVo.link
-        val notificationActionIntent = if (!link.isNullOrBlank()) {
-            Intent(Intent.ACTION_VIEW, Uri.parse(link))
-        } else {
-            packageManager.getLaunchIntentForPackage(packageName)
-        }
+        val notificationActionIntent = safeIntent(link)
         notificationActionIntent?.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        startActivity(notificationActionIntent)
+        if (notificationActionIntent != null)
+            startActivity(notificationActionIntent)
     }
 
     private fun getNotificationActionVo(activityExtras: Bundle): NotificationActionVo? {
         return activityExtras.get(NotificationRedirection.FLOW_PAYLOAD) as? NotificationActionVo
     }
 
-
     companion object {
         const val TAG = "NRA"
 
-        fun getIntent(context: Context, notificationActionVo: NotificationActionVo): Intent {
+        internal fun getIntent(context: Context, notificationActionVo: NotificationActionVo): Intent {
             val bundle = Bundle()
             bundle.putString(NotificationRedirection.FLOW_NAME, NotificationRedirection.NOTIFICATION_CLICKED.name)
             bundle.putSerializable(NotificationRedirection.FLOW_PAYLOAD, notificationActionVo)
@@ -110,6 +95,6 @@ enum class NotificationRedirection {
     }
 }
 
-data class NotificationDismissVo(
+internal data class NotificationDismissVo(
     val notificationId: String
 ) : Serializable

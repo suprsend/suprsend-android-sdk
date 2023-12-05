@@ -8,6 +8,13 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.lang.StringBuilder
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 object AppCreator {
     private const val BASE_IMAGE_SERVER_URL = "https://freeappcreator.in/heruku"
@@ -89,11 +96,42 @@ fun Activity.myToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
 
-val Context.defaultSharedPreferences: SharedPreferences
+internal val Context.defaultSharedPreferences: SharedPreferences
     get() = PreferenceManager.getDefaultSharedPreferences(this)
 
-inline fun SharedPreferences.Edit(func: SharedPreferences.Editor.() -> Unit) {
+internal inline fun SharedPreferences.Edit(func: SharedPreferences.Editor.() -> Unit) {
     val editor = edit()
     editor.func()
     editor.apply()
+}
+
+internal fun Activity.storeInSp(key: String, value: String) {
+    defaultSharedPreferences.Edit {
+        putString(key, value)
+    }
+}
+
+internal fun Activity.getFromSp(key: String, default: String = ""): String {
+    return defaultSharedPreferences.getString(key, default) ?: ""
+}
+
+internal val demoAppExecutorService: ExecutorService by lazy { Executors.newFixedThreadPool(1) }
+
+internal fun makeGetCall(urlStr: String): String {
+    val url = URL(urlStr)
+    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+
+    var response = ""
+    try {
+        val br = BufferedReader(InputStreamReader(connection.inputStream))
+        val sb = StringBuilder()
+        var line: String?
+        while (br.readLine().also { line = it } != null) {
+            sb.append(line).append('\n')
+        }
+        response = sb.toString()
+    } finally {
+        connection.disconnect()
+    }
+    return response
 }

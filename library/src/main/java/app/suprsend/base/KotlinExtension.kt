@@ -1,8 +1,28 @@
 package app.suprsend.base
 
+import android.content.Context
+import android.content.Intent
+import android.content.res.Resources
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Parcel
+import androidx.core.content.res.ResourcesCompat
+import app.suprsend.config.ConfigHelper
+import app.suprsend.event.Algo
+import app.suprsend.event.EventFlushHandler
+import java.io.BufferedReader
+import java.io.DataOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.Locale
 import org.json.JSONArray
 import org.json.JSONObject
+
 import java.net.URLEncoder
+import java.security.MessageDigest
 
 internal inline fun <reified T : Enum<T>> String?.mapToEnum(defaultValue: T): T {
     return mapToEnum<T>() ?: defaultValue
@@ -22,7 +42,6 @@ internal fun String?.toKotlinJsonObject(): JSONObject {
         JSONObject()
     }
 }
-
 
 internal fun JSONObject.filterSSReservedKeys(): JSONObject {
     val filteredJson = JSONObject()
@@ -109,6 +128,39 @@ internal fun getRandomString(length: Int): String {
         .map { allowedChars.random() }
         .joinToString("")
 }
+
+internal fun safeDrawable(resources: Resources, drawableId: Int, theme: Resources.Theme? = null): Drawable? {
+    try {
+        return ResourcesCompat.getDrawable(resources, drawableId, theme)
+    } catch (e: Exception) {
+    }
+    return null
+}
+
+internal fun Context.getDrawableIdFromName(drawableName: String?): Int? {
+    drawableName ?: return null
+    return try {
+        resources.getIdentifier(drawableName, "drawable", packageName)
+    } catch (e: Exception) {
+        null
+    }
+}
+
+internal fun Context.safeIntent(link: String? = null, defaultLauncherIntent: Boolean = true): Intent? {
+    return if (!link.isNullOrBlank()) {
+        Intent(Intent.ACTION_VIEW, Uri.parse(link))
+    } else {
+        if (defaultLauncherIntent)
+            packageManager.getLaunchIntentForPackage(packageName)
+        else null
+    }
+}
+
+internal fun Parcel.safeString(): String {
+    return readString() ?: ""
+}
+
+
 
 internal fun JSONArray.forEach(call: (jo: JSONObject) -> Boolean?) {
     for (i in 0 until length()) {

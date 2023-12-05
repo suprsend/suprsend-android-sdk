@@ -62,6 +62,13 @@ https://github.com/suprsend/suprsend-android-sdk/pull/7/files
 com.github.suprsend:suprsend-kmm-sdk:0.1Beta6
 - Fix app launch & app install were not getting tracked in beta 5 due to bug that $ was getting filtered
 
+com.github.suprsend:suprsend-kmm-sdk:0.1Beta5
+ - commit 48ef0436a16c89d3bd1648e8ccf020938ea0d767
+ - Bug fix - ss_ filter only for prefix
+ 
+com.github.suprsend:suprsend-kmm-sdk:0.1Beta4
+ - Xiaomi Support
+
 com.github.suprsend:suprsend-kmm-sdk:0.1Beta3
 - Xiaomi Messaging Support
 - commit 14020eb5be5d8be69e2cdd84e8be965421f1be4f

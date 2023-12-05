@@ -1,6 +1,7 @@
 package app.suprsend.event
 
 import app.suprsend.SSApiInternal
+import app.suprsend.base.HttPResponse
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
@@ -11,7 +12,6 @@ import app.suprsend.base.toKotlinJsonObject
 import app.suprsend.database.Event_Model
 import org.json.JSONArray
 import java.security.MessageDigest
-import java.util.Date
 
 internal object EventFlushHandler {
     const val TAG = "flush"
@@ -71,27 +71,4 @@ internal object EventFlushHandler {
     }
 
 
-}
-
-data class HttPResponse(
-    val statusCode: Int,
-    val response: String? = null
-){
-    fun ok(): Boolean {
-        return statusCode == 200
-    }
-
-    fun accepted(): Boolean {
-        return statusCode == 202
-    }
-
-}
-
-internal fun String.toMD5(): String {
-    val bytes = MessageDigest.getInstance("MD5").digest(this.toByteArray(Charsets.UTF_8))
-    return bytes.toHex()
-}
-
-private fun ByteArray.toHex(): String {
-    return joinToString("") { "%02x".format(it) }
 }

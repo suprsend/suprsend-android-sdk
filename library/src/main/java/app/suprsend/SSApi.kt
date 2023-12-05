@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import app.suprsend.base.BasicDetails
 import app.suprsend.base.LogLevel
+import app.suprsend.base.Logger
 import app.suprsend.base.PeriodicFlush
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
@@ -16,14 +17,12 @@ import app.suprsend.user.api.UserApiInternalContract
 import app.suprsend.xiaomi.SSXiaomiReceiver
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
 import com.xiaomi.mipush.sdk.Logger as XiaomiLogger
-import app.suprsend.base.Logger
 import app.suprsend.log.LoggerCallback
 import com.xiaomi.mipush.sdk.MiPushClient
 import org.json.JSONObject
 
 class SSApi
-private constructor(
-) {
+private constructor() {
 
     private val ssUserApi: SSUserApi = SSUserApi()
 
@@ -140,7 +139,6 @@ private constructor(
             // Device Properties
             SSApiInternal.setDeviceId(SdkAndroidCreator.deviceInfo.getDeviceId())
 
-
             if (!SSApiInternal.isAppInstalled()) {
                 // App Launched
                 SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_INSTALLED)
@@ -158,7 +156,6 @@ private constructor(
                 SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_LAUNCHED)
                 SSApiInternal.setAppLaunchTime(currentTime)
             }
-
         }
 
         fun setLogger(loggerCallback: LoggerCallback) {
