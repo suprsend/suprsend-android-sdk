@@ -111,7 +111,7 @@ object SSNotificationHelper {
                     if (pushVendor != null)
                         put(SSConstants.PUSH_VENDOR, pushVendor)
                     put("channelSupport", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                    put("notificationPermissionGranted", areNotificationsEnabled)
+                    put("areNotificationsEnabled", areNotificationsEnabled)
                     put("channelId", rawNotification.channelId)
                     put("isChannelEnabled", isChannelEnabled)
                     put("silentPush", rawNotification.silentPush)
