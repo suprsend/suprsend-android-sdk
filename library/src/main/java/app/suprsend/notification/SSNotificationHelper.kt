@@ -94,15 +94,27 @@ object SSNotificationHelper {
 
             // Notification Delivered Event
             val areNotificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
+            val isChannelEnabled = rawNotification.channelId
+                ?.let { channelId ->
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        notificationManager.getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
+                    } else {
+                        true
+                    }
+                } ?: true
             val instance = SSApi.getInstanceFromCachedApiKey()
             SSApiInternal.saveTrackEventPayload(
                 eventName = SSConstants.S_EVENT_NOTIFICATION_DELIVERED,
                 propertiesJO = JSONObject().apply {
                     put("id", rawNotification.id)
-                    put("silentPush", rawNotification.silentPush)
-                    put("areNotificationsEnabled", areNotificationsEnabled)
                     if (pushVendor != null)
                         put(SSConstants.PUSH_VENDOR, pushVendor)
+                    put("channelSupport", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    put("notificationPermissionGranted", areNotificationsEnabled)
+                    put("channelId", rawNotification.channelId)
+                    put("isChannelEnabled", isChannelEnabled)
+                    put("silentPush", rawNotification.silentPush)
                 }
             )
             instance.flush()
