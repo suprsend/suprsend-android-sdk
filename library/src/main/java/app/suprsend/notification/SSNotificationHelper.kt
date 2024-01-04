@@ -84,43 +84,50 @@ object SSNotificationHelper {
         try {
             Logger.i("notification","showRawNotification $rawNotification")
 
-            val notificationManagerCompat = NotificationManagerCompat.from(context)
-            if(!notificationManagerCompat.areNotificationsEnabled()){
-                Logger.e("notification","Notifications are disabled please request the Manifest.permission.POST_NOTIFICATIONS permission")
+            //Local flag to avoid duplicate notifications
+            val showNotificationId = String.format(SSConstants.CONFIG_NOTIFICATION_GROUP_SHOWN, rawNotification.notificationGroupId)
+            val isShown = ConfigHelper.getBoolean(showNotificationId)
+            Logger.i("notification","Notification notificationGroupId : ${rawNotification.notificationGroupId} isShown: $isShown silentPush : ${rawNotification.silentPush}")
+            ConfigHelper.addOrUpdate(showNotificationId, true)
+            if (isShown == true)
                 return
-            }
 
-            // Notification Delivered
+            // Notification Delivered Event
+            val areNotificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
             val instance = SSApi.getInstanceFromCachedApiKey()
             SSApiInternal.saveTrackEventPayload(
                 eventName = SSConstants.S_EVENT_NOTIFICATION_DELIVERED,
                 propertiesJO = JSONObject().apply {
                     put("id", rawNotification.id)
+                    put("silentPush", rawNotification.silentPush)
+                    put("areNotificationsEnabled", areNotificationsEnabled)
                     if (pushVendor != null)
                         put(SSConstants.PUSH_VENDOR, pushVendor)
                 }
             )
-            instance?.flush()
+            instance.flush()
 
-            val showNotificationId = String.format(SSConstants.CONFIG_NOTIFICATION_GROUP_SHOWN, rawNotification.notificationGroupId)
-            val isShown = ConfigHelper.getBoolean(showNotificationId)
-            Logger.i("notification","Notification isShown : ${rawNotification.notificationGroupId} $isShown")
-            if (isShown == true)
+            if(rawNotification.silentPush) {
+                Logger.i("notification", "This is silent push ignored ui rendering")
                 return
-
-            ConfigHelper.addOrUpdate(showNotificationId, true)
+            }
 
             Logger.i("notification","showNotificationInternal")
-            showNotificationInternal(context, rawNotification.getNotificationVo())
+            showNotificationInternal(context,areNotificationsEnabled, rawNotification.getNotificationVo())
 
         } catch (e: Exception) {
             Logger.e("notification", "showRawNotification", e)
         }
     }
 
-    private fun showNotificationInternal(context: Context, notificationVo: NotificationVo) {
+    private fun showNotificationInternal(context: Context,areNotificationsEnabled:Boolean, notificationVo: NotificationVo) {
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if(!areNotificationsEnabled){
+            Logger.e("notification","Notifications are disabled please request the Manifest.permission.POST_NOTIFICATIONS permission")
+            return
+        }
 
         Logger.i("notification","setChannel")
         setChannel(context = context, notificationManager = notificationManager, notificationChannelVo = notificationVo.notificationChannelVo)
@@ -534,6 +541,7 @@ private fun String?.getRawNotification(): RawNotification {
     return RawNotification(
         id = id,
         notificationGroupId = notificationPayloadJO.safeString("notificationGroupId") ?: id,
+        silentPush = notificationPayloadJO.safeBoolean("silentPush") ?: false,
         channelId = notificationPayloadJO.safeString("channelId"),
         channelName = notificationPayloadJO.safeString("channelName"),
         channelDescription = notificationPayloadJO.safeString("channelDescription"),
