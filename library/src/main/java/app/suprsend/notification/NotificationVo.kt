@@ -5,6 +5,7 @@ import java.io.Serializable
 data class RawNotification(
     val id: String,
     val notificationGroupId: String,
+    val silentPush:Boolean = false,
 
     // Channel Details
     val channelId: String? = null,
