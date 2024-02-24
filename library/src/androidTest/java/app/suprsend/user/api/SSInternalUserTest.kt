@@ -508,7 +508,7 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(3, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.PUSH_ANDROID_TOKEN))
-        assertEquals(SSConstants.PUSH_VENDOR_FCM, propertiesPayload.get(SSConstants.PUSH_VENDOR))
+        assertEquals(SSConstants.PUSH_VENDOR_FCM, propertiesPayload.get(SSConstants.ID_PROVIDER))
         assertEquals("D1", propertiesPayload.get(SSConstants.DEVICE_ID))
 
     }
@@ -530,7 +530,7 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(3, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.PUSH_ANDROID_TOKEN))
-        assertEquals(SSConstants.PUSH_VENDOR_FCM, propertiesPayload.get(SSConstants.PUSH_VENDOR))
+        assertEquals(SSConstants.PUSH_VENDOR_FCM, propertiesPayload.get(SSConstants.ID_PROVIDER))
         assertEquals("D1", propertiesPayload.get(SSConstants.DEVICE_ID))
 
     }
@@ -552,7 +552,7 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(3, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.PUSH_ANDROID_TOKEN))
-        assertEquals(SSConstants.PUSH_VENDOR_XIAOMI, propertiesPayload.get(SSConstants.PUSH_VENDOR))
+        assertEquals(SSConstants.PUSH_VENDOR_XIAOMI, propertiesPayload.get(SSConstants.ID_PROVIDER))
         assertEquals("D1", propertiesPayload.get(SSConstants.DEVICE_ID))
 
     }
@@ -574,7 +574,7 @@ class SSInternalUserTest : BaseTest() {
         assertTrue(payload.has(operator))
         assertEquals(3, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.PUSH_ANDROID_TOKEN))
-        assertEquals(SSConstants.PUSH_VENDOR_XIAOMI, propertiesPayload.get(SSConstants.PUSH_VENDOR))
+        assertEquals(SSConstants.PUSH_VENDOR_XIAOMI, propertiesPayload.get(SSConstants.ID_PROVIDER))
         assertEquals("D1", propertiesPayload.get(SSConstants.DEVICE_ID))
 
     }
