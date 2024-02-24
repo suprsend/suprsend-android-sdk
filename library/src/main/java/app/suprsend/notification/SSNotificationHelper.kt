@@ -89,11 +89,12 @@ object SSNotificationHelper {
             val isShown = ConfigHelper.getBoolean(showNotificationId)
             Logger.i("notification", "Notification notificationGroupId : ${rawNotification.notificationGroupId} isShown: $isShown silentPush : ${rawNotification.silentPush}")
             ConfigHelper.addOrUpdate(showNotificationId, true)
-            if (isShown == true)
-                return
 
             // Notification Delivered Event
             val areNotificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
+            if(!areNotificationsEnabled){
+                Logger.e("notification","Notifications are disabled please request the Manifest.permission.POST_NOTIFICATIONS permission")
+            }
             val isChannelEnabled = rawNotification.channelId
                 ?.let { channelId ->
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -103,21 +104,29 @@ object SSNotificationHelper {
                         true
                     }
                 } ?: true
+            if(!isChannelEnabled){
+                Logger.e("notification","User has disabled the channel ${rawNotification.channelId}")
+            }
             val instance = SSApi.getInstanceFromCachedApiKey()
             SSApiInternal.saveTrackEventPayload(
                 eventName = SSConstants.S_EVENT_NOTIFICATION_DELIVERED,
                 propertiesJO = JSONObject().apply {
                     put("id", rawNotification.id)
-                    if (pushVendor != null)
+                    if (pushVendor != null) {
                         put(SSConstants.PUSH_VENDOR, pushVendor)
-                    put("channelSupport", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                    put("areNotificationsEnabled", areNotificationsEnabled)
-                    put("channelId", rawNotification.channelId)
-                    put("isChannelEnabled", isChannelEnabled)
-                    put("silentPush", rawNotification.silentPush)
+                        put(SSConstants.ID_PROVIDER, pushVendor)
+                    }
+                    put("are_notifications_enabled", areNotificationsEnabled)
+                    put("has_channel_support", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    put("channel_id", rawNotification.channelId)
+                    put("is_channel_enabled", isChannelEnabled)
+                    put("is_silent_push", rawNotification.silentPush)
                 }
             )
             instance.flush()
+
+            if (isShown == true)
+                return
 
             if (rawNotification.silentPush) {
                 Logger.i("notification", "This is silent push ignored ui rendering")
