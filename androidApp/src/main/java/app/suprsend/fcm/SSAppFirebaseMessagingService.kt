@@ -3,6 +3,7 @@ package app.suprsend.fcm
 import android.util.Log
 import app.suprsend.SSApi
 import app.suprsend.notification.SSNotificationHelper
+import app.suprsend.notification.isSuprSendRemoteMessage
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import org.json.JSONObject
@@ -11,14 +12,16 @@ class SSAppFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         try {
-            //Custom config event is sent in this custom fcm service for testing the custom payload
-            val jsonObject = JSONObject()
-            remoteMessage.data.keys.forEach {key->
-                if (!key.equals("supr_send_n_pl"))
-                    jsonObject.put(key, remoteMessage.data[key])
+            if (remoteMessage.isSuprSendRemoteMessage()) {
+                // Custom config event is sent in this custom fcm service for testing the custom payload
+                val jsonObject = JSONObject()
+                remoteMessage.data.keys.forEach { key ->
+                    if (!key.equals("supr_send_n_pl"))
+                        jsonObject.put(key, remoteMessage.data[key])
+                }
+                SSApi.getInstance().track(EVENT_NOTIFICATION_CUSTOM_CONFIG, jsonObject)
+                SSNotificationHelper.showFCMNotification(applicationContext, remoteMessage)
             }
-            SSApi.getInstance().track(EVENT_NOTIFICATION_CUSTOM_CONFIG,jsonObject)
-            SSNotificationHelper.showFCMNotification(applicationContext, remoteMessage)
         } catch (e: Exception) {
             Log.e(TAG, "onMessageReceived", e)
         }
@@ -35,7 +38,7 @@ class SSAppFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     companion object {
-        const val TAG = "push_fcm"
+        const val TAG = "app_push_fcm"
         const val EVENT_NOTIFICATION_CUSTOM_CONFIG = "notification_custom_config"
     }
 }

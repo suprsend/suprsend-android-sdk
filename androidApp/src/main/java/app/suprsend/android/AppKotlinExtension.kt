@@ -9,6 +9,7 @@ import android.text.Spanned
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import org.json.JSONObject
 import android.widget.TextView
 import android.widget.Toast
 import app.suprsend.inbox.model.NotificationModel
@@ -61,6 +62,15 @@ fun <T> List<T>.isLast(index: Int): Boolean {
 
 fun logInfo(message: String) {
     Log.i("yep", message)
+}
+fun String?.toKotlinJsonObject(): JSONObject {
+    return try {
+        if (isNullOrBlank())
+            return JSONObject()
+        return JSONObject(this ?: "")
+    } catch (e: Exception) {
+        JSONObject()
+    }
 }
 
 fun TextView.prepend(content: String) {
