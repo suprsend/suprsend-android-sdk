@@ -46,6 +46,7 @@ internal object SSConstants {
     const val PUSH_ANDROID_TOKEN = "\$androidpush"
     const val PUSH_IOS_TOKEN = "\$iospush"
     const val PUSH_VENDOR = "\$pushvendor"
+    const val ID_PROVIDER = "\$id_provider"
     const val PUSH_VENDOR_FCM = "fcm"
     const val PUSH_VENDOR_XIAOMI = "xiaomi"
     const val PUSH_VENDOR_APNS = "apns"

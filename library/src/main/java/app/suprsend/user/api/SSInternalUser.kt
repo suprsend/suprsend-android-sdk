@@ -188,6 +188,7 @@ internal object SSInternalUser {
         val jsonObject = JSONObject()
         jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, newToken)
         jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_FCM)
+        jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
         jsonObject.put(SSConstants.DEVICE_ID, SSApiInternal.getDeviceID())
         storeOperatorPayload(
             properties = jsonObject,
@@ -199,6 +200,7 @@ internal object SSInternalUser {
         val jsonObject = JSONObject()
         jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, token)
         jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_FCM)
+        jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
         jsonObject.put(SSConstants.DEVICE_ID, SSApiInternal.getDeviceID())
         storeOperatorPayload(
             properties = jsonObject,
@@ -214,6 +216,7 @@ internal object SSInternalUser {
         val jsonObject = JSONObject()
         jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, newToken)
         jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_XIAOMI)
+        jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_XIAOMI)
         jsonObject.put(SSConstants.DEVICE_ID, SSApiInternal.getDeviceID())
         storeOperatorPayload(
             properties = jsonObject,
@@ -225,6 +228,7 @@ internal object SSInternalUser {
         val jsonObject = JSONObject()
         jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, token)
         jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_XIAOMI)
+        jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_XIAOMI)
         jsonObject.put(SSConstants.DEVICE_ID, SSApiInternal.getDeviceID())
         storeOperatorPayload(
             properties = jsonObject,

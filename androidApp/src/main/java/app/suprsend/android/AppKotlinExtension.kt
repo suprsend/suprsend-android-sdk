@@ -3,6 +3,7 @@ package app.suprsend.android
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import org.json.JSONObject
 
 fun View.layoutInflater(): LayoutInflater {
     return LayoutInflater.from(context)
@@ -28,4 +29,13 @@ fun <T> List<T>.isLast(index: Int): Boolean {
 
 fun logInfo(message: String) {
     Log.i("yep", message)
+}
+fun String?.toKotlinJsonObject(): JSONObject {
+    return try {
+        if (isNullOrBlank())
+            return JSONObject()
+        return JSONObject(this ?: "")
+    } catch (e: Exception) {
+        JSONObject()
+    }
 }

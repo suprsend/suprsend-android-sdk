@@ -59,7 +59,7 @@ class SSApiInternalTest : BaseTest() {
         Assert.assertTrue(fcmPayload.has(SSConstants.APPEND))
         Assert.assertEquals("XIAOMI_TOKEN", fcmPayload.getJSONObject(SSConstants.APPEND).getString(SSConstants.PUSH_ANDROID_TOKEN))
         Assert.assertEquals("DEV1", fcmPayload.getJSONObject(SSConstants.APPEND).getString(SSConstants.DEVICE_ID))
-        Assert.assertEquals(SSConstants.PUSH_VENDOR_XIAOMI, fcmPayload.getJSONObject(SSConstants.APPEND).getString(SSConstants.PUSH_VENDOR))
+        Assert.assertEquals(SSConstants.PUSH_VENDOR_XIAOMI, fcmPayload.getJSONObject(SSConstants.APPEND).getString(SSConstants.ID_PROVIDER))
         Assert.assertEquals(SSConstants.S_EVENT_USER_LOGIN, eventsList[2].value.toKotlinJsonObject().getString(SSConstants.EVENT))
     }
 
@@ -82,7 +82,7 @@ class SSApiInternalTest : BaseTest() {
         Assert.assertTrue(fcmPayload.has(SSConstants.APPEND))
         Assert.assertEquals("FCM_TOKEN", fcmPayload.getJSONObject(SSConstants.APPEND).getString(SSConstants.PUSH_ANDROID_TOKEN))
         Assert.assertEquals("DEV1", fcmPayload.getJSONObject(SSConstants.APPEND).getString(SSConstants.DEVICE_ID))
-        Assert.assertEquals(SSConstants.PUSH_VENDOR_FCM, fcmPayload.getJSONObject(SSConstants.APPEND).getString(SSConstants.PUSH_VENDOR))
+        Assert.assertEquals(SSConstants.PUSH_VENDOR_FCM, fcmPayload.getJSONObject(SSConstants.APPEND).getString(SSConstants.ID_PROVIDER))
         Assert.assertEquals(SSConstants.S_EVENT_USER_LOGIN, eventsList[2].value.toKotlinJsonObject().getString(SSConstants.EVENT))
     }
 
