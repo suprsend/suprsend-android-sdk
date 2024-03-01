@@ -43,6 +43,7 @@ class SSAppXiaomiReceiver : PushMessageReceiver() {
             if (miPushMessage.isSuprSendPush()) {
                 val jsonObject = miPushMessage.content.toKotlinJsonObject()
                 jsonObject.remove("supr_send_n_pl")
+                // Sending this earlier since flush will be done in showFCMNotification
                 SSApi.getInstance().track(SSAppFirebaseMessagingService.EVENT_NOTIFICATION_CUSTOM_CONFIG, jsonObject)
                 SSNotificationHelper.showXiaomiNotification(context, miPushMessage)
             }

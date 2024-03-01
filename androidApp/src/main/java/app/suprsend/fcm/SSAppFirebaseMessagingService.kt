@@ -19,6 +19,7 @@ class SSAppFirebaseMessagingService : FirebaseMessagingService() {
                     if (!key.equals("supr_send_n_pl"))
                         jsonObject.put(key, remoteMessage.data[key])
                 }
+                // Sending this earlier since flush will be done in showFCMNotification
                 SSApi.getInstance().track(EVENT_NOTIFICATION_CUSTOM_CONFIG, jsonObject)
                 SSNotificationHelper.showFCMNotification(applicationContext, remoteMessage)
             }
