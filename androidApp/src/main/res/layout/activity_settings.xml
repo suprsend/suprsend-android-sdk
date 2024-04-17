@@ -180,6 +180,35 @@
                 android:text="User Preferences"
                 android:textSize="17sp" />
 
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/workspaceKeyEt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:hint="Set Workspace Key"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/subscriberIdEt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:hint="Set SubscriberId"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/inbox"
+                style="@style/btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Inbox"
+                android:textSize="17sp" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/logoutTv"
                 style="@style/btn"

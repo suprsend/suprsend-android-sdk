@@ -39,6 +39,9 @@
             android:name=".PlaceOrderActivity"
             android:exported="false" />
         <activity
+            android:name=".inbox.InboxActivity"
+            android:exported="false" />
+        <activity
             android:name=".ProductDetailsActivity"
             android:exported="true">
             <intent-filter>

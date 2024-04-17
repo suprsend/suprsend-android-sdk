@@ -247,5 +247,13 @@ internal object SSApiInternal {
         return ConfigHelper.get(SSConstants.CONFIG_API_BASE_URL) ?: SSConstants.DEFAULT_BASE_API_URL
     }
 
+    fun getInboxBaseUrl():String{
+        return ConfigHelper.get(SSConstants.CONFIG_INBOX_API_BASE_URL)?: SSConstants.DEFAULT_INBOX_BASE_API_URL
+    }
+
+    fun getInboxSocketUrl():String{
+        return ConfigHelper.get(SSConstants.CONFIG_INBOX_SOCKET_BASE_URL)?: SSConstants.DEFAULT_INBOX_SOCKET_API_URL
+    }
+
     const val TAG = "ssinternal"
 }

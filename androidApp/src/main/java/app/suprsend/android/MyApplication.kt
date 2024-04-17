@@ -9,7 +9,14 @@ class MyApplication : Application() {
 
     override fun onCreate() {
 
-        SSApi.init(context = this, apiKey = BuildConfig.SS_TOKEN, apiSecret = BuildConfig.SS_SECRET, apiBaseUrl = BuildConfig.SS_API_BASE_URL)
+        SSApi.init(
+            context = this,
+            apiKey = BuildConfig.SS_TOKEN,
+            apiSecret = BuildConfig.SS_SECRET,
+            apiBaseUrl = BuildConfig.SS_API_BASE_URL,
+            inboxApiBaseUrl = BuildConfig.SS_API_INBOX_BASE_URL,
+            inboxSocketApiBaseUrl = BuildConfig.SS_API_INBOX_SOCKET_URL
+        )
 
         super.onCreate()
 

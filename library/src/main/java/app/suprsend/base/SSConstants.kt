@@ -3,6 +3,8 @@ package app.suprsend.base
 internal object SSConstants {
 
     const val DEFAULT_BASE_API_URL = "https://hub.suprsend.com"
+    const val DEFAULT_INBOX_BASE_API_URL = "https://inboxs.live"
+    const val DEFAULT_INBOX_SOCKET_API_URL = "https://betainbox.suprsend.com"
     const val IMAGE_KIT_BASE_PATH = "https://ik.imagekit.io/l0quatz6utm"
 
     const val NOTIFICATION_PAYLOAD = "supr_send_n_pl"
@@ -15,6 +17,8 @@ internal object SSConstants {
     const val CONFIG_API_KEY = "api_key"
     const val CONFIG_API_SECRET = "app_secret"
     const val CONFIG_API_BASE_URL = "api_base_url"
+    const val CONFIG_INBOX_API_BASE_URL = "inbox_api_base_url"
+    const val CONFIG_INBOX_SOCKET_BASE_URL = "inbox_socket_base_url"
     const val CONFIG_USER_ID = "user_id"
     const val CONFIG_IS_APP_INSTALLED = "is_app_launched" // Mistakenly value was places wrong in ver 1 keep this as it is to avoid wrong stats
     const val CONFIG_APP_LAUNCH_TIME = "app_launch_time"

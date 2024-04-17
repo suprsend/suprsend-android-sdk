@@ -7,7 +7,10 @@ import android.preference.PreferenceManager
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Toast
+import app.suprsend.inbox.Inbox
 import com.bumptech.glide.Glide
+
+val inbox: Inbox? = null
 
 object AppCreator {
     private const val BASE_IMAGE_SERVER_URL = "https://freeappcreator.in/heruku"

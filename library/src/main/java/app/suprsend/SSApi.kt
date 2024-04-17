@@ -92,7 +92,7 @@ private constructor(
         SSApiInternal.flush()
     }
 
-    fun reset(unSubscribeNotification:Boolean = true) {
+    fun reset(unSubscribeNotification: Boolean = true) {
         executorService.execute {
             SSApiInternal.reset(unSubscribeNotification)
             SSApiInternal.flush()
@@ -101,6 +101,10 @@ private constructor(
 
     fun setLogLevel(level: LogLevel) {
         Logger.logLevel = level
+    }
+
+    fun getDistinctId(): String {
+        return SSApiInternal.userLocalDatasource.getIdentity()
     }
 
     companion object {
@@ -117,16 +121,31 @@ private constructor(
         /**
          * Should be called before Application super.onCreate()
          */
-        fun init(context: Context, apiKey: String, apiSecret: String, apiBaseUrl: String? = null) {
+        fun init(
+            context: Context,
+            apiKey: String,
+            apiSecret: String,
+            apiBaseUrl: String? = null,
+            inboxApiBaseUrl: String? = null,
+            inboxSocketApiBaseUrl: String? = null
+        ) {
 
             // Setting android context to user everywhere
             if (SdkAndroidCreator.isContextInitialized()) {
                 return
             }
             SdkAndroidCreator.context = context.applicationContext
-            val basicDetails = BasicDetails(apiKey, apiSecret, apiBaseUrl)
+            val basicDetails = BasicDetails(
+                apiKey = apiKey,
+                apiSecret = apiSecret,
+                apiBaseUrl = apiBaseUrl,
+                inboxBaseUrl = inboxApiBaseUrl,
+                inboxSocketUrl = inboxSocketApiBaseUrl
+            )
 
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, basicDetails.getApiBaseUrl())
+            ConfigHelper.addOrUpdate(SSConstants.CONFIG_INBOX_API_BASE_URL, basicDetails.getInboxBaseUrl())
+            ConfigHelper.addOrUpdate(SSConstants.CONFIG_INBOX_SOCKET_BASE_URL, basicDetails.getInboxSocketUrl())
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, basicDetails.apiKey)
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_SECRET, basicDetails.apiSecret)
 

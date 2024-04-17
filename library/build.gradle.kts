@@ -47,6 +47,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${Deps.JetBrains.Kotlin.VERSION}")
     implementation("com.google.firebase:firebase-messaging:${Deps.Firebase.messaging}")
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.38")
+    implementation ("io.socket:socket.io-client:2.0.0") {
+        exclude("org.json","json")
+    }
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20230227")

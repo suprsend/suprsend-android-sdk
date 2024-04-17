@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.android.databinding.ActivitySettingsBinding
+import app.suprsend.android.inbox.InboxActivity
 import app.suprsend.android.preference.UserPreferenceActivity
 
 class SettingsActivity : AppCompatActivity() {
@@ -79,6 +80,19 @@ class SettingsActivity : AppCompatActivity() {
         binding.userPreference.clickWithThrottle {
             val intent = Intent(this, UserPreferenceActivity::class.java)
             startActivity(intent)
+        }
+
+        binding.workspaceKeyEt.setText(getValue("workspaceKey", BuildConfig.SS_TOKEN))
+        binding.subscriberIdEt.setText(getValue("subscriberId", "GL-gymM9NGjcDFApgrJP4xT4Iecdj4OB7u45rc3lgCY"))
+        binding.inbox.clickWithThrottle {
+            val intent = Intent(this, InboxActivity::class.java)
+            val workspaceKey = binding.workspaceKeyEt.text.toString()
+            val subscriberId = binding.subscriberIdEt.text.toString()
+            intent.putExtra("workspaceKey", workspaceKey)
+            intent.putExtra("subscriberId", subscriberId)
+            startActivity(intent)
+            storeValue("workspaceKey", workspaceKey)
+            storeValue("subscriberId", subscriberId)
         }
     }
 
