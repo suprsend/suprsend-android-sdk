@@ -19,6 +19,12 @@ internal object Logger {
             Log.e(tag, message, throwable)
     }
 
+    fun e(tag: String, throwable: Throwable? = null) {
+        SSApiInternal.loggerCallback?.e(tag, "", throwable)
+        if (isLogAllowed(LogLevel.ERROR.num))
+            Log.e(tag, "", throwable)
+    }
+
     private fun isLogAllowed(level: Int): Boolean {
         return logLevel.num <= level
     }

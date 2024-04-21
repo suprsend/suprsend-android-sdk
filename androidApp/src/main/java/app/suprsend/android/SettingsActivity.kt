@@ -82,18 +82,34 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.workspaceKeyEt.setText(getValue("workspaceKey", BuildConfig.SS_TOKEN))
-        binding.subscriberIdEt.setText(getValue("subscriberId", "GL-gymM9NGjcDFApgrJP4xT4Iecdj4OB7u45rc3lgCY"))
+        binding.inboxSubscriberIdEt.setText(getValue("inboxSubscriberId", "GL-gymM9NGjcDFApgrJP4xT4Iecdj4OB7u45rc3lgCY"))
+        binding.inboxStoreJsonEt.setText(getValue("inboxStoreJsonEt", getInboxStoreJson()))
         binding.inbox.clickWithThrottle {
+            CommonAnalyticsHandler.set("inbox_visit_at", System.currentTimeMillis().toString())
             val intent = Intent(this, InboxActivity::class.java)
-            val workspaceKey = binding.workspaceKeyEt.text.toString()
-            val subscriberId = binding.subscriberIdEt.text.toString()
-            intent.putExtra("workspaceKey", workspaceKey)
-            intent.putExtra("subscriberId", subscriberId)
+            val subscriberId = binding.inboxSubscriberIdEt.text.toString()
+            val inboxStoreJson = binding.inboxStoreJsonEt.text.toString()
+            intent.putExtra("inboxSubscriberId", subscriberId)
+            intent.putExtra("inboxStoreJson", inboxStoreJson)
             startActivity(intent)
-            storeValue("workspaceKey", workspaceKey)
-            storeValue("subscriberId", subscriberId)
+            storeValue("inboxSubscriberId", subscriberId)
+            storeValue("inboxStoreJson", inboxStoreJson)
         }
+    }
+
+    private fun getInboxStoreJson(): String {
+        return """
+[{"storeId":"Tab1","label":"Read","query":{"tags":"tab1","read":true}},
+ {"storeId":"Tab2","label":"Unread","query":{"read":false,"tags":"tab1"}},
+ {"storeId":"Tab3","label":"All"}]
+        """.trimIndent()
+    }
+
+    private fun getInboxStoreJson1(): String {
+        return """
+[{"storeId":"Tab1","label":"tab1 read true","query":{"tags":"tab1","read":true}},
+{"storeId":"Tab2","label":"tab1 read false","query":{"read":false,"tags":"tab1"}}]
+        """.trimIndent()
     }
 
     private fun logout(unSubscribeNotification: Boolean) {

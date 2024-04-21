@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="app.suprsend.android.AppKotlinExtensionKt" />
+
+        <import type="android.view.View" />
+
+        <variable
+            name="obj"
+            type="app.suprsend.inbox.model.NotificationModel" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/box_bg"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/pinIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="@{obj.isPinned? View.VISIBLE : View.GONE}"
+                app:srcCompat="@drawable/ic_pin"
+                tools:visibility="visible" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/readStateTv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_below="@id/pinIv"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/read_circle"
+                android:visibility="@{AppKotlinExtensionKt.isUnreadNotification(obj)? View.VISIBLE : View.GONE}" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/timeTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/readStateTv"
+                android:text="@{AppKotlinExtensionKt.readableTimePastTime(obj.createdOn)}"
+                tools:text="1r" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/titleTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/timeTv"
+                android:text="@{obj.message.header}"
+                tools:text="This is title is title is title is title is title is title is title is title is title is title is title" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/messageTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/titleTv"
+                android:text="@{obj.message.text}"
+                tools:text="This is body" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/expiryTimeTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/messageTv"
+                android:text="@{AppKotlinExtensionKt.getReadableTimestamp(obj.expiry)}"
+                android:visibility="@{obj.isExpiryVisible? View.VISIBLE : View.GONE}"
+                tools:text="This is body" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/markUnreadTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/expiryTimeTv"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/btn_bg"
+                android:padding="5dp"
+                android:text="Mark UnRead"
+                android:textColor="#FFFFFF"
+                android:visibility="@{!AppKotlinExtensionKt.isUnreadNotification(obj)? View.VISIBLE : View.GONE}" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/markReadTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/markUnreadTv"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/btn_bg"
+                android:padding="5dp"
+                android:text="Mark Read"
+                android:textColor="#FFFFFF"
+                android:visibility="@{AppKotlinExtensionKt.isUnreadNotification(obj)? View.VISIBLE : View.GONE}" />
+        </RelativeLayout>
+    </FrameLayout>
+</layout>

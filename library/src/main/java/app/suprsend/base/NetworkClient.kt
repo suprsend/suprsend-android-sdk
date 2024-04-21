@@ -1,5 +1,6 @@
 package app.suprsend.base
 
+import app.suprsend.BuildConfig
 import app.suprsend.config.ConfigHelper
 import app.suprsend.event.Algo
 import app.suprsend.event.EventFlushHandler
@@ -19,11 +20,12 @@ internal fun httpCall(
     authorization: String,
     date: String,
     requestJson: String? = null,
-    requestMethod:String = "POST"
+    requestMethod: String = "POST"
 ): HttPResponse {
-    Logger.i(SSConstants.TAG_SUPRSEND,"Url : $urL")
+    Logger.i(SSConstants.TAG_SUPRSEND, "Requesting : $urL requestJson:$requestJson")
     var connection: HttpURLConnection? = null
     var inputStream: InputStream? = null
+    var httpResponse = HttPResponse(400)
     try {
         val url = URL(urL)
         connection = url.openConnection() as HttpURLConnection
@@ -37,7 +39,7 @@ internal fun httpCall(
         connection.doInput = true
 
         //Send request
-        if(requestJson!=null) {
+        if (requestJson != null) {
             val wr = DataOutputStream(connection.outputStream)
             wr.writeBytes(requestJson)
             wr.close()
@@ -62,17 +64,21 @@ internal fun httpCall(
         }
         bufferedReader.close()
 
-        return HttPResponse(connection.responseCode, response.toString())
+        httpResponse = HttPResponse(connection.responseCode, response.toString())
     } catch (e: Exception) {
         Logger.e(EventFlushHandler.TAG, "", e)
     } finally {
         connection?.disconnect()
     }
-    return HttPResponse(400)
+    Logger.i(SSConstants.TAG_SUPRSEND, "Response Received : $urL \nCode : ${httpResponse.statusCode}")
+    if (BuildConfig.DEBUG) {
+        Logger.i(SSConstants.TAG_SUPRSEND, "Response : ${httpResponse.response}")
+    }
+    return httpResponse
 }
 
 internal fun createAuthorization(
-    requestJson: String?=null,
+    requestJson: String? = null,
     requestURI: String,
     date: String,
     requestMethod: String = "POST",
@@ -84,10 +90,10 @@ internal fun createAuthorization(
     val envKey = ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""
 
     val stringToSign = requestMethod + "\n" +
-        contentMd5 + "\n" +
-        contentType + "\n" +
-        date + "\n" +
-        requestURI
+            contentMd5 + "\n" +
+            contentType + "\n" +
+            date + "\n" +
+            requestURI
 
     val signature = Algo.base64(Algo.generateHashWithHmac256(secret, stringToSign))
 

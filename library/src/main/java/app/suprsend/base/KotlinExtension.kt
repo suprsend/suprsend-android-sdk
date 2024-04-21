@@ -142,3 +142,11 @@ internal fun <T> JSONArray.map(mapper: (jo: JSONObject) -> T): List<T> {
 internal fun urlEncode(value:String): String {
     return URLEncoder.encode(value,"utf-8")
 }
+
+internal fun<T> JSONArray.convertToList(): MutableList<T> {
+    val items= mutableListOf<T>()
+    for(i in 0 until length()){
+        items.add(get(i) as T)
+    }
+    return items
+}

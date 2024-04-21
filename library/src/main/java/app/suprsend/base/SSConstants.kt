@@ -44,6 +44,8 @@ internal object SSConstants {
     const val IDENTIFIED_ID = "\$identified_id"
     const val ANONYMOUS_ID = "\$anon_id"
     const val DISTINCT_ID = "distinct_id"
+    const val SUBSCRIBER_ID = "subscriber_id"
+    const val TENANT_ID = "tenant_id"
     const val INSERT_ID = "\$insert_id"
     const val IDENTIFY = "\$identify"
     const val TIME = "\$time"
