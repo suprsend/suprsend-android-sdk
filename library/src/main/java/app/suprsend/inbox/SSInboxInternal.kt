@@ -61,7 +61,7 @@ internal class SSInboxInternal {
             val fetchTime = if (notificationStore.hasInitialFetchTime())
                 notificationStore.initialFetchTime else {
                 Logger.i(SSInbox.LOGGING_TAG, "Using new fetch time")
-                System.currentTimeMillis()+8000
+                System.currentTimeMillis() + 8000
             }
 
             val notificationListModel = inboxRepository.fetchNotificationListAndConvertToModels(
@@ -342,6 +342,14 @@ internal class SSInboxInternal {
         }
     }
 
+    fun notifySocketStatus(isConnected: Boolean) {
+        ContextCompat.getMainExecutor(SdkAndroidCreator.context).execute {
+            inboxStoreListeners.forEach {
+                it.socket(isConnected)
+            }
+        }
+    }
+
     private fun notifyListeners(
         storeId: String,
         allNotifications: List<NotificationModel>
@@ -400,7 +408,7 @@ internal class SSInboxInternal {
                                 "Now notification do not belong this store"
                     )
                     store.notifications.remove(oldNotification)
-                    if(store.notifications.isEmpty()){
+                    if (store.notifications.isEmpty()) {
                         store.initialFetchTime = -1
                     }
                 } else {
@@ -481,6 +489,36 @@ internal class SSInboxInternal {
                 store.unseenCount = 0
                 notifyListeners(store.notificationStoreConfig.storeId, store.notifications)
             }
+    }
+
+    fun checkExpiredMessages() {
+        Logger.i(SSInbox.LOGGING_TAG,"Checking expiry messages")
+        val now = System.currentTimeMillis()
+        var anyStoreMessageExpired = false
+        inboxData
+            .notificationStores
+            .forEach { store ->
+                var hasExpired = false
+                val validNotifications = store.notifications.filter { notification ->
+                    if (now > notification.expiry) {
+                        hasExpired = true
+                        anyStoreMessageExpired = true
+                        false
+                    } else true
+                }
+                if (hasExpired) {
+                    store.notifications.clear()
+                    store.notifications.addAll(validNotifications)
+                    notifyListeners(
+                        store.notificationStoreConfig.storeId,
+                        store.notifications
+                    )
+                }
+            }
+        if (anyStoreMessageExpired) {
+            inboxRepository.fetchAndUpdateNotificationCount(inboxData)
+            notifyBellCount(inboxData.bellCount)
+        }
     }
 
 }

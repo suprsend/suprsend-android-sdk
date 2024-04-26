@@ -2,10 +2,11 @@ package app.suprsend.inbox
 
 import app.suprsend.SSApiInternal
 import app.suprsend.base.Logger
+import app.suprsend.base.PeriodicJob
 import app.suprsend.base.executorService
+import app.suprsend.base.isTrue
 import app.suprsend.inbox.model.InboxData
 import app.suprsend.inbox.model.InboxStoreListener
-import app.suprsend.inbox.model.NotificationModel
 import app.suprsend.inbox.model.NotificationStore
 import app.suprsend.inbox.model.NotificationStoreConfig
 import app.suprsend.inbox.model.NotificationStoreQuery
@@ -25,6 +26,7 @@ constructor(
 ) {
 
     private var ssInboxInternal = SSInboxInternal()
+    private var periodicJob: PeriodicJob? = null
 
     private val socket: Socket by lazy {
         val options = IO.Options().apply {
@@ -50,6 +52,13 @@ constructor(
             validateTenantId(tenantId)
             validateStore(notificationStoreConfigs)
             subscribeSocketListeners()
+            periodicJob = PeriodicJob(
+                periodInSec = 30,
+                jobName = "InboxExpiryMessages"
+            ) {
+                ssInboxInternal.checkExpiredMessages()
+            }
+            periodicJob?.start()
         } catch (e: Exception) {
             Logger.e(LOGGING_TAG, e)
         }
@@ -142,8 +151,26 @@ constructor(
         return ssInboxInternal.inboxData
     }
 
+    fun isSocketConnected(): Boolean {
+        return socket.connected()
+    }
+
+    fun connect() {
+        Logger.i(LOGGING_TAG,"Socket Connect Requested")
+        if (!socket.connected())
+            socket.connect()
+
+        if (!periodicJob?.isScheduled.isTrue()) {
+            periodicJob?.start()
+        }
+    }
+
     fun disconnect() {
-        socket.disconnect()
+        Logger.i(LOGGING_TAG,"Socket Disconnect Requested")
+        if (socket.connected())
+            socket.disconnect()
+        if (periodicJob?.isScheduled.isTrue())
+            periodicJob?.stop()
     }
 
     private fun subscribeSocketListeners() {
@@ -151,6 +178,14 @@ constructor(
         subscribeUpdatedNotification()
         subscribeUpdateBadge()
         subscribeMarkAllRead()
+        socket.on(Socket.EVENT_CONNECT) {
+            Logger.i(LOGGING_TAG,"Socket connected")
+            ssInboxInternal.notifySocketStatus(true)
+        }
+        socket.on(Socket.EVENT_DISCONNECT) {
+            Logger.i(LOGGING_TAG,"Socket disconnected")
+            ssInboxInternal.notifySocketStatus(false)
+        }
         socket.connect()
     }
 

@@ -150,3 +150,7 @@ internal fun<T> JSONArray.convertToList(): MutableList<T> {
     }
     return items
 }
+
+fun Boolean?.isTrue(): Boolean {
+    return this == true
+}

@@ -59,13 +59,12 @@ class InboxActivity : AppCompatActivity() {
             selectedNotificationStoreConfig = notificationStoreConfigs.first()
         }
 
-        //Render tabs with default count
+        // Render tabs with default count
         renderTabs()
         binding.bellCountTv.text = "BellCount${ssInbox.getData().bellCount.showCount()}"
         ssInbox.addListener(object : InboxStoreListener {
 
             override fun loading(storeId: String, isLoading: Boolean) {
-
             }
 
             override fun bellCount(bellCount: Int) {
@@ -80,19 +79,22 @@ class InboxActivity : AppCompatActivity() {
 //                total: Int
             ) {
                 if (
-                    selectedNotificationStoreConfig == null // No stores are present
-                    ||
+                    selectedNotificationStoreConfig == null || // No stores are present
                     selectedNotificationStoreConfig?.storeId == storeId // If store is present
                 ) {
                     val notifications = allNotifications.map { it.copy() }
                     updateItemsInUI(notifications)
                     binding.bellCountTv.text = "BellCount${ssInbox.getData().bellCount.showCount()}"
-                    //On Unread action tab count changes
+                    // On Unread action tab count changes
                     renderTabs()
                 }
             }
 
             override fun onError(storeId: String, e: Exception) {
+            }
+
+            override fun socket(isConnected: Boolean) {
+                binding.connectDisconnect.text = if (isConnected) "Disconnect" else "Connect"
             }
         })
 
@@ -112,6 +114,13 @@ class InboxActivity : AppCompatActivity() {
         }
         binding.markAllRead.setOnClickListener {
             ssInbox.markAllNotificationRead()
+        }
+        binding.connectDisconnect.setOnClickListener {
+            if (ssInbox.isSocketConnected()) {
+                ssInbox.disconnect()
+            } else {
+                ssInbox.connect()
+            }
         }
     }
 
@@ -224,7 +233,6 @@ class InboxActivity : AppCompatActivity() {
             this.list = list
             notifyDataSetChanged()
         }
-
     }
 }
 

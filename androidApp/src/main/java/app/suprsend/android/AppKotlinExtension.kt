@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import app.suprsend.inbox.model.NotificationModel
-import org.json.JSONArray
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
+import org.json.JSONArray
 
 fun View.layoutInflater(): LayoutInflater {
     return LayoutInflater.from(context)
@@ -35,21 +35,21 @@ fun logInfo(message: String) {
     Log.i("yep", message)
 }
 
-fun TextView.prepend(content:String){
+fun TextView.prepend(content: String) {
     text = "$content$text"
 }
 
-fun<T> JSONArray.convertToList(): MutableList<T> {
-    val items= mutableListOf<T>()
-    for(i in 0 until length()){
+fun <T> JSONArray.convertToList(): MutableList<T> {
+    val items = mutableListOf<T>()
+    for (i in 0 until length()) {
         items.add(get(i) as T)
     }
     return items
 }
 
-//fun NotificationModel.getReadableExpiry(): String {
+// fun NotificationModel.getReadableExpiry(): String {
 //    return expiry.toString()
-//}
+// }
 
 fun readableTimePastTime(timestamp: Long): String {
     val currentTimeMillis = System.currentTimeMillis()
@@ -72,7 +72,7 @@ fun readableTimePastTime(timestamp: Long): String {
     }
 }
 
-fun getReadableTimestamp(timeStamp:Long): String {
+fun getReadableTimestamp(timeStamp: Long): String {
     val currentTime = System.currentTimeMillis()
     val timeDifference = timeStamp - currentTime
 
@@ -91,7 +91,7 @@ fun getReadableTimestamp(timeStamp:Long): String {
         minutes > 0 -> "$minutes minute(s)"
         else -> "$seconds second(s)"
     }
-    return  "Expires in $timeDuration"
+    return "Expires in $timeDuration"
 }
 fun NotificationModel.isUnreadNotification(): Boolean {
     return seenOn == null

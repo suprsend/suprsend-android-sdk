@@ -42,6 +42,8 @@ interface InboxStoreListener {
     )
 
     fun onError(storeId: String, e: Exception)
+
+    fun socket(isConnected:Boolean)
 }
 
 internal data class NotificationListModel(
