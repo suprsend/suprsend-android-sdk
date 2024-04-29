@@ -492,17 +492,17 @@ internal class SSInboxInternal {
     }
 
     fun checkExpiredMessages() {
-        Logger.i(SSInbox.LOGGING_TAG,"Checking expiry messages")
+        Logger.i(SSInbox.LOGGING_TAG, "Checking expiry messages")
         val now = System.currentTimeMillis()
-        var anyStoreMessageExpired = false
+        val expiredIds = arrayListOf<String>()
         inboxData
             .notificationStores
             .forEach { store ->
                 var hasExpired = false
                 val validNotifications = store.notifications.filter { notification ->
-                    if (now > notification.expiry) {
+                    if (notification.isExpiryVisible && now > notification.expiry) {
+                        expiredIds.add(notification.id)
                         hasExpired = true
-                        anyStoreMessageExpired = true
                         false
                     } else true
                 }
@@ -515,7 +515,8 @@ internal class SSInboxInternal {
                     )
                 }
             }
-        if (anyStoreMessageExpired) {
+        if (expiredIds.isNotEmpty()) {
+            Logger.i(SSInbox.LOGGING_TAG, "Expired message ids : $expiredIds")
             inboxRepository.fetchAndUpdateNotificationCount(inboxData)
             notifyBellCount(inboxData.bellCount)
         }
