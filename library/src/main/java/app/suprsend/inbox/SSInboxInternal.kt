@@ -8,6 +8,7 @@ import app.suprsend.inbox.model.InboxData
 import app.suprsend.inbox.model.InboxStoreListener
 import app.suprsend.inbox.model.NotificationModel
 import app.suprsend.inbox.model.NotificationStore
+import app.suprsend.inbox.model.hasMultipleStore
 import org.json.JSONObject
 
 internal class SSInboxInternal {
@@ -141,7 +142,7 @@ internal class SSInboxInternal {
     }
 
     fun markNotificationClicked(storeId: String, notificationId: String) {
-        val notificationStore = inboxData.notificationStores.find { it.notificationStoreConfig.storeId == storeId }
+        val notificationStore = inboxData.notificationStores.find { it.notificationStoreConfig.storeId == inboxData.safeStoreId(storeId) }
         if (notificationStore == null) {
             Logger.i(SSInbox.LOGGING_TAG, "Notification store not found storeId:$storeId")
             return
@@ -175,7 +176,7 @@ internal class SSInboxInternal {
     }
 
     fun markNotificationRead(storeId: String, notificationId: String) {
-        val notificationStore = inboxData.notificationStores.find { it.notificationStoreConfig.storeId == storeId }
+        val notificationStore = inboxData.notificationStores.find { it.notificationStoreConfig.storeId == inboxData.safeStoreId(storeId) }
         if (notificationStore == null) {
             Logger.i(SSInbox.LOGGING_TAG, "Notification store not found storeId:$storeId")
             return
@@ -208,7 +209,7 @@ internal class SSInboxInternal {
     }
 
     fun markNotificationUnRead(storeId: String, notificationId: String) {
-        val notificationStore = inboxData.notificationStores.find { it.notificationStoreConfig.storeId == storeId }
+        val notificationStore = inboxData.notificationStores.find { it.notificationStoreConfig.storeId == inboxData.safeStoreId(storeId) }
         if (notificationStore == null) {
             Logger.i(SSInbox.LOGGING_TAG, "Notification store not found storeId:$storeId")
             return
@@ -522,4 +523,10 @@ internal class SSInboxInternal {
         }
     }
 
+    private fun InboxData.safeStoreId(storeId: String): String {
+        return if(notificationStores.hasMultipleStore())
+            storeId
+        else
+            SSInbox.DEFAULT_STORE_ID
+    }
 }
