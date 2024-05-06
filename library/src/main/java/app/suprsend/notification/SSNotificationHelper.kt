@@ -55,7 +55,7 @@ object SSNotificationHelper {
 
     fun showFCMNotification(context: Context, remoteMessage: RemoteMessage) {
         try {
-            Logger.i("notification","showFCMNotification")
+            Logger.i("notification", "showFCMNotification")
             appExecutorService.execute {
                 Logger.i(SSFirebaseMessagingService.TAG, "Message Id : ${remoteMessage.messageId}")
                 if (remoteMessage.isSuprSendRemoteMessage()) {
@@ -82,61 +82,89 @@ object SSNotificationHelper {
 
     private fun showRawNotification(context: Context, rawNotification: RawNotification, pushVendor: String? = null) {
         try {
-            Logger.i("notification","showRawNotification $rawNotification")
+            Logger.i("notification", "showRawNotification $rawNotification")
 
-            val notificationManagerCompat = NotificationManagerCompat.from(context)
-            if(!notificationManagerCompat.areNotificationsEnabled()){
+            //Local flag to avoid duplicate notifications
+            val showNotificationId = String.format(SSConstants.CONFIG_NOTIFICATION_GROUP_SHOWN, rawNotification.notificationGroupId)
+            val isShown = ConfigHelper.getBoolean(showNotificationId)
+            Logger.i("notification", "Notification notificationGroupId : ${rawNotification.notificationGroupId} isShown: $isShown silentPush : ${rawNotification.silentPush}")
+            ConfigHelper.addOrUpdate(showNotificationId, true)
+
+            // Notification Delivered Event
+            val areNotificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
+            if(!areNotificationsEnabled){
                 Logger.e("notification","Notifications are disabled please request the Manifest.permission.POST_NOTIFICATIONS permission")
-                return
             }
-
-            // Notification Delivered
+            val isChannelEnabled = rawNotification.channelId
+                ?.let { channelId ->
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        notificationManager.getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
+                    } else {
+                        true
+                    }
+                } ?: true
+            if(!isChannelEnabled){
+                Logger.e("notification","User has disabled the channel ${rawNotification.channelId}")
+            }
             val instance = SSApi.getInstanceFromCachedApiKey()
             SSApiInternal.saveTrackEventPayload(
                 eventName = SSConstants.S_EVENT_NOTIFICATION_DELIVERED,
                 propertiesJO = JSONObject().apply {
                     put("id", rawNotification.id)
-                    if (pushVendor != null)
+                    if (pushVendor != null) {
                         put(SSConstants.PUSH_VENDOR, pushVendor)
+                        put(SSConstants.ID_PROVIDER, pushVendor)
+                    }
+                    put("are_notifications_enabled", areNotificationsEnabled)
+                    put("has_channel_support", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    put("channel_id", rawNotification.channelId)
+                    put("is_channel_enabled", isChannelEnabled)
+                    put("is_silent_push", rawNotification.silentPush)
                 }
             )
-            instance?.flush()
+            instance.flush()
 
-            val showNotificationId = String.format(SSConstants.CONFIG_NOTIFICATION_GROUP_SHOWN, rawNotification.notificationGroupId)
-            val isShown = ConfigHelper.getBoolean(showNotificationId)
-            Logger.i("notification","Notification isShown : ${rawNotification.notificationGroupId} $isShown")
             if (isShown == true)
                 return
 
-            ConfigHelper.addOrUpdate(showNotificationId, true)
+            if (rawNotification.silentPush) {
+                Logger.i("notification", "This is silent push ignored ui rendering")
+                return
+            }
 
-            Logger.i("notification","showNotificationInternal")
-            showNotificationInternal(context, rawNotification.getNotificationVo())
+            Logger.i("notification", "showNotificationInternal")
+            showNotificationInternal(context, areNotificationsEnabled, rawNotification.getNotificationVo())
 
         } catch (e: Exception) {
             Logger.e("notification", "showRawNotification", e)
         }
     }
 
-    private fun showNotificationInternal(context: Context, notificationVo: NotificationVo) {
+    private fun showNotificationInternal(context: Context, areNotificationsEnabled: Boolean, notificationVo: NotificationVo) {
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        Logger.i("notification","setChannel")
+        if (!areNotificationsEnabled) {
+            Logger.e("notification", "Notifications are disabled please request the Manifest.permission.POST_NOTIFICATIONS permission")
+            return
+        }
+
+        Logger.i("notification", "setChannel")
         setChannel(context = context, notificationManager = notificationManager, notificationChannelVo = notificationVo.notificationChannelVo)
 
         val notificationBuilder = NotificationCompat.Builder(context, notificationVo.notificationChannelVo.id)
 
-        Logger.i("notification","setBasicVo")
+        Logger.i("notification", "setBasicVo")
         setBasicVo(context = context, notificationBuilder = notificationBuilder, notificationVo = notificationVo)
 
-        Logger.i("notification","setStyle")
+        Logger.i("notification", "setStyle")
         setStyle(builder = notificationBuilder, notificationVo = notificationVo)
 
-        Logger.i("notification","setNotificationAction")
+        Logger.i("notification", "setNotificationAction")
         setNotificationAction(context = context, notificationBuilder = notificationBuilder, notificationVo = notificationVo)
 
-        Logger.i("notification","notify")
+        Logger.i("notification", "notify")
 
         notificationVo.notificationBasicVo.group?.let {
             val notificationBasicVo = notificationVo.notificationBasicVo
@@ -162,7 +190,7 @@ object SSNotificationHelper {
             notificationManager
                 .notify(
                     notificationBasicVo.group.hashCode(),
-                       groupNotification
+                    groupNotification
                         .build()
                 )
         }
@@ -337,7 +365,7 @@ object SSNotificationHelper {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
     }
 
-    private fun setChannel(context:Context,notificationManager: NotificationManager, notificationChannelVo: NotificationChannelVo) {
+    private fun setChannel(context: Context, notificationManager: NotificationManager, notificationChannelVo: NotificationChannelVo) {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return
@@ -379,7 +407,6 @@ object SSNotificationHelper {
         }
         notificationManager.createNotificationChannel(notificationChannel)
     }
-
 
 
     private fun setStyle(builder: NotificationCompat.Builder, notificationVo: NotificationVo) {
@@ -495,10 +522,10 @@ object SSNotificationHelper {
 }
 
 private fun Context.getDrawableIdFromName(drawableName: String?): Int? {
-   return getIdentifierIdFromName(drawableName,"drawable")
+    return getIdentifierIdFromName(drawableName, "drawable")
 }
 
-private fun Context.getIdentifierIdFromName(resourceName: String?,defType:String): Int? {
+private fun Context.getIdentifierIdFromName(resourceName: String?, defType: String): Int? {
     resourceName ?: return null
     return try {
         val id = resources.getIdentifier(resourceName, defType, packageName)
@@ -506,7 +533,7 @@ private fun Context.getIdentifierIdFromName(resourceName: String?,defType:String
             null
         else id
     } catch (e: Exception) {
-        Logger.e("utils","$defType $resourceName not found")
+        Logger.e("utils", "$defType $resourceName not found")
         null
     }
 }
@@ -534,6 +561,7 @@ private fun String?.getRawNotification(): RawNotification {
     return RawNotification(
         id = id,
         notificationGroupId = notificationPayloadJO.safeString("notificationGroupId") ?: id,
+        silentPush = notificationPayloadJO.safeBoolean("silentPush") ?: false,
         channelId = notificationPayloadJO.safeString("channelId"),
         channelName = notificationPayloadJO.safeString("channelName"),
         channelDescription = notificationPayloadJO.safeString("channelDescription"),
@@ -611,10 +639,10 @@ fun MiPushCommandMessage?.getToken(): String? {
 
     Logger.i(
         SSXiaomiReceiver.TAG, "getToken\n" +
-            "Command : ${this?.command} \n" +
-            "resultCode : ${this?.resultCode} \n" +
-            "token : ${this?.commandArguments?.firstOrNull()} \n" +
-            "reason : ${this?.reason} \n"
+                "Command : ${this?.command} \n" +
+                "resultCode : ${this?.resultCode} \n" +
+                "token : ${this?.commandArguments?.firstOrNull()} \n" +
+                "reason : ${this?.reason} \n"
     )
 
     this ?: return null
@@ -627,6 +655,7 @@ fun MiPushCommandMessage?.getToken(): String? {
 
     return null
 }
+
 private fun String?.createRawSoundUri(context: Context): Uri? {
     var soundFile = this ?: return null
     if (soundFile.isBlank()) {
@@ -636,7 +665,7 @@ private fun String?.createRawSoundUri(context: Context): Uri? {
     soundFile = soundFile.substringBeforeLast(".")
 
     //If resource not found in raw folder then return
-    context.getIdentifierIdFromName(soundFile,"raw")?:return null
+    context.getIdentifierIdFromName(soundFile, "raw") ?: return null
 
     return Uri.parse(
         ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context
