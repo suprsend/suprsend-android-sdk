@@ -2,4 +2,8 @@
 <resources>
     <string name="app_name">SuprSend Android SDK Sample</string>
     <string name="allow_all_notifications">Allow all notifications</string>
+    <string name="mark_unread">Mark UnRead</string>
+    <string name="mark_read">Mark Read</string>
+    <string name="click">Click</string>
+    <string name="action_url">Action Url</string>
 </resources>

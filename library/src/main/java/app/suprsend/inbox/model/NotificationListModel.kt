@@ -11,7 +11,27 @@ import org.json.JSONObject
 data class NotificationMessage(
     val schema: String,
     val header: String,
-    val text: String
+    val text: String,
+    val subText: NotificationSubText?,
+    val avtar: NotificationAvtar?,
+    val actions: List<NotificationMessageAction>?,
+    val url: String?
+)
+
+data class NotificationSubText(
+    val text: String,
+    val actionUrl: String
+)
+
+data class NotificationAvtar(
+    val actionUrl: String,
+    val avtarUrl: String
+)
+
+data class NotificationMessageAction(
+    val openInNewTab: Boolean,
+    val name: String,
+    val url: String
 )
 
 data class NotificationModel(
@@ -43,7 +63,7 @@ interface InboxStoreListener {
 
     fun onError(storeId: String, e: Exception)
 
-    fun socket(isConnected:Boolean)
+    fun socket(isConnected: Boolean)
 }
 
 internal data class NotificationListModel(
@@ -95,7 +115,11 @@ internal data class NotificationListModel(
                 message = NotificationMessage(
                     schema = messageJson?.safeString("schema") ?: "",
                     header = messageJson?.safeString("header") ?: "",
-                    text = messageJson?.safeString("text") ?: ""
+                    text = messageJson?.safeString("text") ?: "",
+                    subText = getNotificationSubtext(messageJson),
+                    actions = getNotificationMessageActions(messageJson),
+                    avtar = getNotificationAvtar(messageJson),
+                    url = messageJson?.safeString("url") ?: ""
                 ),
                 tags = (resultJson.optJSONArray("tags") ?: JSONArray()).convertToList(),
                 isPinned = resultJson.safeBoolean("is_pinned") ?: false,
@@ -110,6 +134,37 @@ internal data class NotificationListModel(
             )
         }
 
+        private fun getNotificationSubtext(messageJson: JSONObject?): NotificationSubText? {
+            val subtextJo = messageJson?.optJSONObject("subtext") ?: return null
+            return NotificationSubText(
+                subtextJo.safeString("text") ?: "",
+                subtextJo.safeString("action_url") ?: ""
+            )
+        }
+
+        private fun getNotificationAvtar(messageJson: JSONObject?): NotificationAvtar? {
+            val avtarJO = messageJson?.optJSONObject("avatar") ?: return null
+            return NotificationAvtar(
+                actionUrl = avtarJO.optString("action_url") ?: "",
+                avtarUrl = avtarJO.optString("avatar_url") ?: ""
+            )
+        }
+
+        private fun getNotificationMessageActions(messageJson: JSONObject?): List<NotificationMessageAction>? {
+            val actionsJA = messageJson?.optJSONArray("actions") ?: return null
+            val actions = arrayListOf<NotificationMessageAction>()
+            for (i in 0 until actionsJA.length()) {
+                val actionJO = actionsJA.getJSONObject(i)
+                actions.add(
+                    NotificationMessageAction(
+                        openInNewTab = actionJO.optBoolean("open_in_new_tab") ?: false,
+                        name = actionJO?.safeString("name") ?: "",
+                        url = actionJO?.safeString("url") ?: ""
+                    )
+                )
+            }
+            return actions
+        }
     }
 }
 
@@ -167,9 +222,19 @@ data class NotificationStore(
     var total: Int = -1,
     var unseenCount: Int = -1,
     var initialFetchTime: Long = -1
-){
+) {
     fun hasInitialFetchTime(): Boolean {
-        return initialFetchTime !=-1L
+        return initialFetchTime != -1L
+    }
+
+    fun reset() {
+        notifications.clear()
+        isLoading = false
+        currentPageNumber = 0
+        totalPages = 0
+        total = -1
+        unseenCount = -1
+        initialFetchTime = -1
     }
 }
 
@@ -194,4 +259,11 @@ data class InboxData(
             temp = temp.coerceAtLeast(SSInbox.DEFAULT_MIN_PAGINATION_LIMIT)
             field = temp
         }
+
+    fun reset() {
+        notificationStores.forEach { store ->
+            store.reset()
+            bellCount = 0
+        }
+    }
 }

@@ -1,9 +1,13 @@
 package app.suprsend.android
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import app.suprsend.inbox.model.NotificationModel
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
@@ -11,6 +15,19 @@ import org.json.JSONArray
 
 fun View.layoutInflater(): LayoutInflater {
     return LayoutInflater.from(context)
+}
+
+fun Context.safeStartActivity(intent:Intent?){
+    intent?:return
+    try {
+        startActivity(intent)
+    }catch (e:Exception){
+        Toast.makeText(this,"Unable to open",Toast.LENGTH_SHORT).show()
+    }
+}
+
+fun String.getIntent(): Intent {
+    return Intent(Intent.ACTION_VIEW, Uri.parse(this))
 }
 
 fun setVisibleOrGone(isVisible: Boolean): Int {
@@ -72,6 +89,17 @@ fun readableTimePastTime(timestamp: Long): String {
     }
 }
 
+fun isNullOrBlank(text: String?): Boolean {
+    return text.isNullOrBlank()
+}
+
+fun <T> isEmpty(list: List<T>?): Boolean {
+    return list?.isEmpty() == true
+}
+fun isNull(item: Any?): Boolean {
+    return item == null
+}
+
 fun getReadableTimestamp(timeStamp: Long): String {
     val currentTime = System.currentTimeMillis()
     val timeDifference = timeStamp - currentTime
@@ -93,6 +121,4 @@ fun getReadableTimestamp(timeStamp: Long): String {
     }
     return "Expires in $timeDuration"
 }
-fun NotificationModel.isUnreadNotification(): Boolean {
-    return seenOn == null
-}
+

@@ -4,15 +4,24 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.suprsend.SSApi
+import app.suprsend.android.AppCreator
 import app.suprsend.android.BaseViewHolder
+import app.suprsend.android.R
 import app.suprsend.android.convertToList
 import app.suprsend.android.databinding.ActivityInboxBinding
+import app.suprsend.android.databinding.InboxItemActionBinding
 import app.suprsend.android.databinding.InboxItemBinding
 import app.suprsend.android.databinding.InboxTabItemBinding
+import app.suprsend.android.getIntent
+import app.suprsend.android.layoutInflater
+import app.suprsend.android.safeStartActivity
 import app.suprsend.android.setVisibleOrGone
 import app.suprsend.inbox.SSInbox
 import app.suprsend.inbox.model.InboxStoreListener
@@ -212,6 +221,11 @@ class InboxActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
             val binding = holder.binding as InboxItemBinding
+            holder.binding.root.layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+            val context = binding.titleTv.context
             val notification = list[position]
             binding.obj = notification
             binding.markUnreadTv.setOnClickListener {
@@ -225,6 +239,30 @@ class InboxActivity : AppCompatActivity() {
                     storeId = activity.selectedNotificationStoreConfig?.storeId ?: "",
                     notificationId = notification.id
                 )
+            }
+            val avtarUrl = notification.message.avtar?.avtarUrl
+            if (!avtarUrl.isNullOrBlank())
+                AppCreator.loadUrl(binding.avtarIv.context, avtarUrl, binding.avtarIv)
+            binding.avtarIv.setOnClickListener {
+                binding.avtarIv.context.safeStartActivity(notification.message.avtar?.actionUrl?.getIntent())
+            }
+
+            binding.actionButtonsLL.removeAllViews()
+            binding.subTextTv.setOnClickListener {
+                binding.subTextTv.context.safeStartActivity(notification.message.subText?.actionUrl?.getIntent())
+            }
+            binding.actionUrl.setOnClickListener {
+                binding.subTextTv.context.safeStartActivity(notification.message.url?.getIntent())
+            }
+            notification.message.actions?.forEach { action ->
+                val actionBinding = InboxItemActionBinding.inflate(binding.titleTv.layoutInflater())
+                actionBinding.button.text = action.name
+                actionBinding.button.setOnClickListener {
+                    context.safeStartActivity(action.url.getIntent())
+                }
+                val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                params.setMargins(0, 0, context.resources.getDimension(R.dimen.margin_10).toInt(), 0)
+                binding.actionButtonsLL.addView(actionBinding.root, params)
             }
         }
 
