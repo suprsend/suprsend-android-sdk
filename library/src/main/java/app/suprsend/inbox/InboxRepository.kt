@@ -154,6 +154,69 @@ internal class InboxRepository {
         return httpResponse.ok()
     }
 
+    fun markNotificationArchive(
+        notificationId: String,
+        distinctId: String,
+        subscriberId: String
+    ): Boolean {
+        val requestURI = "/notification/${notificationId}/action"
+        val bodyJo = JSONObject()
+
+        bodyJo.put("action", "archive")
+        bodyJo.put("distinct_id", distinctId)
+        bodyJo.put("subscriber_id", subscriberId)
+        val date = getDate()
+        val requestMethod = "POST"
+
+        val workspaceKey = ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""
+        val authorization = "$workspaceKey:${UUID.randomUUID()}"
+
+        val baseUrl = SSApiInternal.getInboxBaseUrl()
+        val url = "$baseUrl$requestURI"
+        val httpResponse = httpCall(
+            urL = url,
+            authorization = authorization,
+            date = date,
+            requestMethod = requestMethod,
+            requestJson = bodyJo.toString()
+        )
+        return httpResponse.ok()
+    }
+
+    fun getNotificationDetails(
+        notificationId: String,
+        subscriberId: String,
+        distinctId: String,
+        tenantId: String
+    ): NotificationModel? {
+        try {
+            val requestURI = "/notification/${notificationId}/?subscriber_id=${subscriberId}&distinct_id=${distinctId}&tenant_id=${tenantId}"
+
+            val date = getDate()
+            val requestMethod = "GET"
+
+            val workspaceKey = ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""
+            val authorization = "$workspaceKey:${UUID.randomUUID()}"
+
+            val baseUrl = SSApiInternal.getInboxBaseUrl()
+            val url = "$baseUrl$requestURI"
+            val httpResponse = httpCall(
+                urL = url,
+                authorization = authorization,
+                date = date,
+                requestMethod = requestMethod
+            )
+            val responseJO = JSONObject(httpResponse.response ?: "")
+            return NotificationListModel.convertToModel(
+                responseJO.getJSONObject("data")
+            )
+        } catch (e: Exception) {
+            //Do noting user can be in offline mode
+        }
+
+        return null
+    }
+
     fun hitApi(
         requestURI: String,
         distinctId: String,
@@ -222,40 +285,6 @@ internal class InboxRepository {
             requestMethod = requestMethod
         )
         return if (httpResponse.ok()) httpResponse.response ?: "" else ""
-    }
-
-    fun getNotificationDetails(
-        notificationId: String,
-        subscriberId: String,
-        distinctId: String,
-        tenantId: String
-    ): NotificationModel? {
-        try {
-            val requestURI = "/notification/${notificationId}/?subscriber_id=${subscriberId}&distinct_id=${distinctId}&tenant_id=${tenantId}"
-
-            val date = getDate()
-            val requestMethod = "GET"
-
-            val workspaceKey = ConfigHelper.get(SSConstants.CONFIG_API_KEY) ?: ""
-            val authorization = "$workspaceKey:${UUID.randomUUID()}"
-
-            val baseUrl = SSApiInternal.getInboxBaseUrl()
-            val url = "$baseUrl$requestURI"
-            val httpResponse = httpCall(
-                urL = url,
-                authorization = authorization,
-                date = date,
-                requestMethod = requestMethod
-            )
-            val responseJO = JSONObject(httpResponse.response ?: "")
-            return NotificationListModel.convertToModel(
-                responseJO.getJSONObject("data")
-            )
-        } catch (e: Exception) {
-            //Do noting user can be in offline mode
-        }
-
-        return null
     }
 
 }

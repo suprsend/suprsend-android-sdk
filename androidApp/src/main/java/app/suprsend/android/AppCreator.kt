@@ -1,16 +1,24 @@
 package app.suprsend.android
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.widget.ArrayAdapter
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import io.noties.markwon.Markwon
 
+@SuppressLint("StaticFieldLeak")
 object AppCreator {
     private const val BASE_IMAGE_SERVER_URL = "https://freeappcreator.in/heruku"
+
+    lateinit var context: Context
+
+    val markWon: Markwon by lazy { Markwon.create(context) }
 
     fun loadUrl(context: Context, url: String, imageView: ImageView) {
         Glide.with(context)
@@ -96,4 +104,9 @@ inline fun SharedPreferences.Edit(func: SharedPreferences.Editor.() -> Unit) {
     val editor = edit()
     editor.func()
     editor.apply()
+}
+
+fun TextView.setMarkDownText(markdownText: String?) {
+    markdownText ?: return
+    AppCreator.markWon.setMarkdown(this, markdownText)
 }

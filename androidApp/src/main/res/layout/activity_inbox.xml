@@ -15,18 +15,6 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/loadNextPageTv"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_toStartOf="@id/markAllRead"
-                android:background="@drawable/btn_bg"
-                android:padding="10dp"
-                android:text="Load Next"
-                android:textColor="#FFFFFF" />
-
-            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/markAllRead"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
@@ -54,32 +42,11 @@
                 tools:text="BellCount" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/secondRow"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/firstRow"
-            android:gravity="end"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/connectDisconnect"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/btn_bg"
-                android:padding="10dp"
-                android:text="Disconnect"
-                android:textColor="#FFFFFF" />
-        </LinearLayout>
-
         <HorizontalScrollView
             android:id="@+id/tabsSv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/secondRow"
+            android:layout_below="@id/firstRow"
             tools:background="#e4e4e4"
             tools:layout_height="50dp">
 

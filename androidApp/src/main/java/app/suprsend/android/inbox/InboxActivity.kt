@@ -7,10 +7,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import app.suprsend.SSApi
 import app.suprsend.android.AppCreator
 import app.suprsend.android.BaseViewHolder
 import app.suprsend.android.R
@@ -21,8 +19,12 @@ import app.suprsend.android.databinding.InboxItemBinding
 import app.suprsend.android.databinding.InboxTabItemBinding
 import app.suprsend.android.getIntent
 import app.suprsend.android.layoutInflater
+import app.suprsend.android.logInfo
+import app.suprsend.android.myToast
 import app.suprsend.android.safeStartActivity
+import app.suprsend.android.setMarkDownText
 import app.suprsend.android.setVisibleOrGone
+import app.suprsend.inbox.ConnectionState
 import app.suprsend.inbox.SSInbox
 import app.suprsend.inbox.model.InboxStoreListener
 import app.suprsend.inbox.model.NotificationModel
@@ -30,6 +32,7 @@ import app.suprsend.inbox.model.NotificationStoreConfig
 import app.suprsend.inbox.model.NotificationStoreQuery
 import org.json.JSONArray
 import org.json.JSONObject
+
 
 @SuppressLint("SetTextI18n")
 class InboxActivity : AppCompatActivity() {
@@ -48,20 +51,16 @@ class InboxActivity : AppCompatActivity() {
         title = "Inbox"
         binding = ActivityInboxBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        notificationStoreConfigs = getNotificationConfigs(intent.getStringExtra("inboxStoreJson") ?: "")
-        ssInbox = SSInbox(
+        notificationStoreConfigs =
+            getNotificationConfigs(intent.getStringExtra("inboxStoreJson") ?: "")
+        ssInbox = SSInbox.initialize(
             subscriberId = intent.getStringExtra("inboxSubscriberId") ?: "",
-            distinctId = SSApi.getInstance().getDistinctId(),
+            distinctId = AppCreator.getEmail(this),
             pageSize = 20,
             notificationStoreConfigs = notificationStoreConfigs
         )
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        inboxRecyclerAdapter = InboxRecyclerAdapter(
-            activity = this,
-            ssInbox = ssInbox,
-            list = listOf()
-        )
-        binding.recyclerView.adapter = inboxRecyclerAdapter
+
+        initRecyclerview()
 
         if (notificationStoreConfigs.isNotEmpty()) {
             tabSelectedPosition = 0
@@ -84,8 +83,6 @@ class InboxActivity : AppCompatActivity() {
             override fun onUpdate(
                 storeId: String,
                 allNotifications: List<NotificationModel>
-//                totalPages: Int,
-//                total: Int
             ) {
                 if (
                     selectedNotificationStoreConfig == null || // No stores are present
@@ -102,8 +99,11 @@ class InboxActivity : AppCompatActivity() {
             override fun onError(storeId: String, e: Exception) {
             }
 
-            override fun socket(isConnected: Boolean) {
-                binding.connectDisconnect.text = if (isConnected) "Disconnect" else "Connect"
+            override fun socket(connectionState: ConnectionState) {
+            }
+
+            override fun newNotification(notificationModel: NotificationModel) {
+                myToast("New Notification : ${notificationModel.message.header}")
             }
         })
 
@@ -112,39 +112,54 @@ class InboxActivity : AppCompatActivity() {
         } else {
             ssInbox.load(notificationStoreConfigs.first().storeId)
         }
-        binding.loadNextPageTv.setOnClickListener {
-            if (notificationStoreConfigs.isEmpty())
-                ssInbox.load()
-            else
-                ssInbox.load(selectedNotificationStoreConfig?.storeId ?: "")
-        }
         binding.bellCountTv.setOnClickListener {
             ssInbox.markBellClicked()
         }
         binding.markAllRead.setOnClickListener {
             ssInbox.markAllNotificationRead()
         }
-        binding.connectDisconnect.setOnClickListener {
-            if (ssInbox.isSocketConnected()) {
-                ssInbox.disconnect()
-            } else {
-                ssInbox.connect()
-            }
-        }
+
     }
+
+    private fun initRecyclerview() {
+        val layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.layoutManager = layoutManager
+        inboxRecyclerAdapter = InboxRecyclerAdapter(
+            activity = this,
+            ssInbox = ssInbox,
+            list = listOf()
+        )
+        binding.recyclerView.adapter = inboxRecyclerAdapter
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                val position = layoutManager.findLastCompletelyVisibleItemPosition()
+                logInfo("At position $position")
+                val store = ssInbox.findStore(selectedNotificationStoreConfig?.storeId)
+                if (hasReachedEnd(store?.notifications, position))
+                    ssInbox.load(store?.notificationStoreConfig?.storeId)
+            }
+        })
+    }
+
+    fun hasReachedEnd(list: List<Any>?, position: Int): Boolean {
+        if (list == null)
+            return false
+        return position >= list.size - 3
+    }
+
 
     private fun renderTabs() {
         binding.tabsLL.removeAllViews()
         notificationStoreConfigs.forEachIndexed { index, notificationStoreConfig ->
             val tabItemViewBinding = InboxTabItemBinding.inflate(layoutInflater)
             val store = ssInbox.getData().notificationStores[index]
-            tabItemViewBinding.title = (notificationStoreConfig.label + store.unseenCount.showCount())
+            tabItemViewBinding.title =
+                (notificationStoreConfig.label + store.unseenCount.showCount())
             tabItemViewBinding.selected = (index == tabSelectedPosition)
             tabItemViewBinding.tabTitleTv.setOnClickListener {
                 tabSelectedPosition = index
                 selectedNotificationStoreConfig = notificationStoreConfig
-                if (!store.hasInitialFetchTime())
-                    ssInbox.load(selectedNotificationStoreConfig?.storeId ?: "")
+                ssInbox.reload(notificationStoreConfig.storeId)
                 updateItemsInUI(store.notifications)
                 renderTabs()
             }
@@ -184,14 +199,16 @@ class InboxActivity : AppCompatActivity() {
                     }
                 } else null
                 val read = if (queryJO.has("read")) queryJO.optBoolean("read") else null
+                val archived = if (queryJO.has("archived")) queryJO.optBoolean("archived") else null
                 list.add(
                     NotificationStoreConfig(
                         storeJo.optString("storeId"),
                         label = storeJo.optString("label").ifBlank { null },
                         query = NotificationStoreQuery(
-                            tags,
-                            categories,
-                            read
+                            tags = tags,
+                            categories = categories,
+                            read = read,
+                            archived = archived
                         )
                     )
                 )
@@ -201,8 +218,13 @@ class InboxActivity : AppCompatActivity() {
         return list
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStart() {
+        super.onStart()
+        ssInbox.connect()
+    }
+
+    override fun onStop() {
+        super.onStop()
         ssInbox.disconnect()
     }
 
@@ -211,6 +233,7 @@ class InboxActivity : AppCompatActivity() {
         val ssInbox: SSInbox,
         private var list: List<NotificationModel>
     ) : RecyclerView.Adapter<BaseViewHolder>() {
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
             return BaseViewHolder(InboxItemBinding.inflate(LayoutInflater.from(parent.context)))
         }
@@ -228,6 +251,11 @@ class InboxActivity : AppCompatActivity() {
             val context = binding.titleTv.context
             val notification = list[position]
             binding.obj = notification
+
+            binding.titleTv.setMarkDownText(notification.message.header)
+            binding.messageTv.setMarkDownText(notification.message.text)
+            binding.subTextTv.setMarkDownText(notification.message.subText?.text)
+
             binding.markUnreadTv.setOnClickListener {
                 ssInbox.markNotificationUnRead(
                     storeId = activity.selectedNotificationStoreConfig?.storeId ?: "",
@@ -236,6 +264,12 @@ class InboxActivity : AppCompatActivity() {
             }
             binding.markReadTv.setOnClickListener {
                 ssInbox.markNotificationRead(
+                    storeId = activity.selectedNotificationStoreConfig?.storeId ?: "",
+                    notificationId = notification.id
+                )
+            }
+            binding.archiveTv.setOnClickListener{
+                ssInbox.markNotificationArchive(
                     storeId = activity.selectedNotificationStoreConfig?.storeId ?: "",
                     notificationId = notification.id
                 )
@@ -260,8 +294,16 @@ class InboxActivity : AppCompatActivity() {
                 actionBinding.button.setOnClickListener {
                     context.safeStartActivity(action.url.getIntent())
                 }
-                val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-                params.setMargins(0, 0, context.resources.getDimension(R.dimen.margin_10).toInt(), 0)
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                params.setMargins(
+                    0,
+                    0,
+                    context.resources.getDimension(R.dimen.margin_10).toInt(),
+                    0
+                )
                 binding.actionButtonsLL.addView(actionBinding.root, params)
             }
         }

@@ -3,6 +3,9 @@ package app.suprsend.android
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.text.Html
+import android.text.Spanned
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +15,7 @@ import app.suprsend.inbox.model.NotificationModel
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import org.json.JSONArray
+import kotlin.math.abs
 
 fun View.layoutInflater(): LayoutInflater {
     return LayoutInflater.from(context)
@@ -25,7 +29,14 @@ fun Context.safeStartActivity(intent:Intent?){
         Toast.makeText(this,"Unable to open",Toast.LENGTH_SHORT).show()
     }
 }
-
+fun safeHtml(htmlText:String?): Spanned? {
+    htmlText?:return null
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        Html.fromHtml(htmlText, Html.FROM_HTML_MODE_COMPACT)
+    } else {
+        Html.fromHtml(htmlText)
+    }
+}
 fun String.getIntent(): Intent {
     return Intent(Intent.ACTION_VIEW, Uri.parse(this))
 }
@@ -64,28 +75,37 @@ fun <T> JSONArray.convertToList(): MutableList<T> {
     return items
 }
 
-// fun NotificationModel.getReadableExpiry(): String {
-//    return expiry.toString()
-// }
-
-fun readableTimePastTime(timestamp: Long): String {
+fun getReadableTime(timestamp: Long): String {
     val currentTimeMillis = System.currentTimeMillis()
-    val elapsedTimeMillis = currentTimeMillis - timestamp
+    val timeDifference = timestamp - currentTimeMillis
 
-    val seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedTimeMillis)
-    val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTimeMillis)
-    val hours = TimeUnit.MILLISECONDS.toHours(elapsedTimeMillis)
-    val days = TimeUnit.MILLISECONDS.toDays(elapsedTimeMillis)
-    val months = days / 30
-    val years = days / 365
+    val positiveTimeDifference = abs(timeDifference)
 
-    return when {
-        years > 0 -> "$years year${if (years > 1) "s" else ""} ago"
-        months > 0 -> "$months month${if (months > 1) "s" else ""} ago"
-        days > 0 -> "$days day${if (days > 1) "s" else ""} ago"
-        hours > 0 -> "$hours hour${if (hours > 1) "s" else ""} ago"
-        minutes > 0 -> "$minutes minute${if (minutes > 1) "s" else ""} ago"
-        else -> "$seconds second${if (seconds > 1) "s" else ""} ago"
+    val seconds = TimeUnit.MILLISECONDS.toSeconds(positiveTimeDifference)
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(positiveTimeDifference)
+    val hours = TimeUnit.MILLISECONDS.toHours(positiveTimeDifference)
+    val days = TimeUnit.MILLISECONDS.toDays(positiveTimeDifference)
+    val months = ceil(days / 30.0).toInt()
+    val years = ceil(days / 365.0).toInt()
+
+    return when  {
+        timeDifference >= 0 -> when {
+            years > 0 -> "$years year(s)"
+            months > 0 -> "$months month(s)"
+            days > 0 -> "$days day(s)"
+            hours > 0 -> "$hours hour(s)"
+            minutes > 0 -> "$minutes minute(s)"
+            else -> "$seconds second(s)"
+        }
+        else -> when {
+            years > 0 -> "$years year${if (years > 1) "s" else ""} ago"
+            months > 0 -> "$months month${if (months > 1) "s" else ""} ago"
+            days > 0 -> "$days day${if (days > 1) "s" else ""} ago"
+            hours > 0 -> "$hours hour${if (hours > 1) "s" else ""} ago"
+            minutes > 0 -> "$minutes minute${if (minutes > 1) "s" else ""} ago"
+            else -> "$seconds second${if (seconds > 1) "s" else ""} ago"
+        }
+
     }
 }
 
@@ -100,25 +120,6 @@ fun isNull(item: Any?): Boolean {
     return item == null
 }
 
-fun getReadableTimestamp(timeStamp: Long): String {
-    val currentTime = System.currentTimeMillis()
-    val timeDifference = timeStamp - currentTime
-
-    val seconds = TimeUnit.MILLISECONDS.toSeconds(timeDifference)
-    val minutes = TimeUnit.MILLISECONDS.toMinutes(timeDifference)
-    val hours = TimeUnit.MILLISECONDS.toHours(timeDifference)
-    val days = TimeUnit.MILLISECONDS.toDays(timeDifference)
-    val months = ceil(days / 30.0).toInt()
-    val years = ceil(days / 365.0).toInt()
-
-    val timeDuration = when {
-        years > 0 -> "$years year(s)"
-        months > 0 -> "$months month(s)"
-        days > 0 -> "$days day(s)"
-        hours > 0 -> "$hours hour(s)"
-        minutes > 0 -> "$minutes minute(s)"
-        else -> "$seconds second(s)"
-    }
-    return "Expires in $timeDuration"
+fun Boolean?.isTrue(): Boolean {
+    return this == true
 }
-

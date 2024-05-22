@@ -6,4 +6,8 @@
     <string name="mark_read">Mark Read</string>
     <string name="click">Click</string>
     <string name="action_url">Action Url</string>
+    <string name="two_str">%s %s</string>
+    <string name="expiry">Expiry : </string>
+    <string name="createdOn">CreatedOn : </string>
+    <string name="archive">Archive</string>
 </resources>

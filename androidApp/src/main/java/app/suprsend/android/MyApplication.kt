@@ -13,12 +13,13 @@ class MyApplication : Application() {
             context = this,
             apiKey = BuildConfig.SS_TOKEN,
             apiSecret = BuildConfig.SS_SECRET,
-            apiBaseUrl = BuildConfig.SS_API_BASE_URL,
-            inboxApiBaseUrl = BuildConfig.SS_API_INBOX_BASE_URL,
-            inboxSocketApiBaseUrl = BuildConfig.SS_API_INBOX_SOCKET_URL
+            apiBaseUrl = BuildConfig.SS_BASE_URL,
+            inboxApiBaseUrl = BuildConfig.SS_INBOX_BASE_URL,
+            inboxSocketApiBaseUrl = BuildConfig.SS_INBOX_SOCKET_URL
         )
 
         super.onCreate()
+        AppCreator.context = this
 
         SSApi.initXiaomi(context = this, appId = BuildConfig.XIAOMI_APP_ID, apiKey = BuildConfig.XIAOMI_APP_KEY)
         SSApi.setLogger(object : LoggerCallback {

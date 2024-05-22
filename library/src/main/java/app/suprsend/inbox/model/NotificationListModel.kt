@@ -4,6 +4,7 @@ import app.suprsend.base.convertToList
 import app.suprsend.base.safeBoolean
 import app.suprsend.base.safeLong
 import app.suprsend.base.safeString
+import app.suprsend.inbox.ConnectionState
 import app.suprsend.inbox.SSInbox
 import org.json.JSONArray
 import org.json.JSONObject
@@ -43,7 +44,7 @@ data class NotificationModel(
     val isPinned: Boolean,
     val archived: Boolean,
     val createdOn: Long,
-    val expiry: Long,
+    val expiry: Long?,
     val category: String,
     val canUserUnpin: Boolean,
     var seenOn: Long? = null,
@@ -57,13 +58,12 @@ interface InboxStoreListener {
     fun onUpdate(
         storeId: String,
         allNotifications: List<NotificationModel>
-//        totalPages: Int,
-//        total: Int
     )
 
     fun onError(storeId: String, e: Exception)
 
-    fun socket(isConnected: Boolean)
+    fun socket(connectionState: ConnectionState)
+    fun newNotification(notificationModel: NotificationModel)
 }
 
 internal data class NotificationListModel(
@@ -125,7 +125,7 @@ internal data class NotificationListModel(
                 isPinned = resultJson.safeBoolean("is_pinned") ?: false,
                 archived = resultJson.safeBoolean("archived") ?: false,
                 createdOn = resultJson.safeLong("created_on") ?: -1,
-                expiry = resultJson.safeLong("expiry") ?: -1,
+                expiry = resultJson.safeLong("expiry"),
                 category = resultJson.safeString("n_category") ?: "",
                 interactedOn = resultJson.safeLong("interacted_on") ?: -1,
                 seenOn = resultJson.safeLong("seen_on"),
@@ -182,6 +182,7 @@ data class NotificationStoreConfig(
         val tags = query.tags ?: listOf()
         val categories = query.categories ?: listOf()
         val read = query.read
+        val archived = query.archived
 
         val jsonObject = JSONObject()
         jsonObject.put("store_id", storeId)
@@ -191,6 +192,8 @@ data class NotificationStoreConfig(
             queryJo.put("read", read)
         queryJo.put("tags", queryOrOperator(tags))
         queryJo.put("categories", queryOrOperator(categories))
+        if (archived != null)
+            queryJo.put("archived", archived)
         jsonObject.put("query", queryJo)
         return jsonObject
     }
@@ -241,7 +244,8 @@ data class NotificationStore(
 data class NotificationStoreQuery(
     val tags: List<String>? = null,
     val categories: List<String>? = null,
-    val read: Boolean? = null
+    val read: Boolean? = null,
+    val archived: Boolean? = null
 )
 
 data class InboxData(
@@ -259,6 +263,12 @@ data class InboxData(
             temp = temp.coerceAtLeast(SSInbox.DEFAULT_MIN_PAGINATION_LIMIT)
             field = temp
         }
+
+    fun findStore(storeId: String? =null): NotificationStore? {
+        if (storeId == null)
+            return notificationStores.firstOrNull()
+        return notificationStores.find { it.notificationStoreConfig.storeId == storeId }
+    }
 
     fun reset() {
         notificationStores.forEach { store ->

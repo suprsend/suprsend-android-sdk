@@ -103,10 +103,6 @@ private constructor(
         Logger.logLevel = level
     }
 
-    fun getDistinctId(): String {
-        return SSApiInternal.userLocalDatasource.getIdentity()
-    }
-
     companion object {
 
         private val instancesMap = hashMapOf<String, SSApi>()

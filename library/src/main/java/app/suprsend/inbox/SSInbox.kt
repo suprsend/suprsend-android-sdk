@@ -3,7 +3,7 @@ package app.suprsend.inbox
 import app.suprsend.SSApiInternal
 import app.suprsend.base.Logger
 import app.suprsend.base.PeriodicJob
-import app.suprsend.base.executorService
+import app.suprsend.base.inboxExecutorService
 import app.suprsend.base.isTrue
 import app.suprsend.inbox.model.InboxData
 import app.suprsend.inbox.model.InboxStoreListener
@@ -17,7 +17,7 @@ import java.util.UUID
 
 
 class SSInbox
-constructor(
+private constructor(
     subscriberId: String,
     distinctId: String,
     tenantId: String? = null,
@@ -27,6 +27,7 @@ constructor(
 
     private var ssInboxInternal = SSInboxInternal()
     private var periodicJob: PeriodicJob? = null
+    private var socketConnectionState: ConnectionState = ConnectionState.CLOSED
 
     private val socket: Socket by lazy {
         val options = IO.Options().apply {
@@ -53,7 +54,7 @@ constructor(
             validateStore(notificationStoreConfigs)
             subscribeSocketListeners()
             periodicJob = PeriodicJob(
-                periodInSec = 30,
+                periodInSec = 20,
                 jobName = "InboxExpiryMessages"
             ) {
                 ssInboxInternal.checkExpiredMessages()
@@ -66,22 +67,14 @@ constructor(
 
 
     fun load(storeId: String? = null) {
-        executorService.execute {
-            val sid = storeId ?: DEFAULT_STORE_ID
-            val notificationStore = ssInboxInternal.inboxData.notificationStores.find { it.notificationStoreConfig.storeId == sid }
-            if (notificationStore == null) {
-                Logger.i(LOGGING_TAG, "Notification Store not found storeId:$sid")
-                return@execute
-            }
-            if (notificationStore.hasInitialFetchTime()) {
-                ssInboxInternal.loadNextPage(
-                    notificationStore
-                )
-            } else {
-                ssInboxInternal.loadInitial(
-                    notificationStore
-                )
-            }
+        inboxExecutorService.execute {
+            ssInboxInternal.load(storeId)
+        }
+    }
+
+    fun reload(storeId: String? = null) {
+        inboxExecutorService.execute {
+            ssInboxInternal.reload(storeId)
         }
     }
 
@@ -101,13 +94,13 @@ constructor(
 //    }
 
     fun markBellClicked() {
-        executorService.execute {
+        inboxExecutorService.execute {
             ssInboxInternal.markBellClicked()
         }
     }
 
     fun markAllNotificationRead() {
-        executorService.execute {
+        inboxExecutorService.execute {
             ssInboxInternal.markAllNotificationRead()
         }
     }
@@ -120,7 +113,7 @@ constructor(
     }
 
     fun markNotificationRead(storeId: String, notificationId: String) {
-        executorService.execute {
+        inboxExecutorService.execute {
             ssInboxInternal
                 .markNotificationRead(
                     storeId = storeId,
@@ -129,8 +122,18 @@ constructor(
         }
     }
 
+    fun markNotificationArchive(storeId: String, notificationId: String) {
+        inboxExecutorService.execute {
+            ssInboxInternal
+                .markNotificationArchive(
+                    storeId = storeId,
+                    notificationId = notificationId
+                )
+        }
+    }
+
     fun markNotificationUnRead(storeId: String, notificationId: String) {
-        executorService
+        inboxExecutorService
             .execute {
                 ssInboxInternal.markNotificationUnRead(
                     storeId = storeId,
@@ -143,55 +146,66 @@ constructor(
         ssInboxInternal.addListener(inboxStoreListener)
     }
 
-//    fun getNotificationItems(storeId: String): List<NotificationModel>? {
-//        return ssInboxInternal.getNotificationItems(storeId)
-//    }
+    fun findStore(storeId: String? = null): NotificationStore? {
+        return getData().findStore(storeId)
+    }
 
     fun getData(): InboxData {
         return ssInboxInternal.inboxData
     }
 
-    fun isSocketConnected(): Boolean {
-        return socket.connected()
-    }
-
     fun connect() {
-        Logger.i(LOGGING_TAG,"Socket Connect Requested")
-        if (!socket.connected())
-            socket.connect()
-
-        if (!periodicJob?.isScheduled.isTrue()) {
-            periodicJob?.start()
+        inboxExecutorService.execute {
+            Logger.i(LOGGING_TAG, "Socket Connect Requested")
+            if (socketConnectionState == ConnectionState.FAILURE || socketConnectionState == ConnectionState.CLOSED) {
+                socket.connect()
+                if (!periodicJob?.isScheduled.isTrue()) {
+                    periodicJob?.start()
+                }
+                ssInboxInternal.reload()
+            } else {
+                Logger.i(LOGGING_TAG, "Socket connect ignored")
+            }
         }
     }
 
     fun disconnect() {
-        Logger.i(LOGGING_TAG,"Socket Disconnect Requested")
-        if (socket.connected())
-            socket.disconnect()
-        if (periodicJob?.isScheduled.isTrue())
-            periodicJob?.stop()
+        inboxExecutorService.execute {
+            Logger.i(LOGGING_TAG, "Socket Disconnect Requested")
+            if (socket.connected())
+                socket.disconnect()
+            if (periodicJob?.isScheduled.isTrue())
+                periodicJob?.stop()
+        }
     }
 
     private fun subscribeSocketListeners() {
+        socketConnectionState = ConnectionState.CONNECTING
         subscribeNewNotification()
         subscribeUpdatedNotification()
         subscribeUpdateBadge()
         subscribeMarkAllRead()
         socket.on(Socket.EVENT_CONNECT) {
-            Logger.i(LOGGING_TAG,"Socket connected")
-            ssInboxInternal.notifySocketStatus(true)
+            Logger.i(LOGGING_TAG, "Socket connected")
+            socketConnectionState = ConnectionState.OPENED
+            ssInboxInternal.notifySocketStatus(socketConnectionState)
         }
         socket.on(Socket.EVENT_DISCONNECT) {
-            Logger.i(LOGGING_TAG,"Socket disconnected")
-            ssInboxInternal.notifySocketStatus(false)
+            socketConnectionState = ConnectionState.CLOSED
+            Logger.i(LOGGING_TAG, "Socket disconnected")
+            ssInboxInternal.notifySocketStatus(socketConnectionState)
+        }
+        socket.on(Socket.EVENT_CONNECT_ERROR) {
+            socketConnectionState = ConnectionState.FAILURE
+            Logger.i(LOGGING_TAG, "Socket connect error")
+            ssInboxInternal.notifySocketStatus(socketConnectionState)
         }
         socket.connect()
     }
 
     private fun subscribeMarkAllRead() {
         socket.on("mark_all_read") {
-            executorService.execute {
+            inboxExecutorService.execute {
                 Logger.i(LOGGING_TAG, "mark_all_read")
                 ssInboxInternal.onSocketMarkAllRead()
             }
@@ -207,7 +221,7 @@ constructor(
 
     private fun subscribeUpdatedNotification() {
         socket.on("notification_updated") { data ->
-            executorService.execute {
+            inboxExecutorService.execute {
                 Logger.i(LOGGING_TAG, "notification_updated")
                 ssInboxInternal.onSocketNotificationUpdate(data)
             }
@@ -216,7 +230,7 @@ constructor(
 
     private fun subscribeNewNotification() {
         socket.on("new_notification") { data ->
-            executorService.execute {
+            inboxExecutorService.execute {
                 Logger.i(LOGGING_TAG, "new_notification")
                 ssInboxInternal.onSocketNewNotification(data)
             }
@@ -258,5 +272,25 @@ constructor(
         const val DEFAULT_TENANT_ID = "default"
         const val DEFAULT_STORE_ID = "default_store"
         const val LOGGING_TAG = "inbox"
+        private val instance: SSInbox? = null
+
+        fun initialize(
+            subscriberId: String,
+            distinctId: String,
+            tenantId: String? = null,
+            pageSize: Int? = null,
+            notificationStoreConfigs: List<NotificationStoreConfig> = listOf()
+        ): SSInbox {
+            return instance
+                ?: SSInbox(
+                    subscriberId, distinctId, tenantId, pageSize, notificationStoreConfigs
+                )
+        }
+
+        fun getInstance(): SSInbox? {
+            return instance
+        }
     }
+
+
 }

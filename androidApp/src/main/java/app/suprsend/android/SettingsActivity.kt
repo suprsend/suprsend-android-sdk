@@ -82,7 +82,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.inboxSubscriberIdEt.setText(getValue("inboxSubscriberId", "GL-gymM9NGjcDFApgrJP4xT4Iecdj4OB7u45rc3lgCY"))
+        binding.inboxSubscriberIdEt.setText(getValue("inboxSubscriberId", BuildConfig.SS_INBOX_SUBSCRIBER_ID))
         binding.inboxStoreJsonEt.setText(getValue("inboxStoreJsonEt", getInboxStoreJson()))
         binding.inbox.clickWithThrottle {
             CommonAnalyticsHandler.set("inbox_visit_at", System.currentTimeMillis().toString())
@@ -99,16 +99,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun getInboxStoreJson(): String {
         return """
-[{"storeId":"Tab1","label":"Read","query":{"tags":"tab1","read":true}},
- {"storeId":"Tab2","label":"Unread","query":{"read":false,"tags":"tab1"}},
- {"storeId":"Tab3","label":"All"}]
-        """.trimIndent()
-    }
-
-    private fun getInboxStoreJson1(): String {
-        return """
-[{"storeId":"Tab1","label":"tab1 read true","query":{"tags":"tab1","read":true}},
-{"storeId":"Tab2","label":"tab1 read false","query":{"read":false,"tags":"tab1"}}]
+[{"storeId":"Read","label":"Read","query":{"tags":"tab1","read":true,"archived":false}},{"storeId":"Unread","label":"Unread","query":{"read":false,"tags":"tab1","archived":false}},{"storeId":"Archived","label":"Archived","query":{"archived":true}},{"storeId":"All","label":"All"}]
         """.trimIndent()
     }
 
