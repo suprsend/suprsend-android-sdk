@@ -65,6 +65,11 @@
             android:layout_height="match_parent"
             android:layout_below="@id/tabsSv"
             android:layout_marginTop="5dp" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/messageTv"

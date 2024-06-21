@@ -366,7 +366,7 @@ internal class SSInboxInternal {
         val storeArchived = config.query.archived
 
         val sameRead = storeRead == null || notificationRead == storeRead
-        val sameArchived = storeArchived == null || (notificationArchive == storeArchived)
+        val sameArchived = if (storeArchived == null) !notificationArchive else notificationArchive == storeArchived
         var sameTags = false
         var sameCategory = false
 

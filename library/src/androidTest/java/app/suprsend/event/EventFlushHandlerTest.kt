@@ -12,7 +12,7 @@ class EventFlushHandlerTest: BaseTest() {
 
     @Test
     fun eventFlush() {
-
+        initializeConfig()
         val events = arrayListOf<Event_Model>()
 
         events.add(

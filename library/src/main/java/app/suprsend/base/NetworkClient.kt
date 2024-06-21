@@ -71,9 +71,7 @@ internal fun httpCall(
         connection?.disconnect()
     }
     Logger.i(SSConstants.TAG_SUPRSEND, "Response Received : $urL \nCode : ${httpResponse.statusCode}")
-    if (BuildConfig.DEBUG) {
-        Logger.i(SSConstants.TAG_SUPRSEND, "Response : ${httpResponse.response}")
-    }
+    Logger.i(SSConstants.TAG_SUPRSEND, "Response : ${httpResponse.response}")
     return httpResponse
 }
 

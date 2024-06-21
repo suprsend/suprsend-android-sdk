@@ -107,6 +107,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7")
     implementation("com.github.angads25:toggle:1.1.0")
+    implementation ("io.noties.markwon:core:4.6.2")
+    implementation ("io.noties.markwon:html:4.6.2")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

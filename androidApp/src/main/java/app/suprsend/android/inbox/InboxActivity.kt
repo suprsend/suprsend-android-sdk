@@ -30,6 +30,8 @@ import app.suprsend.inbox.model.InboxStoreListener
 import app.suprsend.inbox.model.NotificationModel
 import app.suprsend.inbox.model.NotificationStoreConfig
 import app.suprsend.inbox.model.NotificationStoreQuery
+import app.suprsend.inbox.util.getReadableTime
+import app.suprsend.inbox.util.todayMidNightMilli
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -73,6 +75,11 @@ class InboxActivity : AppCompatActivity() {
         ssInbox.addListener(object : InboxStoreListener {
 
             override fun loading(storeId: String, isLoading: Boolean) {
+                if (selectedNotificationStoreConfig?.storeId == storeId && SSInbox.getInstance()?.findStore(storeId)?.notifications?.isEmpty() == true) {
+                    binding.progressBar.visibility = setVisibleOrGone(isLoading)
+                } else {
+                    binding.progressBar.visibility = setVisibleOrGone(false)
+                }
             }
 
             override fun bellCount(bellCount: Int) {
@@ -161,6 +168,7 @@ class InboxActivity : AppCompatActivity() {
                 selectedNotificationStoreConfig = notificationStoreConfig
                 ssInbox.reload(notificationStoreConfig.storeId)
                 updateItemsInUI(store.notifications)
+                //Selected tab position is changed
                 renderTabs()
             }
             binding.tabsLL.addView(tabItemViewBinding.root)
@@ -255,6 +263,10 @@ class InboxActivity : AppCompatActivity() {
             binding.titleTv.setMarkDownText(notification.message.header)
             binding.messageTv.setMarkDownText(notification.message.text)
             binding.subTextTv.setMarkDownText(notification.message.subText?.text)
+            binding.timeTv.text = context.getString(R.string.createdOn) + getReadableTime(notification.createdOn)
+            val expiry = notification.expiry
+            if (expiry != null)
+                binding.expiryTimeTv.text = context.getString(R.string.expiry) + " " + getReadableTime(expiry, todayMidNightMilli())
 
             binding.markUnreadTv.setOnClickListener {
                 ssInbox.markNotificationUnRead(
@@ -268,7 +280,7 @@ class InboxActivity : AppCompatActivity() {
                     notificationId = notification.id
                 )
             }
-            binding.archiveTv.setOnClickListener{
+            binding.archiveTv.setOnClickListener {
                 ssInbox.markNotificationArchive(
                     storeId = activity.selectedNotificationStoreConfig?.storeId ?: "",
                     notificationId = notification.id
@@ -287,6 +299,10 @@ class InboxActivity : AppCompatActivity() {
             }
             binding.actionUrl.setOnClickListener {
                 binding.subTextTv.context.safeStartActivity(notification.message.url?.getIntent())
+                ssInbox.markNotificationClicked(
+                    storeId = activity.selectedNotificationStoreConfig?.storeId ?: "",
+                    notificationId = notification.id
+                )
             }
             notification.message.actions?.forEach { action ->
                 val actionBinding = InboxItemActionBinding.inflate(binding.titleTv.layoutInflater())

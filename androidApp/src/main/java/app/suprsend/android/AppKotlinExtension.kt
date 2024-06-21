@@ -75,40 +75,6 @@ fun <T> JSONArray.convertToList(): MutableList<T> {
     return items
 }
 
-fun getReadableTime(timestamp: Long): String {
-    val currentTimeMillis = System.currentTimeMillis()
-    val timeDifference = timestamp - currentTimeMillis
-
-    val positiveTimeDifference = abs(timeDifference)
-
-    val seconds = TimeUnit.MILLISECONDS.toSeconds(positiveTimeDifference)
-    val minutes = TimeUnit.MILLISECONDS.toMinutes(positiveTimeDifference)
-    val hours = TimeUnit.MILLISECONDS.toHours(positiveTimeDifference)
-    val days = TimeUnit.MILLISECONDS.toDays(positiveTimeDifference)
-    val months = ceil(days / 30.0).toInt()
-    val years = ceil(days / 365.0).toInt()
-
-    return when  {
-        timeDifference >= 0 -> when {
-            years > 0 -> "$years year(s)"
-            months > 0 -> "$months month(s)"
-            days > 0 -> "$days day(s)"
-            hours > 0 -> "$hours hour(s)"
-            minutes > 0 -> "$minutes minute(s)"
-            else -> "$seconds second(s)"
-        }
-        else -> when {
-            years > 0 -> "$years year${if (years > 1) "s" else ""} ago"
-            months > 0 -> "$months month${if (months > 1) "s" else ""} ago"
-            days > 0 -> "$days day${if (days > 1) "s" else ""} ago"
-            hours > 0 -> "$hours hour${if (hours > 1) "s" else ""} ago"
-            minutes > 0 -> "$minutes minute${if (minutes > 1) "s" else ""} ago"
-            else -> "$seconds second${if (seconds > 1) "s" else ""} ago"
-        }
-
-    }
-}
-
 fun isNullOrBlank(text: String?): Boolean {
     return text.isNullOrBlank()
 }
