@@ -17,6 +17,7 @@ import app.suprsend.xiaomi.SSXiaomiReceiver
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
 import com.xiaomi.mipush.sdk.Logger as XiaomiLogger
 import app.suprsend.base.Logger
+import app.suprsend.inbox.SSInbox
 import app.suprsend.log.LoggerCallback
 import com.xiaomi.mipush.sdk.MiPushClient
 import org.json.JSONObject
@@ -96,6 +97,7 @@ private constructor(
         executorService.execute {
             SSApiInternal.reset(unSubscribeNotification)
             SSApiInternal.flush()
+            SSInbox.clear()
         }
     }
 

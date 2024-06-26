@@ -272,7 +272,7 @@ private constructor(
         const val DEFAULT_TENANT_ID = "default"
         const val DEFAULT_STORE_ID = "default_store"
         const val LOGGING_TAG = "inbox"
-        private val instance: SSInbox? = null
+        private var instance: SSInbox? = null
 
         fun initialize(
             subscriberId: String,
@@ -281,14 +281,20 @@ private constructor(
             pageSize: Int? = null,
             notificationStoreConfigs: List<NotificationStoreConfig> = listOf()
         ): SSInbox {
-            return instance
-                ?: SSInbox(
-                    subscriberId, distinctId, tenantId, pageSize, notificationStoreConfigs
-                )
+            var safeInstance = instance
+            if (safeInstance == null) {
+                safeInstance = SSInbox(subscriberId, distinctId, tenantId, pageSize, notificationStoreConfigs)
+                instance = safeInstance
+            }
+            return safeInstance
         }
 
         fun getInstance(): SSInbox? {
             return instance
+        }
+
+        fun clear() {
+            instance = null
         }
     }
 
