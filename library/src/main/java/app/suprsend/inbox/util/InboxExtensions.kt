@@ -3,8 +3,8 @@ package app.suprsend.inbox.util
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-fun getReadableTime(timestamp: Long, anchorTimeMillis: Long = System.currentTimeMillis()): String {
-    val timeDifference = timestamp - anchorTimeMillis
+fun getReadableTime(timestampMillis: Long, anchorTimeMillis: Long = System.currentTimeMillis()): String {
+    val timeDifference = timestampMillis - anchorTimeMillis
     val positiveTimeDifference = abs(timeDifference)
 
     val seconds = (positiveTimeDifference / 1000).toInt()

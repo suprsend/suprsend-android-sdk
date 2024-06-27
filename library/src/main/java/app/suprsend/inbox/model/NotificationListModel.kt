@@ -53,16 +53,39 @@ data class NotificationModel(
 )
 
 interface InboxStoreListener {
+    /**
+     * The Bell count to be shown
+     */
     fun bellCount(bellCount: Int)
+
+    /**
+     * Loading state of store
+     */
     fun loading(storeId: String, isLoading: Boolean)
+
+    /**
+     * If store has any new notifications update will be posted
+     */
     fun onUpdate(
         storeId: String,
         allNotifications: List<NotificationModel>
     )
 
+    /**
+     * If any failure happens
+     * We suggest to shown full screen error if inbox messages are not loaded in the requested store_id
+     * on the screen else show toast error message
+     */
     fun onError(storeId: String, e: Exception)
 
+    /**
+     * The current state of socket connection
+     */
     fun socket(connectionState: ConnectionState)
+
+    /**
+     * If an new notification has received through socket connection
+     */
     fun newNotification(notificationModel: NotificationModel)
 }
 
