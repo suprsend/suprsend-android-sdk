@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="app.suprsend.android.AppKotlinExtensionKt" />
+
+        <import type="app.suprsend.inbox.util.InboxExtensionsKt" />
+
+        <import type="android.view.View" />
+
+        <variable
+            name="obj"
+            type="app.suprsend.inbox.model.NotificationModel" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/box_bg"
+            android:padding="10sp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/pinIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:visibility="@{obj.isPinned? View.VISIBLE : View.GONE}"
+                app:layout_constraintEnd_toStartOf="@id/readStateTv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_pin"
+                tools:visibility="visible" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/readStateTv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/read_circle"
+                android:visibility="@{AppKotlinExtensionKt.isNull(obj.seenOn)? View.VISIBLE : View.INVISIBLE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/topBarrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pinIv,readStateTv" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/avtarIv"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:visibility="@{AppKotlinExtensionKt.isNull(obj.message.avtar)? View.GONE : View.VISIBLE}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/topBarrier"
+                tools:background="#e4e4e4"
+                tools:visibility="visible" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/titleTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/avtarIv"
+                tools:text="This is title is title is title is title is title is title is title is title is title is title is title" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/messageTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/titleTv"
+                tools:text="This is body" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/subTextTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{AppKotlinExtensionKt.isNullOrBlank(obj.message.subText.text)? View.GONE : View.VISIBLE}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/messageTv"
+                tools:text="This is subtext" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/timeTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/subTextTv"
+                tools:text="Message Time - 1r" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/expiryTimeTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{obj.isExpiryVisible? View.VISIBLE : View.GONE}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/timeTv"
+                tools:text="Expiry time" />
+
+            <HorizontalScrollView
+                android:id="@+id/notificationActions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/expiryTimeTv">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/markUnreadTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_bg"
+                        android:padding="5dp"
+                        android:text="@string/mark_unread"
+                        android:textColor="#FFFFFF"
+                        android:visibility="@{!AppKotlinExtensionKt.isNull(obj.seenOn)? View.VISIBLE : View.GONE}"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/expiryTimeTv" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/markReadTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_10"
+                        android:background="@drawable/btn_bg"
+                        android:padding="5dp"
+                        android:text="@string/mark_read"
+                        android:textColor="#FFFFFF"
+                        android:visibility="@{AppKotlinExtensionKt.isNull(obj.seenOn)? View.VISIBLE : View.GONE}"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/markUnreadTv"
+                        tools:visibility="visible" />
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/archiveTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_10"
+                        android:background="@drawable/btn_bg"
+                        android:padding="5dp"
+                        android:text="@string/archive"
+                        android:textColor="#FFFFFF"
+                        android:visibility="@{AppKotlinExtensionKt.isTrue(obj.archived)? View.GONE : View.VISIBLE}"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/markReadTv" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/actionUrl"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_10"
+                        android:background="@drawable/btn_bg"
+                        android:padding="5dp"
+                        android:text="@string/action_url"
+                        android:textColor="#FFFFFF"
+                        android:visibility="@{AppKotlinExtensionKt.isNullOrBlank(obj.message.url)? View.GONE : View.VISIBLE}"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/markReadTv" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <LinearLayout
+                android:id="@+id/actionButtonsLL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:visibility="@{AppKotlinExtensionKt.isEmpty(obj.message.actions)? View.GONE : View.VISIBLE}"
+                app:layout_constraintTop_toBottomOf="@id/notificationActions"
+                tools:background="#e4e4e4"
+                tools:layout_height="50dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</layout>

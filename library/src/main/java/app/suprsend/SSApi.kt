@@ -17,6 +17,7 @@ import app.suprsend.xiaomi.SSXiaomiReceiver
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
 import com.xiaomi.mipush.sdk.Logger as XiaomiLogger
 import app.suprsend.base.Logger
+import app.suprsend.inbox.SSInbox
 import app.suprsend.log.LoggerCallback
 import com.xiaomi.mipush.sdk.MiPushClient
 import org.json.JSONObject
@@ -92,10 +93,11 @@ private constructor(
         SSApiInternal.flush()
     }
 
-    fun reset(unSubscribeNotification:Boolean = true) {
+    fun reset(unSubscribeNotification: Boolean = true) {
         executorService.execute {
             SSApiInternal.reset(unSubscribeNotification)
             SSApiInternal.flush()
+            SSInbox.clear()
         }
     }
 
@@ -117,16 +119,31 @@ private constructor(
         /**
          * Should be called before Application super.onCreate()
          */
-        fun init(context: Context, apiKey: String, apiSecret: String, apiBaseUrl: String? = null) {
+        fun init(
+            context: Context,
+            apiKey: String,
+            apiSecret: String,
+            apiBaseUrl: String? = null,
+            inboxApiBaseUrl: String? = null,
+            inboxSocketApiBaseUrl: String? = null
+        ) {
 
             // Setting android context to user everywhere
             if (SdkAndroidCreator.isContextInitialized()) {
                 return
             }
             SdkAndroidCreator.context = context.applicationContext
-            val basicDetails = BasicDetails(apiKey, apiSecret, apiBaseUrl)
+            val basicDetails = BasicDetails(
+                apiKey = apiKey,
+                apiSecret = apiSecret,
+                apiBaseUrl = apiBaseUrl,
+                inboxBaseUrl = inboxApiBaseUrl,
+                inboxSocketUrl = inboxSocketApiBaseUrl
+            )
 
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, basicDetails.getApiBaseUrl())
+            ConfigHelper.addOrUpdate(SSConstants.CONFIG_INBOX_API_BASE_URL, basicDetails.getInboxBaseUrl())
+            ConfigHelper.addOrUpdate(SSConstants.CONFIG_INBOX_SOCKET_BASE_URL, basicDetails.getInboxSocketUrl())
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, basicDetails.apiKey)
             ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_SECRET, basicDetails.apiSecret)
 

@@ -43,26 +43,14 @@ android {
 
     buildTypes {
         getByName("debug") {
-            buildConfigField("String", "XIAOMI_APP_ID", "\"${Deps.XIAOMI_APP_ID}\"")
-            buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
-            buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
-            buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
-            buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
-            buildConfigField("String", "SS_TENANT_ID", "${Deps.SS_TENANT_ID}")
-            buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
+            addBuildConfigFields()
             versionNameSuffix = "(d)"
             isDebuggable = true
             isCrunchPngs = false
             isMinifyEnabled = false
         }
         getByName("release") {
-            buildConfigField("String", "XIAOMI_APP_ID", "\"${Deps.XIAOMI_APP_ID}\"")
-            buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
-            buildConfigField("String", "SS_API_BASE_URL", "\"${Deps.SS_API_BASE_URL}\"")
-            buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
-            buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
-            buildConfigField("String", "SS_TENANT_ID", "${Deps.SS_TENANT_ID}")
-            buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
+            addBuildConfigFields()
             signingConfig = signingConfigs.getByName("release")
             isDebuggable = false
             isMinifyEnabled = true
@@ -119,8 +107,23 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7")
     implementation("com.github.angads25:toggle:1.1.0")
+    implementation ("io.noties.markwon:core:4.6.2")
+    implementation ("io.noties.markwon:html:4.6.2")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+}
+
+fun com.android.build.gradle.internal.dsl.BuildType.addBuildConfigFields() {
+    buildConfigField("String", "XIAOMI_APP_ID", "\"${Deps.XIAOMI_APP_ID}\"")
+    buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
+    buildConfigField("String", "SS_BASE_URL", "\"${Deps.SS_BASE_URL}\"")
+    buildConfigField("String", "SS_INBOX_BASE_URL", "\"${Deps.SS_INBOX_BASE_URL}\"")
+    buildConfigField("String", "SS_INBOX_SOCKET_URL", "\"${Deps.SS_INBOX_SOCKET_URL}\"")
+    buildConfigField("String", "SS_INBOX_SUBSCRIBER_ID", "\"${Deps.SS_INBOX_SUBSCRIBER_ID}\"")
+    buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
+    buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
+    buildConfigField("String", "SS_TENANT_ID", "\"${Deps.SS_TENANT_ID}\"")
+    buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
 }

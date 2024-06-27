@@ -14,6 +14,37 @@
             tools:context=".SettingsActivity">
 
             <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/inboxSubscriberIdEt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:hint="Set Inbox SubscriberId"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/inboxStoreJsonEt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:gravity="start"
+                android:hint="Set Inbox Store Json"
+                android:lines="5"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/inbox"
+                style="@style/btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Inbox"
+                android:textSize="17sp" />
+
+            <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/emailEt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -179,6 +210,7 @@
                 android:gravity="center"
                 android:text="User Preferences"
                 android:textSize="17sp" />
+
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/logoutTv"

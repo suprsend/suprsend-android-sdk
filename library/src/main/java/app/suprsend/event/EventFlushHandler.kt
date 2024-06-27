@@ -58,7 +58,6 @@ internal object EventFlushHandler {
             date = date
         )
 
-        Logger.i(TAG, "${httpResponse.statusCode} \n$requestJson \n${httpResponse.response}")
         return httpResponse
     }
 

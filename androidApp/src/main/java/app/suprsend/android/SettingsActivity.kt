@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.android.databinding.ActivitySettingsBinding
+import app.suprsend.android.inbox.InboxActivity
 import app.suprsend.android.preference.UserPreferenceActivity
 
 class SettingsActivity : AppCompatActivity() {
@@ -80,6 +81,26 @@ class SettingsActivity : AppCompatActivity() {
             val intent = Intent(this, UserPreferenceActivity::class.java)
             startActivity(intent)
         }
+
+        binding.inboxSubscriberIdEt.setText(getValue("inboxSubscriberId", BuildConfig.SS_INBOX_SUBSCRIBER_ID))
+        binding.inboxStoreJsonEt.setText(getValue("inboxStoreJsonEt", getInboxStoreJson()))
+        binding.inbox.clickWithThrottle {
+            CommonAnalyticsHandler.set("inbox_visit_at", System.currentTimeMillis().toString())
+            val intent = Intent(this, InboxActivity::class.java)
+            val subscriberId = binding.inboxSubscriberIdEt.text.toString()
+            val inboxStoreJson = binding.inboxStoreJsonEt.text.toString()
+            intent.putExtra("inboxSubscriberId", subscriberId)
+            intent.putExtra("inboxStoreJson", inboxStoreJson)
+            startActivity(intent)
+            storeValue("inboxSubscriberId", subscriberId)
+            storeValue("inboxStoreJson", inboxStoreJson)
+        }
+    }
+
+    private fun getInboxStoreJson(): String {
+        return """
+[{"storeId":"Read","label":"Read","query":{"tags":"tab1","read":true,"archived":false}},{"storeId":"Unread","label":"Unread","query":{"read":false,"tags":"tab1","archived":false}},{"storeId":"Archived","label":"Archived","query":{"archived":true}},{"storeId":"All","label":"All"}]
+        """.trimIndent()
     }
 
     private fun logout(unSubscribeNotification: Boolean) {

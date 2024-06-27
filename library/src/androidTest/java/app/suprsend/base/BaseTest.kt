@@ -1,13 +1,11 @@
 package app.suprsend.base
 
 import androidx.test.InstrumentationRegistry
-import app.suprsend.SSApi
 import app.suprsend.SSApiInternal
 import app.suprsend.config.ConfigHelper
 import app.suprsend.database.SQLDataHelper
 import junit.framework.Assert.assertEquals
 import org.json.JSONObject
-import org.junit.Assert
 import org.junit.Before
 
 
@@ -26,6 +24,10 @@ open class BaseTest {
         )
             throw IllegalStateException("Please input credentials")
 
+        initializeConfig()
+    }
+
+    fun initializeConfig() {
         ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, TestConstant.CONFIG_API_BASE_URL)
         ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, TestConstant.CONFIG_API_KEY)
         ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_SECRET, TestConstant.CONFIG_API_SECRET)
