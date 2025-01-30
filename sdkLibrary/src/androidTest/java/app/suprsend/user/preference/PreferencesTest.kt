@@ -56,6 +56,15 @@ class PreferencesTest : BaseTest() {
 
     }
 
+    /**
+     * Covers below cases
+     *  Category
+     *      - OPT_IN and Verify
+     *      - OPT_OUT and Verify
+     *  Category Channel
+     *      - OPT_IN and Verify
+     *      - OPT_OUT and Verify
+     */
     @Test
     fun verifyUpdateCategoryPreference() {
         UserPreferenceRemote.networkClient = networkClient
@@ -201,11 +210,13 @@ class PreferencesTest : BaseTest() {
         Assert.assertEquals("refund-promotion", subCategory?.category)
         Assert.assertEquals(PreferenceOptions.OPT_OUT, subCategory?.preferenceOptions)
 
-
-
     }
 
-
+    /**
+     * Covers below cases
+     * ALL and verify
+     * REQUIRED and verify
+     */
     @Test
     fun verifyChannelPreferenceRestricted() {
         UserPreferenceRemote.networkClient = networkClient
