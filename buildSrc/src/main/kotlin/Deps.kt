@@ -28,22 +28,26 @@ object Deps {
     var APP_VERSION_NAME = if (ISPROD) "$SDK_VERSION_NAME-Prod" else "$SDK_VERSION_NAME-Stag"
 
     //Prod
-    var SS_API_BASE_URL = if (ISPROD) "https://hub.suprsend.com" else "https://collector-staging.suprsend.workers.dev"
-    var SS_API_INBOX_BASE_URL = if (ISPROD) "https://inboxs.live" else "https://inbox-staging.inboxs.workers.dev"
-    var SS_API_INBOX_SOCKET_URL = if (ISPROD) "https://betainbox.suprsend.com" else "https://staging-inbox-api.suprsend.com"
-    val SS_TENANT_ID = "null"
-    var SS_TOKEN = "XXXX"
-    var SS_SECRET = "XXXX"
+    var SS_BASE_URL = if (ISPROD) "https://hub.suprsend.com" else "https://collector-staging.suprsend.workers.dev"
+    var SS_INBOX_BASE_URL = if (ISPROD) "https://inboxs.live" else "https://inbox-staging.inboxs.workers.dev"
+    var SS_INBOX_SOCKET_URL = if (ISPROD) "https://betainbox.suprsend.com" else "https://staging-inbox-api.suprsend.com"
+    var SS_INBOX_SUBSCRIBER_ID = "XX"
 
-    const val XIAOMI_APP_ID = "XXXX"
-    const val XIAOMI_APP_KEY = "XXXX"
+    var SS_TOKEN = "XX"
+    var SS_SECRET = "XX"
+    var SS_PUBLIC_API_KEY = "XX"
+    val SS_TENANT_ID = "XX"
+    var INBOX_SECRET = "XX"
 
-    const val OPPO_APP_KEY = "XXXX"
-    const val OPPO_APP_SECRET = "XXXX"
 
-    //Todo : Add jitpack publishing
-    const val MX_TOKEN = "XXXX"
-    const val JITPACK_TOKEN = "XXXX"
+    const val XIAOMI_APP_ID = "XX"
+    const val XIAOMI_APP_KEY = "XX"
+
+    const val OPPO_APP_KEY = "XX"
+    const val OPPO_APP_SECRET = "XX"
+
+    const val MX_TOKEN = "XX"
+    const val JITPACK_TOKEN = "XX"
 
     object Android {
         const val minSdk = 19
@@ -72,8 +76,8 @@ object Deps {
         const val POM_SCM_DEV_CONNECTION = "scm:git@github.com:suprsend/suprsend-android-sdk.git"
         const val POM_SCM_URL = "https://github.com/suprsend/suprsend-android-sdk"
 
-        const val OSSRH_USERNAME = "XXXX"
-        const val OSSRH_PASSWORD = "XXXX"
+        const val OSSRH_USERNAME = "XX"
+        const val OSSRH_PASSWORD = "XX"
     }
 
     object JetBrains {

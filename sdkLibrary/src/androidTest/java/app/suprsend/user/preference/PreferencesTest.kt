@@ -35,7 +35,7 @@ class PreferencesTest : BaseTest() {
         )
         SuprSend.initialize(
             context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY_SEC_OFF,
+            publicApiKey = TestConstants.PUBLIC_API_KEY,
             options = SuprSendOptions(
                 "https://collector-staging.suprsend.workers.dev"
             )
@@ -74,7 +74,7 @@ class PreferencesTest : BaseTest() {
         )
         SuprSend.initialize(
             context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY_SEC_OFF,
+            publicApiKey = TestConstants.PUBLIC_API_KEY,
             options = SuprSendOptions(
                 "https://collector-staging.suprsend.workers.dev"
             )
@@ -224,7 +224,7 @@ class PreferencesTest : BaseTest() {
         )
         SuprSend.initialize(
             context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY_SEC_OFF,
+            publicApiKey = TestConstants.PUBLIC_API_KEY,
             options = SuprSendOptions(
                 "https://collector-staging.suprsend.workers.dev"
             )

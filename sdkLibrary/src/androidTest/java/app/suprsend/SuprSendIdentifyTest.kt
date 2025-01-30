@@ -21,7 +21,7 @@ class SuprSendIdentifyTest  : BaseTest() {
         val userTokenFetcher = mockk<UserTokenFetcher>(relaxed = true)
         SuprSend.initialize(
             context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY_SEC_OFF,
+            publicApiKey = TestConstants.PUBLIC_API_KEY,
             options = SuprSendOptions(
                 "https://collector-staging.suprsend.workers.dev"
             ),
@@ -50,7 +50,7 @@ class SuprSendIdentifyTest  : BaseTest() {
         } returns ApiResponse(ResponseStatus.SUCCESS)
         SuprSend.initialize(
             context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY_SEC_OFF,
+            publicApiKey = TestConstants.PUBLIC_API_KEY,
             options = SuprSendOptions(
                 "https://collector-staging.suprsend.workers.dev"
             ),
@@ -89,7 +89,7 @@ class SuprSendIdentifyTest  : BaseTest() {
         } returns ApiResponse(ResponseStatus.SUCCESS)
         SuprSend.initialize(
             context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY_SEC_OFF,
+            publicApiKey = TestConstants.PUBLIC_API_KEY,
             options = SuprSendOptions(
                 "https://collector-staging.suprsend.workers.dev"
             ),
@@ -123,7 +123,7 @@ class SuprSendIdentifyTest  : BaseTest() {
         } returns ApiResponse(ResponseStatus.SUCCESS)
         SuprSend.initialize(
             context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY_SEC_OFF,
+            publicApiKey = TestConstants.PUBLIC_API_KEY,
             options = SuprSendOptions(
                 "https://collector-staging.suprsend.workers.dev"
             ),
@@ -149,7 +149,7 @@ class SuprSendIdentifyTest  : BaseTest() {
         } returns ApiResponse(ResponseStatus.ERROR)
         SuprSend.initialize(
             context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY_SEC_OFF,
+            publicApiKey = TestConstants.PUBLIC_API_KEY,
             options = SuprSendOptions(
                 "https://collector-staging.suprsend.workers.dev"
             ),
@@ -177,7 +177,7 @@ class SuprSendIdentifyTest  : BaseTest() {
         every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken()
         SuprSend.initialize(
             context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY_SEC_OFF,
+            publicApiKey = TestConstants.PUBLIC_API_KEY,
             options = SuprSendOptions(
                 "https://collector-staging.suprsend.workers.dev"
             ),

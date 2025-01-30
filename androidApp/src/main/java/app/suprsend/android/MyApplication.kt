@@ -4,7 +4,6 @@ import android.app.Application
 import android.util.Log
 import app.suprsend.NotificationCallbackListener
 import app.suprsend.SuprSend
-import app.suprsend.TestConstants
 import app.suprsend.UserTokenFetcher
 import app.suprsend.base.NetworkClient
 import app.suprsend.log.LoggerCallback
@@ -21,10 +20,10 @@ class MyApplication : Application() {
         val userTokenFetcher: UserTokenFetcher? = if (isEnabled) UserTokenFetcherImpl() else null
         SuprSend.initialize(
             context = this,
-            publicApiKey = TestConstants.PUBLIC_API_KEY,
+            publicApiKey = BuildConfig.SS_PUBLIC_API_KEY,
             userTokenFetcher = userTokenFetcher,
             options = SuprSendOptions(
-                host = TestConstants.SS_BASE_URL
+                host = BuildConfig.SS_BASE_URL
             )
         )
 
@@ -57,7 +56,7 @@ class UserTokenFetcherImpl : UserTokenFetcher {
         return try {
             val response = NetworkClient().httpCall(
                 requestMethod = "GET",
-                url = "${TestConstants.SS_BASE_URL}/authentication-token/${URLEncoder.encode(distinctId, "utf-8")}"
+                url = "${BuildConfig.SS_BASE_URL}/authentication-token/${URLEncoder.encode(distinctId, "utf-8")}"
             )
             val responseJo = JSONObject(response.body ?: "{}")
             val token = responseJo.optString("token")

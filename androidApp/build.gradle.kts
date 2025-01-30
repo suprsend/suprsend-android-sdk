@@ -128,6 +128,7 @@ fun com.android.build.api.dsl.BuildType.addBuildConfigFields() {
     buildConfigField("String", "SS_INBOX_SUBSCRIBER_ID", "\"${Deps.SS_INBOX_SUBSCRIBER_ID}\"")
     buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
     buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
+    buildConfigField("String", "SS_PUBLIC_API_KEY", "\"${Deps.SS_PUBLIC_API_KEY}\"")
     buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
 }
 tasks.register("testClasses")
