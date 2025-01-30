@@ -47,6 +47,8 @@ object Deps {
 
     object Android {
         const val minSdk = 19
+//      To run tests change this to min sdk 21 since mockk required min 21
+//      const val minSdk = 21
         const val targetSdk = 33
         const val compileSdk = 33
         const val buildToolsVersion = "33.0.0"
@@ -76,11 +78,12 @@ object Deps {
 
     object JetBrains {
         object Kotlin {
-            const val VERSION = "1.3.72"
+            // https://kotlinlang.org/docs/releases.html#release-details
+            const val VERSION = "1.9.22"
         }
     }
     object Firebase {
-        const val messaging = "20.2.4"
+        const val messaging = "22.0.0"
     }
     const val material = "1.4.0"
 }

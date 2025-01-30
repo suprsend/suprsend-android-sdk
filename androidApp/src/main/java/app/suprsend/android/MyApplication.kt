@@ -1,28 +1,37 @@
 package app.suprsend.android
 
 import android.app.Application
-import app.suprsend.SSApi
+import android.util.Log
+import app.suprsend.NotificationCallbackListener
+import app.suprsend.SuprSend
+import app.suprsend.TestConstants
+import app.suprsend.UserTokenFetcher
+import app.suprsend.base.NetworkClient
 import app.suprsend.log.LoggerCallback
+import app.suprsend.model.SuprSendOptions
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import org.json.JSONObject
+import java.net.URLEncoder
 
 class MyApplication : Application() {
 
     override fun onCreate() {
 
-        SSApi.init(
+        val isEnabled = defaultSharedPreferences.getBoolean("jwtToken", true)
+        val userTokenFetcher: UserTokenFetcher? = if (isEnabled) UserTokenFetcherImpl() else null
+        SuprSend.initialize(
             context = this,
-            apiKey = BuildConfig.SS_TOKEN,
-            apiSecret = BuildConfig.SS_SECRET,
-            apiBaseUrl = BuildConfig.SS_BASE_URL,
-            inboxApiBaseUrl = BuildConfig.SS_INBOX_BASE_URL,
-            inboxSocketApiBaseUrl = BuildConfig.SS_INBOX_SOCKET_URL
+            publicApiKey = TestConstants.PUBLIC_API_KEY,
+            userTokenFetcher = userTokenFetcher,
+            options = SuprSendOptions(
+                host = TestConstants.SS_BASE_URL
+            )
         )
 
         super.onCreate()
         AppCreator.context = this
 
-        SSApi.initXiaomi(context = this, appId = BuildConfig.XIAOMI_APP_ID, apiKey = BuildConfig.XIAOMI_APP_KEY)
-        SSApi.setLogger(object : LoggerCallback {
+        SuprSend.setLogger(object : LoggerCallback {
             override fun i(tag: String, message: String) {
                 // you will receive sdk info messages here
             }
@@ -32,5 +41,30 @@ class MyApplication : Application() {
                 FirebaseCrashlytics.getInstance().recordException(throwable)
             }
         })
+
+        SuprSend.setNotificationCallback(object :NotificationCallbackListener{
+            override fun onPushPayloadReceived(data: Map<String, String>) {
+                Log.i("app","onPushPayloadReceived : $data")
+            }
+
+        })
+    }
+}
+
+class UserTokenFetcherImpl : UserTokenFetcher {
+
+    override fun getToken(distinctId: String): String {
+        return try {
+            val response = NetworkClient().httpCall(
+                requestMethod = "GET",
+                url = "${TestConstants.SS_BASE_URL}/authentication-token/${URLEncoder.encode(distinctId, "utf-8")}"
+            )
+            val responseJo = JSONObject(response.body ?: "{}")
+            val token = responseJo.optString("token")
+            Log.i("suprsend", "Token Received $token")
+            token
+        } catch (e: Exception) {
+            ""
+        }
     }
 }

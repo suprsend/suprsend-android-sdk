@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.android.databinding.ActivityOrderSuccessFullBinding
-import app.suprsend.base.getReadableDate
 import org.json.JSONObject
 
 class OrderSuccessFullActivity : AppCompatActivity() {

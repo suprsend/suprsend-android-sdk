@@ -68,7 +68,7 @@ object AppCreator {
     val homeItemsList: List<BaseItem> by lazy {
         val list = arrayListOf<BaseItem>()
         list.add(BannerListVo((1..10).map { value ->
-            BannerVo("B$value", getBannerImage(value))
+            BannerVo("B$value", getProductImage())
         }))
         list.addAll((1..30).map { value ->
             ProductVo(

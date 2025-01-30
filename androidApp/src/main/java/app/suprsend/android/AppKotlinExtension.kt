@@ -1,5 +1,6 @@
 package app.suprsend.android
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -11,10 +12,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import app.suprsend.inbox.model.NotificationModel
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import org.json.JSONArray
+import java.text.SimpleDateFormat
+import java.util.Date
 import kotlin.math.abs
 
 fun View.layoutInflater(): LayoutInflater {
@@ -88,4 +90,9 @@ fun isNull(item: Any?): Boolean {
 
 fun Boolean?.isTrue(): Boolean {
     return this == true
+}
+
+@SuppressLint("SimpleDateFormat")
+fun getReadableDate(date: Date = Date()): String {
+    return SimpleDateFormat("dd-MM-yyyy").format(date)
 }

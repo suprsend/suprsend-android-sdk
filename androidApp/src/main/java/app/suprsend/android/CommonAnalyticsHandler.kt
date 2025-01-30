@@ -2,136 +2,139 @@ package app.suprsend.android
 
 import android.annotation.SuppressLint
 import android.content.Context
-import app.suprsend.SSApi
-import app.suprsend.base.LogLevel
+import app.suprsend.SuprSend
+import app.suprsend.log.LogLevel
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONObject
 
 object CommonAnalyticsHandler {
 
-    private lateinit var ssApi: SSApi
+    private lateinit var suprSend: SuprSend
 
     @SuppressLint("StaticFieldLeak")
     private lateinit var mixpanelAPI: MixpanelAPI
 
     fun initialize(context: Context) {
-        if (this::ssApi.isInitialized)
+        if (this::suprSend.isInitialized)
             return
-        ssApi = SSApi.getInstance()
-        ssApi.setLogLevel(LogLevel.VERBOSE)
+        suprSend = SuprSend.getInstance()
+        suprSend.setLogLevel(LogLevel.VERBOSE)
         mixpanelAPI = MixpanelAPI.getInstance(context, BuildConfig.MX_TOKEN)
     }
 
     fun identify(identity: String) {
-        ssApi.identify(identity)
-        ssApi.getUser().setEmail(identity)
+        suprSend.identityAsync(identity)
+        suprSend.user.addEmail(identity)
         mixpanelAPI.identify(identity)
     }
 
     fun track(eventName: String) {
-        ssApi.track(eventName)
+        suprSend.trackEventAsync(eventName)
         mixpanelAPI.track(eventName)
     }
 
     fun track(eventName: String, properties: JSONObject) {
-        ssApi.track(eventName, properties)
+        suprSend.trackEventAsync(eventName, properties)
         mixpanelAPI.track(eventName, properties)
     }
 
     fun set(key: String, value: String) {
-        ssApi.getUser().set(key, value)
+        suprSend.user.setAsync(key, value)
         mixpanelAPI.people.set(key, value)
     }
 
     fun set(properties: JSONObject) {
-        ssApi.getUser().set(properties)
+        suprSend.user.setAsync(properties)
         mixpanelAPI.people.set(properties)
     }
 
     fun increment(key: String, value: Number) {
-        ssApi.getUser().increment(key, value)
+        suprSend.user.incrementAsync(key, value)
         mixpanelAPI.people.increment(key, value.toDouble())
     }
 
     fun increment(properties: Map<String, Number>) {
-        ssApi.getUser().increment(properties)
+        suprSend.user.incrementAsync(properties)
         mixpanelAPI.people.increment(properties)
     }
 
     fun append(key: String, value: String) {
-        ssApi.getUser().append(key, value)
+        suprSend.user.appendAsync(key, value)
         mixpanelAPI.people.append(key, value)
     }
 
     fun remove(key: String, value: String) {
-        ssApi.getUser().remove(key, value)
+        suprSend.user.removeAsync(key, value)
         mixpanelAPI.people.remove(key, value)
     }
 
     fun setEmail(email: String) {
-        ssApi.getUser().setEmail(email)
+        suprSend.user.addEmailAsync(email)
     }
 
     fun unSetEmail(email: String) {
-        ssApi.getUser().unSetEmail(email)
+        suprSend.user.removeEmailAsync(email)
     }
 
     fun setSms(email: String) {
-        ssApi.getUser().setSms(email)
+        suprSend.user.addSmsAsync(email)
     }
 
     fun unSetSms(email: String) {
-        ssApi.getUser().unSetSms(email)
+        suprSend.user.removeSmsAsync(email)
     }
 
     fun setWhatsApp(email: String) {
-        ssApi.getUser().setWhatsApp(email)
+        suprSend.user.addWhatsappAsync(email)
     }
 
     fun unSetWhatsApp(email: String) {
-        ssApi.getUser().unSetWhatsApp(email)
+        suprSend.user.removeWhatsappAsync(email)
     }
 
     fun unset(key: String) {
-        ssApi.getUser().unSet(key)
+        suprSend.user.unSetAsync(key)
         mixpanelAPI.people.unset(key)
     }
 
     fun reset(unSubscribeNotification: Boolean) {
-        ssApi.reset(unSubscribeNotification)
+        suprSend.resetAsync(unSubscribeNotification)
         mixpanelAPI.reset()
     }
 
     fun setOnce(key: String, value: Any) {
-        ssApi.getUser().setOnce(key, value)
+        suprSend.user.setOnceAsync(key, value)
         mixpanelAPI.people.setOnce(key, value)
     }
 
     fun setOnce(properties: JSONObject) {
-        ssApi.getUser().setOnce(properties)
+        suprSend.user.setOnceAsync(properties)
         mixpanelAPI.people.setOnce(properties)
     }
 
     fun setSuperProperties(key: String, value: Any) {
-        ssApi.setSuperProperty(key, value)
+        // Suprsend do not support super properties now
+        // suprSend.setSuperProperty(key, value)
         mixpanelAPI.registerSuperPropertiesMap(hashMapOf(key to value))
     }
 
     fun setSuperProperties(jsonObject: JSONObject) {
-        ssApi.setSuperProperties(jsonObject)
+        // Suprsend do not support super properties now
+        // suprSend.setSuperProperty(key, value)
         mixpanelAPI.registerSuperProperties(jsonObject)
     }
 
     fun unSetSuperProperties(key: String) {
-        ssApi.unSetSuperProperty(key)
+        // Suprsend do not support super properties now
+        // suprSend.unSetSuperProperty(key)
         mixpanelAPI.unregisterSuperProperty(key)
     }
 
     fun setPreferredLanguage(languageCode: String) {
-        ssApi.getUser().setPreferredLanguage(languageCode)
+        suprSend.user.setPreferredLanguageAsync(languageCode)
     }
 
     fun purchaseMade(properties: JSONObject) {
-        ssApi.purchaseMade(properties)
+        suprSend.trackEventAsync("purchase_made", properties)
     }
 }

@@ -11,7 +11,6 @@ import app.suprsend.android.databinding.SectionItemBinding
 import app.suprsend.android.databinding.SubCategoryItemBinding
 import app.suprsend.android.layoutInflater
 import app.suprsend.android.setVisibleOrGone
-import app.suprsend.base.Debounce
 import app.suprsend.user.preference.Channel
 import app.suprsend.user.preference.ChannelPreference
 import app.suprsend.user.preference.ChannelPreferenceOptions
@@ -92,8 +91,6 @@ private data class SectionHolder(
 private data class SubCategoryHolder(
     val binding: SubCategoryItemBinding
 ) : RecyclerView.ViewHolder(binding.root) {
-    val subCategoryDebounce = Debounce()
-    val channelDebounce = Debounce()
     fun bind(
         item: RecyclerViewItem.SubCategoryVo,
         categoryItemClick: CategoryItemClick,
@@ -105,22 +102,17 @@ private data class SubCategoryHolder(
         binding.subCategoryCheckbox.isEnabled = subCategory.isEditable
         binding.subCategoryCheckbox.isOn = subCategory.preferenceOptions == PreferenceOptions.OPT_IN
         binding.subCategoryCheckbox.setOnToggledListener { _, isOn ->
-
-            subCategoryDebounce.debounceLast {
-                categoryItemClick.invoke(subCategory.category, isOn)
-            }
+            categoryItemClick.invoke(subCategory.category, isOn)
         }
 
         binding.channelChipGroup.removeAllViews()
-        if (subCategory.preferenceOptions == PreferenceOptions.OPT_IN) {
-            subCategory.channels.forEach { channel ->
-                addChannel(channel, binding.channelChipGroup, subCategory, channelDebounce, channelItemClick)
-            }
+        subCategory.channels.forEach { channel ->
+            addChannel(channel, binding.channelChipGroup, subCategory, channelItemClick)
         }
         binding.subCategoryDivider.visibility = setVisibleOrGone(!item.isLast)
     }
 
-    private fun addChannel(channel: Channel, channelChipGroup: ChipGroup, subCategory: SubCategory, channelDebounce: Debounce, channelItemClick: ChannelItemClick) {
+    private fun addChannel(channel: Channel, channelChipGroup: ChipGroup, subCategory: SubCategory, channelItemClick: ChannelItemClick) {
         val isChecked = channel.preferenceOptions == PreferenceOptions.OPT_IN
         val channelBinding = ChannelItemBinding.inflate(channelChipGroup.layoutInflater())
         val chip = channelBinding.root as Chip
@@ -129,13 +121,11 @@ private data class SubCategoryHolder(
         chip.isChecked = isChecked
         channelChipGroup.addView(chip)
         chip.setOnCheckedChangeListener { _, isOn ->
-            channelDebounce.debounceLast {
-                channelItemClick(
-                    subCategory.category,
-                    channel.channel,
-                    isOn
-                )
-            }
+            channelItemClick(
+                subCategory.category,
+                channel.channel,
+                isOn
+            )
         }
     }
 }
@@ -173,8 +163,7 @@ private data class ChannelPreferenceHolder(
             } else {
                 ChannelPreferenceOptions.REQUIRED
             }
-            if (item.channelPreference.toChannelPreferenceOptions() != pref)
-                channelPreferenceChangeClick.invoke(channelPreference.channel, pref)
+            channelPreferenceChangeClick.invoke(channelPreference.channel, pref)
         }
     }
 

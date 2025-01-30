@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.android.databinding.ActivitySettingsBinding
-import app.suprsend.android.inbox.InboxActivity
 import app.suprsend.android.preference.UserPreferenceActivity
 
 class SettingsActivity : AppCompatActivity() {
@@ -27,8 +26,6 @@ class SettingsActivity : AppCompatActivity() {
         binding.unSetEmailTv.clickWithThrottle {
             val email = binding.emailEt.text.toString()
             CommonAnalyticsHandler.unSetEmail(email)
-            storeValue("email", "")
-            binding.emailEt.setText("")
         }
 
         binding.smsEt.setText(getValue("sms", "+918983364103"))
@@ -40,8 +37,6 @@ class SettingsActivity : AppCompatActivity() {
         binding.unSetSmsTv.clickWithThrottle {
             val sms = binding.smsEt.text.toString()
             CommonAnalyticsHandler.unSetSms(sms)
-            storeValue("sms", "")
-            binding.smsEt.setText("")
         }
 
         binding.whatsAppEt.setText(getValue("whatsapp", "+918983364103"))
@@ -53,8 +48,6 @@ class SettingsActivity : AppCompatActivity() {
         binding.unSetWhatsAppTv.clickWithThrottle {
             val email = binding.whatsAppEt.text.toString()
             CommonAnalyticsHandler.unSetWhatsApp(email)
-            storeValue("whatsapp", "")
-            binding.whatsAppEt.setText("")
         }
 
         binding.setSuprProperty.clickWithThrottle {
@@ -72,28 +65,38 @@ class SettingsActivity : AppCompatActivity() {
         binding.logoutTv.clickWithThrottle {
             logout(false)
         }
-
+        val jwtTokenBoolean = defaultSharedPreferences.getBoolean("jwtToken",true)
+        binding.jwtTokenCb.isChecked=jwtTokenBoolean
+        binding.jwtTokenCb.setOnCheckedChangeListener { _, isChecked ->
+            defaultSharedPreferences.edit().apply {
+                putBoolean("jwtToken", isChecked)
+                apply()
+            }
+        }
         binding.logoutUnSubTv.clickWithThrottle {
             logout(true)
         }
 
         binding.userPreference.clickWithThrottle {
             val intent = Intent(this, UserPreferenceActivity::class.java)
+            intent.putExtra("tenantId",binding.tenantIdEt.text?.trim()?:"")
+            intent.putExtra("showOptOutChannels",binding.showOptOutChannelsCb.isChecked)
             startActivity(intent)
         }
 
         binding.inboxSubscriberIdEt.setText(getValue("inboxSubscriberId", BuildConfig.SS_INBOX_SUBSCRIBER_ID))
         binding.inboxStoreJsonEt.setText(getValue("inboxStoreJsonEt", getInboxStoreJson()))
         binding.inbox.clickWithThrottle {
-            CommonAnalyticsHandler.set("inbox_visit_at", System.currentTimeMillis().toString())
-            val intent = Intent(this, InboxActivity::class.java)
-            val subscriberId = binding.inboxSubscriberIdEt.text.toString()
-            val inboxStoreJson = binding.inboxStoreJsonEt.text.toString()
-            intent.putExtra("inboxSubscriberId", subscriberId)
-            intent.putExtra("inboxStoreJson", inboxStoreJson)
-            startActivity(intent)
-            storeValue("inboxSubscriberId", subscriberId)
-            storeValue("inboxStoreJson", inboxStoreJson)
+            //TODO - Implement Inbox
+//            CommonAnalyticsHandler.set("inbox_visit_at", System.currentTimeMillis().toString())
+//            val intent = Intent(this, InboxActivity::class.java)
+//            val subscriberId = binding.inboxSubscriberIdEt.text.toString()
+//            val inboxStoreJson = binding.inboxStoreJsonEt.text.toString()
+//            intent.putExtra("inboxSubscriberId", subscriberId)
+//            intent.putExtra("inboxStoreJson", inboxStoreJson)
+//            startActivity(intent)
+//            storeValue("inboxSubscriberId", subscriberId)
+//            storeValue("inboxStoreJson", inboxStoreJson)
         }
     }
 

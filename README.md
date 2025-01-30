@@ -3,6 +3,17 @@
 #Release Notes
 
 ```
+2.0.0
+- JWT Token
+- Removed Xiaomi
+- Use async function, normal functions will make api call on main thread
+
+1.2.0
+- Suprsend Inbox
+
+1.1.0
+- Silent push Notification
+
 1.0.3
 - User Preferences
 

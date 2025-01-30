@@ -1,14 +1,16 @@
 package app.suprsend.android.preference
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import app.suprsend.SSApi
+import app.suprsend.SuprSend
 import app.suprsend.android.BuildConfig
 import app.suprsend.android.databinding.UserPreferenceActivityBinding
 import app.suprsend.android.isLast
 import app.suprsend.android.logInfo
 import app.suprsend.android.myToast
+import app.suprsend.base.Response
 import app.suprsend.exception.NoInternetException
 import app.suprsend.user.preference.ChannelPreferenceOptions
 import app.suprsend.user.preference.PreferenceCallback
@@ -20,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 class UserPreferenceActivity : AppCompatActivity() {
 
@@ -37,13 +40,18 @@ class UserPreferenceActivity : AppCompatActivity() {
         title = "Preferences"
         binding = UserPreferenceActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        SuprSend.getInstance().user.getPreferences().setPreferenceConfig(
+            tenantId = intent.extras?.get("tenantId").toString()?:"",
+            showOptOutChannels = intent.extras?.get("showOptOutChannels").toString().toBoolean()
+        )
         binding.categoriesRV.layoutManager = LinearLayoutManager(this@UserPreferenceActivity)
-        adapter = UserPreferenceRecyclerViewAdapter(categoryItemClick = { category, checked ->
-            coroutineScope.launch {
-                val response = SSApi.getInstance().getUser().getPreferences().updateCategoryPreference(
+        adapter = UserPreferenceRecyclerViewAdapter(
+            //Category Toggle from right side
+            categoryItemClick = { category, checked ->
+            coroutineScope.launch(Dispatchers.IO) {
+                val response = SuprSend.getInstance().user.getPreferences().updateCategoryPreference(
                     category = category,
-                    preference = PreferenceOptions.from(checked),
-                    tenantId = BuildConfig.SS_TENANT_ID
+                    preference = PreferenceOptions.from(checked)
                 )
                 if (response.getException() is NoInternetException) {
                     withContext(Dispatchers.Main) {
@@ -51,13 +59,14 @@ class UserPreferenceActivity : AppCompatActivity() {
                     }
                 }
             }
-        }, channelItemClick = { category, channel, checked ->
+        },
+            //Category Channel Item
+            channelItemClick = { category, channel, checked ->
             coroutineScope.launch {
-                val response = SSApi.getInstance().getUser().getPreferences().updateChannelPreferenceInCategory(
+                val response = SuprSend.getInstance().user.getPreferences().updateChannelPreferenceInCategory(
                     category = category,
                     channel = channel,
-                    preference = PreferenceOptions.from(checked),
-                    tenantId = BuildConfig.SS_TENANT_ID
+                    preference = PreferenceOptions.from(checked)
                 )
                 if (response.getException() is NoInternetException) {
                     withContext(Dispatchers.Main) {
@@ -69,10 +78,11 @@ class UserPreferenceActivity : AppCompatActivity() {
             channelPreferenceArrowClick = { category, expanded ->
                 expandedIds[category] = expanded
             },
+//           //Overall
             channelPreferenceChangeClick = { channel: String, channelPreferenceOptions: ChannelPreferenceOptions ->
                 logInfo("Updated channelPreferenceOptions channel:$channel channelPreferenceOptions: $channelPreferenceOptions ")
                 coroutineScope.launch {
-                    val response = SSApi.getInstance().getUser().getPreferences().updateOverallChannelPreference(
+                    val response = SuprSend.getInstance().user.getPreferences().updateOverallChannelPreference(
                         channel = channel,
                         channelPreferenceOptions = channelPreferenceOptions
                     )
@@ -85,12 +95,10 @@ class UserPreferenceActivity : AppCompatActivity() {
             })
         binding.categoriesRV.adapter = adapter
 
-        preferences = SSApi.getInstance().getUser().getPreferences()
+        preferences = SuprSend.getInstance().user.getPreferences()
 
         coroutineScope.launch {
-            val data = preferences.fetchUserPreference(
-                tenantId = BuildConfig.SS_TENANT_ID
-            ).getData() ?: return@launch
+            val data = preferences.fetchUserPreference().getData() ?: return@launch
             showData(data)
         }
     }
@@ -101,11 +109,14 @@ class UserPreferenceActivity : AppCompatActivity() {
             override fun onUpdate() {
                 coroutineScope.launch {
                     val data = preferences.fetchUserPreference(
-                        fetchRemote = false,
-                        tenantId = BuildConfig.SS_TENANT_ID
+                        fetchRemote = false
                     ).getData() ?: return@launch
                     showData(data)
                 }
+            }
+
+            override fun onError(response: Response<JSONObject>) {
+                Log.e("preference","Response Json : ${response.getData()}")
             }
         })
     }
