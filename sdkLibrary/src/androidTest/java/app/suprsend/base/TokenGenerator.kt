@@ -6,7 +6,7 @@ import java.util.Date
 
 object TokenGenerator {
 
-    fun generateToken(time:Long = System.currentTimeMillis() + (1000 * 60 * 60 * 48)): String {
+    fun generateToken(time: Long = System.currentTimeMillis() + (1000 * 60 * 60 * 48)): String {
         val expiresAt = Date(time)
         val secretKey = "supr"
 

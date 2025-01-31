@@ -14,12 +14,12 @@ import io.mockk.mockk
 import org.junit.Assert
 import org.junit.Test
 
-class PreferencesDefaultConfigTest:BaseTest() {
+class PreferencesDefaultConfigTest : BaseTest() {
 
     private val networkClient: NetworkClient = mockk(relaxed = true)
 
     @Test
-    fun verifyIfConfigIsNotPresent(){
+    fun verifyIfConfigIsNotPresent() {
         UserPreferenceRemote.networkClient = networkClient
         every {
             networkClient.httpCall(

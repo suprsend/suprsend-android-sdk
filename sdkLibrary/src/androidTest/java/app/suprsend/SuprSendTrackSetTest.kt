@@ -2,7 +2,6 @@ package app.suprsend
 
 import app.suprsend.base.AssetHelper
 import app.suprsend.base.BaseTest
-import app.suprsend.base.LocalStorage
 import app.suprsend.base.NetworkClient
 import app.suprsend.base.SSConstants
 import app.suprsend.base.TestConstants

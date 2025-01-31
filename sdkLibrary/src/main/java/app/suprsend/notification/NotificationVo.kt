@@ -5,7 +5,7 @@ import java.io.Serializable
 data class RawNotification(
     val id: String,
     val notificationGroupId: String,
-    val silentPush:Boolean = false,
+    val silentPush: Boolean = false,
 
     // Channel Details
     val channelId: String? = null,
@@ -52,7 +52,7 @@ data class RawNotification(
     // Actions
     val actions: List<NotificationActionVo>? = null
 
-): Serializable {
+) : Serializable {
     fun getNotificationVo(): NotificationVo {
         var notificationVo = NotificationVo(
             id = id,
@@ -167,7 +167,7 @@ data class NotificationChannelVo(
     val showBadge: Boolean,
     val channelLockScreenVisibility: NotificationChannelVisibility = NotificationChannelVisibility.PUBLIC,
     val channelImportance: NotificationChannelImportance = NotificationChannelImportance.HIGH,
-    val channelSound:String?
+    val channelSound: String?
 )
 
 enum class NotificationChannelVisibility {

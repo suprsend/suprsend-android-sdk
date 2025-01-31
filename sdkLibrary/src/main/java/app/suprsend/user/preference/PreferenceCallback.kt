@@ -5,5 +5,5 @@ import org.json.JSONObject
 
 interface PreferenceCallback {
     fun onUpdate(preferenceData: PreferenceData)
-    fun onError(response :Response<JSONObject>)
+    fun onError(response: Response<JSONObject>)
 }

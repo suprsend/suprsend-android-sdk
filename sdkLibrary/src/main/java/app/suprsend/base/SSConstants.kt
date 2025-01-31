@@ -1,6 +1,6 @@
 package app.suprsend.base
 
-internal object SSConstants{
+internal object SSConstants {
 
     const val DEFAULT_BASE_API_URL = "https://hub.suprsend.com"
     const val DEFAULT_INBOX_BASE_API_URL = "https://inboxs.live"
@@ -23,16 +23,16 @@ internal object SSConstants{
     const val IDENTIFY = "\$identify"
     const val PROPERTIES = "properties"
 
-    const val APP_VERSION_STRING= "\$app_version_string"
-    const val APP_BUILD_NUMBER= "\$app_build_number"
-    const val OS= "\$os"
-    const val MANUFACTURER= "\$manufacturer"
-    const val BRAND= "\$brand"
-    const val MODEL= "\$model"
-    const val SS_SDK_VERSION_CODE= "\$ss_sdk_version_code"
-    const val SS_SDK_VERSION= "\$ss_sdk_version"
-    const val NETWORK= "\$network"
-    const val CONNECTED= "\$connected"
+    const val APP_VERSION_STRING = "\$app_version_string"
+    const val APP_BUILD_NUMBER = "\$app_build_number"
+    const val OS = "\$os"
+    const val MANUFACTURER = "\$manufacturer"
+    const val BRAND = "\$brand"
+    const val MODEL = "\$model"
+    const val SS_SDK_VERSION_CODE = "\$ss_sdk_version_code"
+    const val SS_SDK_VERSION = "\$ss_sdk_version"
+    const val NETWORK = "\$network"
+    const val CONNECTED = "\$connected"
 
 
     const val SP_USER_PREFERENCES = "user_preferences"
@@ -80,6 +80,7 @@ internal object SSConstants{
     const val CONFIG_IS_APP_INSTALLED = "is_app_launched" // Mistakenly value was places wrong in ver 1 keep this as it is to avoid wrong stats
     const val CONFIG_APP_LAUNCH_TIME = "app_launch_time"
     const val CONFIG_DISTINCT_ID = "distinct_id"
+
     // As soon as user call identify his distinct id is stored in distinct_id_try distinct id since this identify can fail due to network error
     // In trackEvent we will retry with distinct_id_try value to recover from error
     const val CONFIG_DISTINCT_ID_TRY = "distinct_id_try"

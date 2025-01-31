@@ -8,9 +8,10 @@ enum class PreferenceOptions {
     fun getNetworkName(): String {
         return name.toLowerCase(Locale.getDefault())
     }
-    companion object{
-        fun from(isSelected:Boolean): PreferenceOptions {
-            return if(isSelected) OPT_IN else OPT_OUT
+
+    companion object {
+        fun from(isSelected: Boolean): PreferenceOptions {
+            return if (isSelected) OPT_IN else OPT_OUT
         }
     }
 }

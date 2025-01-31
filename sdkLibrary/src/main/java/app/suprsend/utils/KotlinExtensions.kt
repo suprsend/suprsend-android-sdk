@@ -142,10 +142,10 @@ internal fun JSONArray.forEach(call: (jo: JSONObject) -> Boolean?) {
     }
 }
 
-internal fun JSONArray.forEachIndexed(call: (index:Int, jo: JSONObject) -> Boolean?) {
+internal fun JSONArray.forEachIndexed(call: (index: Int, jo: JSONObject) -> Boolean?) {
     for (i in 0 until length()) {
         val jo = getJSONObject(i)
-        val shouldBreak = call(i,jo) ?: false
+        val shouldBreak = call(i, jo) ?: false
         if (shouldBreak) {
             break
         }
@@ -161,13 +161,13 @@ internal fun <T> JSONArray.map(mapper: (jo: JSONObject) -> T): List<T> {
     return list
 }
 
-internal fun urlEncode(value:String): String {
-    return URLEncoder.encode(value,"utf-8")
+internal fun urlEncode(value: String): String {
+    return URLEncoder.encode(value, "utf-8")
 }
 
-internal fun<T> JSONArray.convertToList(): MutableList<T> {
-    val items= mutableListOf<T>()
-    for(i in 0 until length()){
+internal fun <T> JSONArray.convertToList(): MutableList<T> {
+    val items = mutableListOf<T>()
+    for (i in 0 until length()) {
         items.add(get(i) as T)
     }
     return items

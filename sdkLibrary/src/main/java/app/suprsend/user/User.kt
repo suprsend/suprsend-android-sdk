@@ -45,7 +45,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute setPreferredLanguage", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute setPreferredLanguage", exception = e))
             }
         }
     }
@@ -69,7 +69,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute setTimezone", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute setTimezone", exception = e))
             }
         }
     }
@@ -92,7 +92,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute set", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute set", exception = e))
             }
         }
     }
@@ -101,7 +101,7 @@ class User() {
     fun set(properties: JSONObject): ApiResponse {
         if (properties.length() == 0) {
             Logger.i(SSConstants.TAG_SUPRSEND, "data provided is empty")
-            return ApiResponse(status = ResponseStatus.ERROR, message ="data provided is empty")
+            return ApiResponse(status = ResponseStatus.ERROR, message = "data provided is empty")
         }
         return SuprSendInternal.trackOperator(
             operator = SSConstants.SET,
@@ -117,7 +117,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute set", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute set", exception = e))
             }
         }
     }
@@ -140,7 +140,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute unSet", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute unSet", exception = e))
             }
         }
     }
@@ -165,7 +165,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute unSet", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute unSet", exception = e))
             }
         }
     }
@@ -188,7 +188,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute setOnce", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute setOnce", exception = e))
             }
         }
     }
@@ -209,7 +209,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute setOnce", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute setOnce", exception = e))
             }
         }
     }
@@ -236,7 +236,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute increment", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute increment", exception = e))
             }
         }
     }
@@ -265,7 +265,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute increment", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute increment", exception = e))
             }
         }
     }
@@ -288,7 +288,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute append", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute append", exception = e))
             }
         }
     }
@@ -309,7 +309,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute append", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute append", exception = e))
             }
         }
     }
@@ -332,7 +332,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute remove", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute remove", exception = e))
             }
         }
     }
@@ -353,7 +353,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute remove", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute remove", exception = e))
             }
         }
     }
@@ -361,7 +361,8 @@ class User() {
     @WorkerThread
     fun addEmail(email: String): ApiResponse {
         if (!email.isValidEmail()) {
-            return ApiResponse(status = ResponseStatus.ERROR, message = "Email is not valid : $email"
+            return ApiResponse(
+                status = ResponseStatus.ERROR, message = "Email is not valid : $email"
             )
         }
         return SuprSendInternal.trackOperator(
@@ -381,7 +382,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute addEmail", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute addEmail", exception = e))
             }
         }
     }
@@ -389,7 +390,8 @@ class User() {
     @WorkerThread
     fun removeEmail(email: String): ApiResponse {
         if (!email.isValidEmail()) {
-            return ApiResponse(status = ResponseStatus.ERROR, message = "Email is not valid : $email"
+            return ApiResponse(
+                status = ResponseStatus.ERROR, message = "Email is not valid : $email"
             )
         }
         return SuprSendInternal.trackOperator(
@@ -409,7 +411,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute removeEmail", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute removeEmail", exception = e))
             }
         }
     }
@@ -417,7 +419,8 @@ class User() {
     @WorkerThread
     fun addSms(mobile: String): ApiResponse {
         if (!isMobileNumberValid(mobile)) {
-            return ApiResponse(status = ResponseStatus.ERROR,
+            return ApiResponse(
+                status = ResponseStatus.ERROR,
                 message = "Mobile number is not valid : $mobile"
             )
         }
@@ -438,7 +441,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute addSms", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute addSms", exception = e))
             }
         }
     }
@@ -446,7 +449,8 @@ class User() {
     @WorkerThread
     fun removeSms(mobile: String): ApiResponse {
         if (!isMobileNumberValid(mobile)) {
-            return ApiResponse(status = ResponseStatus.ERROR,
+            return ApiResponse(
+                status = ResponseStatus.ERROR,
                 message = "Mobile number is not valid : $mobile"
             )
         }
@@ -467,7 +471,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute removeSms", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute removeSms", exception = e))
             }
         }
     }
@@ -475,7 +479,8 @@ class User() {
     @WorkerThread
     fun addWhatsapp(mobile: String): ApiResponse {
         if (!isMobileNumberValid(mobile)) {
-            return ApiResponse(status = ResponseStatus.ERROR,
+            return ApiResponse(
+                status = ResponseStatus.ERROR,
                 message = "Mobile number is not valid : $mobile"
             )
         }
@@ -496,7 +501,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute addWhatsapp", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute addWhatsapp", exception = e))
             }
         }
     }
@@ -504,7 +509,8 @@ class User() {
     @WorkerThread
     fun removeWhatsapp(mobile: String): ApiResponse {
         if (!isMobileNumberValid(mobile)) {
-            return ApiResponse(status = ResponseStatus.ERROR,
+            return ApiResponse(
+                status = ResponseStatus.ERROR,
                 message = "Mobile number is not valid : $mobile"
             )
         }
@@ -525,7 +531,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute removeWhatsapp", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute removeWhatsapp", exception = e))
             }
         }
     }
@@ -549,7 +555,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute addSlack", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute addSlack", exception = e))
             }
         }
     }
@@ -573,7 +579,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute removeSlack", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute removeSlack", exception = e))
             }
         }
     }
@@ -597,7 +603,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute addMSTeams", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute addMSTeams", exception = e))
             }
         }
     }
@@ -621,7 +627,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute removeMSTeamsAsync", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute removeMSTeamsAsync", exception = e))
             }
         }
     }
@@ -662,7 +668,7 @@ class User() {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
-                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message ="Failed to execute setAndroidFcmPushAsync", exception=e))
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute setAndroidFcmPushAsync", exception = e))
             }
         }
     }

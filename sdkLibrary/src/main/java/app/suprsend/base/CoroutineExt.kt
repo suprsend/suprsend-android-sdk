@@ -14,7 +14,7 @@ val jobsMap = ConcurrentHashMap<String, Pair<Long, Job>>()
 fun Job.executeWithThrottleLast(
     key: String,
     throttleTimeMillis: Long,
-    info:String
+    info: String
 ): Job {
     val currentTime = System.currentTimeMillis()
     val (lastExecutionTime, existingJob) = jobsMap[key] ?: Pair(0L, null)
@@ -38,7 +38,7 @@ fun Job.executeWithThrottleLast(
             Logger.i(SSConstants.TAG_SUPRSEND, "Canceling job : $info")
     }
     runBlocking {
-        Logger.i(SSConstants.TAG_SUPRSEND,"Job waiting : $info")
+        Logger.i(SSConstants.TAG_SUPRSEND, "Job waiting : $info")
         newJob.join()
     }
     return newJob

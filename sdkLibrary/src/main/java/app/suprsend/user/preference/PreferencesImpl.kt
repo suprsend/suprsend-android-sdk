@@ -10,7 +10,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 
 class PreferencesImpl : Preferences {
@@ -61,33 +60,33 @@ class PreferencesImpl : Preferences {
         category: String,
         preference: PreferenceOptions
     ): Response<JSONObject> {
-        Logger.i(SSConstants.TAG_SUPRSEND,"updateCategoryPreference : $category : ${preference.name}")
+        Logger.i(SSConstants.TAG_SUPRSEND, "updateCategoryPreference : $category : ${preference.name}")
         if (!NetworkInfo.isConnected()) {
             sendUpdate()
             return Response.Error(NoInternetException())
         }
         var response: Response<JSONObject>? = null
         val job = CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.LAZY) {
-            Logger.i(SSConstants.TAG_SUPRSEND,"updateCategoryPreference : executing $category ${preference.name}")
+            Logger.i(SSConstants.TAG_SUPRSEND, "updateCategoryPreference : executing $category ${preference.name}")
             response = SSInternalUserPreference.updateCategoryPreference(category, preference)
         }
-        val scheduleJob = job.executeWithThrottleLast("Category$category", 2000,"$category ${preference.name}")
+        val scheduleJob = job.executeWithThrottleLast("Category$category", 2000, "$category ${preference.name}")
 
-        Logger.i(SSConstants.TAG_SUPRSEND,"isCancelled: $category : ${preference.name} : ${scheduleJob.isCancelled}")
-        Logger.i(SSConstants.TAG_SUPRSEND,"isActive: $category : ${preference.name} : ${scheduleJob.isActive}")
-        Logger.i(SSConstants.TAG_SUPRSEND,"isCompleted: $category : ${preference.name} : ${scheduleJob.isCompleted}")
+        Logger.i(SSConstants.TAG_SUPRSEND, "isCancelled: $category : ${preference.name} : ${scheduleJob.isCancelled}")
+        Logger.i(SSConstants.TAG_SUPRSEND, "isActive: $category : ${preference.name} : ${scheduleJob.isActive}")
+        Logger.i(SSConstants.TAG_SUPRSEND, "isCompleted: $category : ${preference.name} : ${scheduleJob.isCompleted}")
 
-        val returnResponse= if (scheduleJob.isCancelled) {
+        val returnResponse = if (scheduleJob.isCancelled) {
             Response.Error(Exception("updateCategoryPreference ignored due to debounce: $category : ${preference.name}"))
         } else {
             if (response?.isSuccess() == true) {
                 sendUpdate()
-            }else{
+            } else {
                 Logger.e(SSConstants.TAG_SUPRSEND, response?.getException()?.message ?: "updateCategoryPreference something went wrong : $category : ${preference.name}")
             }
             response ?: Response.Error(Exception("updateCategoryPreference something went wrong : $category : ${preference.name}"))
         }
-        Logger.i(SSConstants.TAG_SUPRSEND,"returnResponse : $category : ${preference.name} : ${returnResponse.getData()} : ${returnResponse.getException()?.message}")
+        Logger.i(SSConstants.TAG_SUPRSEND, "returnResponse : $category : ${preference.name} : ${returnResponse.getData()} : ${returnResponse.getException()?.message}")
         return returnResponse
     }
 
@@ -104,13 +103,13 @@ class PreferencesImpl : Preferences {
         val job = CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.LAZY) {
             response = SSInternalUserPreference.updateChannelPreferenceInCategory(category, channel, preference)
         }
-        val scheduleJob = job.executeWithThrottleLast("Channel$category$channel", 2000,"$category : $channel : ${preference.name}")
+        val scheduleJob = job.executeWithThrottleLast("Channel$category$channel", 2000, "$category : $channel : ${preference.name}")
         return if (scheduleJob.isCancelled) {
             Response.Error(Exception("updateChannelPreferenceInCategory ignored due to debounce: $category : $channel : ${preference.name}"))
         } else {
             if (response?.isSuccess() == true) {
                 sendUpdate()
-            }else{
+            } else {
                 Logger.e(SSConstants.TAG_SUPRSEND, response?.getException()?.message ?: "Something went wrong")
             }
             response ?: Response.Error(Exception("updateCategoryPreference something went wrong: $category : $channel"))
@@ -129,7 +128,7 @@ class PreferencesImpl : Preferences {
         val job = CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.LAZY) {
             response = SSInternalUserPreference.updateOverallChannelPreference(channel, channelPreferenceOptions)
         }
-        val scheduleJob = job.executeWithThrottleLast("Overall$channel", 2000,"$channel ${channelPreferenceOptions.name}")
+        val scheduleJob = job.executeWithThrottleLast("Overall$channel", 2000, "$channel ${channelPreferenceOptions.name}")
         return if (scheduleJob.isCancelled) {
             Response.Error(Exception("updateOverallChannelPreference ignored due to debounce: $channel"))
         } else {
@@ -141,7 +140,7 @@ class PreferencesImpl : Preferences {
     }
 
     private fun sendUpdate() {
-        SSInternalUserPreference.preferenceCallback?.onUpdate(fetchUserPreference(false).getData()?:PreferenceData())
+        SSInternalUserPreference.preferenceCallback?.onUpdate(fetchUserPreference(false).getData() ?: PreferenceData())
     }
 
 }

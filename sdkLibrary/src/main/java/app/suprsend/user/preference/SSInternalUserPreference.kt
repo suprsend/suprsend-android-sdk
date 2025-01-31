@@ -139,7 +139,7 @@ internal object SSInternalUserPreference {
                     }
                     savePreferenceData(preferenceDataJO.toString())
                 }
-            }else{
+            } else {
                 preferenceCallback?.onError(nwResponse)
             }
             return nwResponse
@@ -222,7 +222,7 @@ internal object SSInternalUserPreference {
                 tenantId = tenantId,
                 showOptOutChannels = showOptOutChannels
             )
-            if(!remoteResponse.isSuccess()){
+            if (!remoteResponse.isSuccess()) {
                 preferenceCallback?.onError(remoteResponse)
             }
             remoteResponse
@@ -268,7 +268,7 @@ internal object SSInternalUserPreference {
 
             fetchAndSavePreferenceData(fetchRemote = true)
 
-            if(!updateOverallChannelPrefResponse.isSuccess()){
+            if (!updateOverallChannelPrefResponse.isSuccess()) {
                 preferenceCallback?.onError(updateOverallChannelPrefResponse)
             }
 

@@ -2,7 +2,6 @@ package app.suprsend.model
 
 import app.suprsend.base.Response
 import org.json.JSONObject
-import java.lang.Exception
 
 data class SuprSendOptions(
     val host: String? = null

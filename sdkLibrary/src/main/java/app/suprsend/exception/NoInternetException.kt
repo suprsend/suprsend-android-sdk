@@ -1,3 +1,3 @@
 package app.suprsend.exception
 
-class NoInternetException:Exception("No internet connection")
+class NoInternetException : Exception("No internet connection")

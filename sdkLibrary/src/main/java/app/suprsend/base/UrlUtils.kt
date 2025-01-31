@@ -23,6 +23,7 @@ internal object UrlUtils {
             NetworkType.WIFI,
             NetworkType.G4,
             NetworkType.G5 -> 80
+
             NetworkType.G3 -> 60
             NetworkType.G2 -> 40
             NetworkType.UNKNOWN -> 60

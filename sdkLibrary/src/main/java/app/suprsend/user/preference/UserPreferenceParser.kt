@@ -1,12 +1,8 @@
 package app.suprsend.user.preference
 
-import app.suprsend.utils.forEach
 import app.suprsend.utils.map
-import app.suprsend.utils.mapToEnum
-import app.suprsend.utils.safeBoolean
 import app.suprsend.utils.safeBooleanDefault
 import app.suprsend.utils.safeJsonArray
-import app.suprsend.utils.safeString
 import app.suprsend.utils.safeStringDefault
 import org.json.JSONArray
 import org.json.JSONObject
@@ -65,6 +61,6 @@ object UserPreferenceParser {
     private fun <T> parseJA(jsonArray: JSONArray?, createObject: (jo: JSONObject) -> T): List<T> {
         if (jsonArray == null)
             return listOf()
-        return jsonArray.map {jo-> createObject(jo) }
+        return jsonArray.map { jo -> createObject(jo) }
     }
 }

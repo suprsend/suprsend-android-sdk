@@ -116,8 +116,8 @@ object UserPreferenceRemote {
         val operationStatus = SuprSendInternal.refreshTokenIfRequired(distinctId = distinctId)
 
         if (!operationStatus.isSuccess()) {
-            Logger.e(SSConstants.TAG_SUPRSEND, operationStatus.message?:"No response", operationStatus.exception)
-            return ApiResponse(status = ResponseStatus.ERROR, statusCode = 401, message =  operationStatus.message)
+            Logger.e(SSConstants.TAG_SUPRSEND, operationStatus.message ?: "No response", operationStatus.exception)
+            return ApiResponse(status = ResponseStatus.ERROR, statusCode = 401, message = operationStatus.message)
         }
 
         val requestURI = if (queryParams == null) {

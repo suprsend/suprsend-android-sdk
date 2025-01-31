@@ -21,7 +21,7 @@ class PreferencesTest : BaseTest() {
     private val networkClient: NetworkClient = mockk(relaxed = true)
 
     @Before
-    fun setup(){
+    fun setup() {
         UserPreferenceRemote.networkClient = networkClient
         SuprSendInternal.networkClient = networkClient
 
@@ -52,7 +52,7 @@ class PreferencesTest : BaseTest() {
 
         every {
             networkClient.httpCall(
-                url ="https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/full_preference?&show_opt_out_channels=true",
+                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/full_preference?&show_opt_out_channels=true",
                 authorization = any(),
                 requestMethod = any(),
                 requestJson = any(),
@@ -74,7 +74,7 @@ class PreferencesTest : BaseTest() {
     @Test
     fun verifyFetchUserPreference() {
 
-        val preferences =  SuprSend.getInstance().user.getPreferences()
+        val preferences = SuprSend.getInstance().user.getPreferences()
         val data = preferences.fetchUserPreference().getData()
 
         Assert.assertEquals(5, data?.sections?.size)
@@ -108,7 +108,7 @@ class PreferencesTest : BaseTest() {
         //Update Category - OPT_IN and Verify
         every {
             networkClient.httpCall(
-                url ="https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
+                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
                 authorization = any(),
                 requestMethod = any(),
                 requestJson = "{\"preference\":\"opt_in\"}",
@@ -134,7 +134,7 @@ class PreferencesTest : BaseTest() {
         //Update Channel - whatsapp preference opt_out and Verify
         every {
             networkClient.httpCall(
-                url ="https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
+                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
                 authorization = any(),
                 requestMethod = any(),
                 requestJson = "{\"preference\":\"opt_in\",\"opt_out_channels\":[\"androidpush\",\"email\",\"webpush\",\"whatsapp\"]}",
@@ -156,14 +156,14 @@ class PreferencesTest : BaseTest() {
         subCategory = data?.sections?.get(0)?.subCategories?.get(0)
         Assert.assertEquals("refund-promotion", subCategory?.category)
         Assert.assertEquals(PreferenceOptions.OPT_IN, subCategory?.preferenceOptions)
-        var channel  = subCategory?.channels?.last()
+        var channel = subCategory?.channels?.last()
         Assert.assertEquals("whatsapp", channel?.channel)
         Assert.assertEquals(PreferenceOptions.OPT_OUT, channel?.preferenceOptions)
 
         //Update Channel - whatsapp preference opt_in and Verify
         every {
             networkClient.httpCall(
-                url ="https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
+                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
                 authorization = any(),
                 requestMethod = any(),
                 requestJson = "{\"preference\":\"opt_in\",\"opt_out_channels\":[\"androidpush\",\"email\",\"webpush\"]}",
@@ -185,7 +185,7 @@ class PreferencesTest : BaseTest() {
         subCategory = data?.sections?.get(0)?.subCategories?.get(0)
         Assert.assertEquals("refund-promotion", subCategory?.category)
         Assert.assertEquals(PreferenceOptions.OPT_IN, subCategory?.preferenceOptions)
-        channel  = subCategory?.channels?.last()
+        channel = subCategory?.channels?.last()
         Assert.assertEquals("whatsapp", channel?.channel)
         Assert.assertEquals(PreferenceOptions.OPT_IN, channel?.preferenceOptions)
 
@@ -193,7 +193,7 @@ class PreferencesTest : BaseTest() {
         //Update - OPT_OUT and Verify
         every {
             networkClient.httpCall(
-                url ="https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
+                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
                 authorization = any(),
                 requestMethod = any(),
                 requestJson = "{\"preference\":\"opt_out\",\"opt_out_channels\":[\"androidpush\",\"email\",\"webpush\"]}",
@@ -231,7 +231,6 @@ class PreferencesTest : BaseTest() {
         var channel = data?.channelPreferences?.get(0)
         Assert.assertEquals("androidpush", channel?.channel)
         Assert.assertEquals(false, channel?.isRestricted)
-
 
 
         //Update - ALL and Verify

@@ -5,14 +5,14 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
-import app.suprsend.log.Logger
-import org.json.JSONObject
 import app.suprsend.BuildConfig
 import app.suprsend.SuprSendInternal
+import app.suprsend.log.Logger
+import org.json.JSONObject
 import java.util.Locale
 
 internal object DeviceInfo {
-    fun addDeviceInfoProperties(jsonObject:JSONObject): JSONObject {
+    fun addDeviceInfoProperties(jsonObject: JSONObject): JSONObject {
         jsonObject.put(SSConstants.APP_VERSION_STRING, versionName())
         jsonObject.put(SSConstants.APP_BUILD_NUMBER, versionCode())
         jsonObject.put(SSConstants.OS, os())
@@ -20,7 +20,7 @@ internal object DeviceInfo {
         jsonObject.put(SSConstants.BRAND, brand())
         jsonObject.put(SSConstants.MODEL, model())
         jsonObject.put(SSConstants.DEVICE_ID, getDeviceId())
-        val ssSdkVersion  = "android-"+BuildConfig.SS_SDK_TYPE.toLowerCase(Locale.getDefault())+"/"+BuildConfig.SS_SDK_VERSION_NAME
+        val ssSdkVersion = "android-" + BuildConfig.SS_SDK_TYPE.toLowerCase(Locale.getDefault()) + "/" + BuildConfig.SS_SDK_VERSION_NAME
         jsonObject.put(SSConstants.SS_SDK_VERSION, ssSdkVersion)
         jsonObject.put(SSConstants.NETWORK, NetworkInfo.getNetworkType().readableName)
         jsonObject.put(SSConstants.CONNECTED, NetworkInfo.isConnected().toString())

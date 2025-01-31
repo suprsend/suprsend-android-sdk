@@ -2,6 +2,7 @@ package app.suprsend.log
 
 import android.util.Log
 import app.suprsend.SuprSendInternal
+
 internal object Logger {
 
     var logLevel = LogLevel.VERBOSE

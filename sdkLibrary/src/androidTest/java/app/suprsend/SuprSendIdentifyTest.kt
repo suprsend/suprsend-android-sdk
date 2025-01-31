@@ -12,11 +12,10 @@ import app.suprsend.model.ResponseStatus
 import app.suprsend.model.SuprSendOptions
 import io.mockk.every
 import io.mockk.mockk
-import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
 
-class SuprSendIdentifyTest  : BaseTest() {
+class SuprSendIdentifyTest : BaseTest() {
     private val networkClient = mockk<NetworkClient>()
 
     @Test

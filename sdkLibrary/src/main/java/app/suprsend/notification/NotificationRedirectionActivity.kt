@@ -7,8 +7,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import app.suprsend.SuprSend
-import app.suprsend.log.Logger
 import app.suprsend.base.SSConstants
+import app.suprsend.log.Logger
 import app.suprsend.utils.mapToEnum
 import org.json.JSONObject
 import java.io.Serializable
@@ -26,7 +26,7 @@ class NotificationRedirectionActivity : Activity() {
             handleFlowPayload(activityExtras)
             finish()
         } catch (e: Exception) {
-            Logger.e(SSConstants.TAG_SUPRSEND, "NRA:unable to handle meta data in handleFlowPayload",e)
+            Logger.e(SSConstants.TAG_SUPRSEND, "NRA:unable to handle meta data in handleFlowPayload", e)
             finish()
         }
     }
@@ -37,6 +37,7 @@ class NotificationRedirectionActivity : Activity() {
                 NotificationRedirection.NOTIFICATION_CLICKED -> {
                     handleNotificationActionClicked(activityExtras)
                 }
+
                 else -> {
                     // do nothing
                     Logger.i(SSConstants.TAG_SUPRSEND, "payload not handled")
@@ -59,7 +60,7 @@ class NotificationRedirectionActivity : Activity() {
             eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
             properties = JSONObject().apply {
                 put("id", notificationActionVo.notificationId)
-                if(notificationActionVo.notificationActionType == NotificationActionType.BUTTON) {
+                if (notificationActionVo.notificationActionType == NotificationActionType.BUTTON) {
                     put("label_id", notificationActionVo.id)
                 }
             }

@@ -13,7 +13,6 @@ import app.suprsend.model.ApiResponse
 import app.suprsend.model.ResponseStatus
 import app.suprsend.model.SuprSendOptions
 import app.suprsend.user.User
-import app.suprsend.user.preference.SSInternalUserPreference
 import app.suprsend.utils.runOnUIThread
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
@@ -113,7 +112,7 @@ class SuprSend private constructor() {
 
     @WorkerThread
     fun reset(unSubscribeNotification: Boolean) {
-       SuprSendInternal.reset(unSubscribeNotification)
+        SuprSendInternal.reset(unSubscribeNotification)
     }
 
     fun resetAsync(unSubscribeNotification: Boolean, actionStatusCallback: ActionStatusCallback? = null) {

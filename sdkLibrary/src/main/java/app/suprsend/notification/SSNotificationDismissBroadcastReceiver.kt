@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import app.suprsend.SuprSend
-import app.suprsend.SuprSendInternal
 import app.suprsend.base.SSConstants
 import app.suprsend.log.Logger
 import app.suprsend.utils.mapToEnum
@@ -22,7 +21,7 @@ class SSNotificationDismissBroadcastReceiver : BroadcastReceiver() {
             }
             handleFlowPayload(activityExtras)
         } catch (e: Exception) {
-            Logger.e(SSConstants.TAG_SUPRSEND, "dismiss:unable to handle meta data in handleFlowPayload",e)
+            Logger.e(SSConstants.TAG_SUPRSEND, "dismiss:unable to handle meta data in handleFlowPayload", e)
         }
     }
 
@@ -32,6 +31,7 @@ class SSNotificationDismissBroadcastReceiver : BroadcastReceiver() {
                 NotificationRedirection.NOTIFICATION_DISMISS -> {
                     handleNotificationDismissClicked(activityExtras)
                 }
+
                 else -> {
                     // do nothing
                     Logger.i(SSConstants.TAG_SUPRSEND, "payload not handled")

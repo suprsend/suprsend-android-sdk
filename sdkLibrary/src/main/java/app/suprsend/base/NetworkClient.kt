@@ -33,7 +33,7 @@ class NetworkClient {
         headers: Map<String, String>? = null
     ): ApiResponse {
         Logger.i(SSConstants.TAG_SUPRSEND, "Requesting : $url requestJson:$requestJson")
-        if(!NetworkInfo.isConnected()){
+        if (!NetworkInfo.isConnected()) {
             return ApiResponse(
                 status = ResponseStatus.ERROR,
                 statusCode = 500,
@@ -99,9 +99,9 @@ class NetworkClient {
         Logger.i(SSConstants.TAG_SUPRSEND, "Response : $responseStr")
 
         return ApiResponse(
-            status =if(statusCode >= 400) ResponseStatus.ERROR else ResponseStatus.SUCCESS,
+            status = if (statusCode >= 400) ResponseStatus.ERROR else ResponseStatus.SUCCESS,
             statusCode = statusCode,
-            body =  responseStr
+            body = responseStr
         )
     }
 }
