@@ -13,6 +13,7 @@ import app.suprsend.log.LoggerCallback
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ErrorType
 import app.suprsend.model.ResponseStatus
+import app.suprsend.user.preference.SSInternalUserPreference
 import app.suprsend.utils.filterSSReservedKeys
 import com.auth0.android.jwt.JWT
 import org.json.JSONArray
@@ -53,16 +54,18 @@ internal object SuprSendInternal {
         if (distinctId == localDistinctId) {
             return ApiResponse(status = ResponseStatus.SUCCESS)
         }
+        LocalStorage.setValue(SSConstants.CONFIG_DISTINCT_ID_TRY, distinctId)
         val apiResponse = trackEvent(
-            eventName = "\$identify",
+            eventName = SSConstants.IDENTIFY,
             distinctId = distinctId,
             properties = JSONObject().apply {
-                put("\$identified_id", distinctId)
+                put(SSConstants.IDENTIFIED_ID, distinctId)
             },
             ignoreFilter = true
         )
         if (apiResponse.status == ResponseStatus.SUCCESS) {
             LocalStorage.setValue(SSConstants.CONFIG_DISTINCT_ID, distinctId)
+            LocalStorage.setValue(SSConstants.CONFIG_DISTINCT_ID_TRY, "")
             suprSendData.distinctId = distinctId
             appendNotificationToken()
         }
@@ -70,11 +73,11 @@ internal object SuprSendInternal {
     }
 
     fun trackEvent(
-        // Only in case of identity method distinct id is passed externally else from all places it is taken from cache
-        distinctId: String = suprSendData.distinctId ?: "",
         eventName: String,
         properties: JSONObject = JSONObject(),
-        ignoreFilter: Boolean = false
+        ignoreFilter: Boolean = false,
+        // Only in case of identity method distinct id is passed externally else from all places it is taken from cache
+        distinctId: String = suprSendData.distinctId ?: "",
     ): ApiResponse {
         try {
             var canBiPassDistinctId = false
@@ -87,13 +90,11 @@ internal object SuprSendInternal {
                 canBiPassDistinctId = true
             }
             if (!canBiPassDistinctId) {
+                // Trying to identify(recover) if user has called identify earlier
                 if (distinctId.isBlank()) {
-                    Logger.i(SSConstants.TAG_SUPRSEND, "Distinct id is missing - trackEvent $eventName")
-                    return ApiResponse(
-                        status = ResponseStatus.ERROR,
-                        errorType = ErrorType.VALIDATION_ERROR,
-                        message = "Distinct id is missing - trackEvent $eventName"
-                    )
+                    val action = tryToIdentify("Distinct id is missing - trackEvent $eventName")
+                    if (action != null)
+                        return action
                 }
                 val operationStatus = refreshTokenIfRequired(distinctId = distinctId)
                 if (!operationStatus.isSuccess())
@@ -117,6 +118,7 @@ internal object SuprSendInternal {
         }
     }
 
+
     fun trackOperator(
         operator: String,
         properties: JSONObject? = null,
@@ -125,12 +127,11 @@ internal object SuprSendInternal {
     ): ApiResponse {
         try {
 
+            // Trying to identify(recover) if user has called identify earlier
             if (suprSendData.distinctId.isNullOrBlank()) {
-                Logger.i(SSConstants.TAG_SUPRSEND, "Distinct id cannot be blank - trackOperator $operator")
-                return ApiResponse(
-                    status = ResponseStatus.ERROR,
-                    message = "Distinct id cannot be blank - trackOperator $operator"
-                )
+                val action = tryToIdentify("Distinct id cannot be blank - trackOperator $operator")
+                if (action != null)
+                    return action
             }
 
             val distinctId = suprSendData.distinctId!!
@@ -191,7 +192,7 @@ internal object SuprSendInternal {
                     if (!isJWTTokenExpired(userToken))
                         storeToken(userToken)
                     else {
-                        Logger.e(SSConstants.TAG_SUPRSEND,"Invalid token has received : $userToken")
+                        Logger.e(SSConstants.TAG_SUPRSEND, "Invalid token has received : $userToken")
                     }
                     refreshTokenIfRequired(distinctId, retryCount + 1)
                 } else {
@@ -265,6 +266,29 @@ internal object SuprSendInternal {
         return headers
     }
 
+    fun reset(unSubscribeNotification: Boolean) {
+        if (unSubscribeNotification)
+            removeNotificationToken()
+        SSInternalUserPreference.clearUserPreference()
+        suprSendData.distinctId = null
+        LocalStorage.remove(SSConstants.USER_TOKEN)
+        LocalStorage.remove(SSConstants.CONFIG_DISTINCT_ID)
+        LocalStorage.remove(SSConstants.CONFIG_DISTINCT_ID_TRY)
+    }
+
+
+    fun storeToken(userToken: String?) {
+        if (userToken == null) {
+            LocalStorage.remove(SSConstants.USER_TOKEN)
+        } else {
+            LocalStorage.setValue(SSConstants.USER_TOKEN, userToken)
+        }
+    }
+
+    fun getToken(): String? {
+        return LocalStorage.getValue(SSConstants.USER_TOKEN)
+    }
+
     @WorkerThread
     private fun appendNotificationToken() {
         val fcmToken = LocalStorage.getValue(SSConstants.CONFIG_FCM_PUSH_TOKEN)
@@ -282,33 +306,37 @@ internal object SuprSendInternal {
     }
 
     @WorkerThread
-    fun removeNotificationToken(): ApiResponse? {
+    private fun removeNotificationToken(): ApiResponse? {
         val fcmToken = LocalStorage.getValue(SSConstants.CONFIG_FCM_PUSH_TOKEN)
         if (!fcmToken.isNullOrBlank()) {
             val jsonObject = JSONObject()
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, fcmToken)
             jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
             jsonObject.put(SSConstants.DEVICE_ID, DeviceInfo.getDeviceId())
-            return SuprSendInternal
-                .trackOperator(
-                    properties = jsonObject,
-                    operator = SSConstants.REMOVE,
-                    ignoreFilter = true
-                )
+            return trackOperator(
+                properties = jsonObject,
+                operator = SSConstants.REMOVE,
+                ignoreFilter = true
+            )
         }
         return null
     }
 
-    fun storeToken(userToken: String?) {
-        if (userToken == null) {
-            LocalStorage.remove(SSConstants.USER_TOKEN)
-        } else {
-            LocalStorage.setValue(SSConstants.USER_TOKEN, userToken)
+    private fun tryToIdentify(log: String): ApiResponse? {
+        val tryDistinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID_TRY) ?: ""
+        var action: ApiResponse? = null
+        if (tryDistinctId.isNotBlank()) {
+            action = identity(tryDistinctId)
         }
-    }
-
-    fun getToken(): String? {
-        return LocalStorage.getValue(SSConstants.USER_TOKEN)
+        if (action?.isSuccess() == false || tryDistinctId.isBlank()) {
+            Logger.i(SSConstants.TAG_SUPRSEND, log)
+            return ApiResponse(
+                status = ResponseStatus.ERROR,
+                errorType = ErrorType.VALIDATION_ERROR,
+                message = log
+            )
+        }
+        return null
     }
 
 }

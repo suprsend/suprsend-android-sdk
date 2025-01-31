@@ -41,40 +41,40 @@ class UserPreferenceActivity : AppCompatActivity() {
         binding = UserPreferenceActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         SuprSend.getInstance().user.getPreferences().setPreferenceConfig(
-            tenantId = intent.extras?.get("tenantId").toString()?:"",
+            tenantId = intent.extras?.get("tenantId").toString() ?: "",
             showOptOutChannels = intent.extras?.get("showOptOutChannels").toString().toBoolean()
         )
         binding.categoriesRV.layoutManager = LinearLayoutManager(this@UserPreferenceActivity)
         adapter = UserPreferenceRecyclerViewAdapter(
             //Category Toggle from right side
             categoryItemClick = { category, checked ->
-            coroutineScope.launch(Dispatchers.IO) {
-                val response = SuprSend.getInstance().user.getPreferences().updateCategoryPreference(
-                    category = category,
-                    preference = PreferenceOptions.from(checked)
-                )
-                if (response.getException() is NoInternetException) {
-                    withContext(Dispatchers.Main) {
-                        myToast("Please check internet connection")
+                coroutineScope.launch(Dispatchers.IO) {
+                    val response = SuprSend.getInstance().user.getPreferences().updateCategoryPreference(
+                        category = category,
+                        preference = PreferenceOptions.from(checked)
+                    )
+                    if (response.getException() is NoInternetException) {
+                        withContext(Dispatchers.Main) {
+                            myToast("Please check internet connection")
+                        }
                     }
                 }
-            }
-        },
+            },
             //Category Channel Item
             channelItemClick = { category, channel, checked ->
-            coroutineScope.launch {
-                val response = SuprSend.getInstance().user.getPreferences().updateChannelPreferenceInCategory(
-                    category = category,
-                    channel = channel,
-                    preference = PreferenceOptions.from(checked)
-                )
-                if (response.getException() is NoInternetException) {
-                    withContext(Dispatchers.Main) {
-                        myToast("Please check internet connection")
+                coroutineScope.launch {
+                    val response = SuprSend.getInstance().user.getPreferences().updateChannelPreferenceInCategory(
+                        category = category,
+                        channel = channel,
+                        preference = PreferenceOptions.from(checked)
+                    )
+                    if (response.getException() is NoInternetException) {
+                        withContext(Dispatchers.Main) {
+                            myToast("Please check internet connection")
+                        }
                     }
                 }
-            }
-        },
+            },
             channelPreferenceArrowClick = { category, expanded ->
                 expandedIds[category] = expanded
             },
@@ -98,7 +98,7 @@ class UserPreferenceActivity : AppCompatActivity() {
         preferences = SuprSend.getInstance().user.getPreferences()
 
         coroutineScope.launch {
-            val data = preferences.fetchUserPreference().getData() ?: return@launch
+            val data = preferences.fetchUserPreference(fetchRemote = true).getData() ?: return@launch
             showData(data)
         }
     }
@@ -106,17 +106,14 @@ class UserPreferenceActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         preferences.registerCallback(object : PreferenceCallback {
-            override fun onUpdate() {
+            override fun onUpdate(preferenceData: PreferenceData) {
                 coroutineScope.launch {
-                    val data = preferences.fetchUserPreference(
-                        fetchRemote = false
-                    ).getData() ?: return@launch
-                    showData(data)
+                    showData(preferenceData)
                 }
             }
 
             override fun onError(response: Response<JSONObject>) {
-                Log.e("preference","Response Json : ${response.getData()}")
+                Log.e("preference", "Response Json : ${response.getData()}")
             }
         })
     }

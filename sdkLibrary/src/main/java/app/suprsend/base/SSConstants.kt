@@ -13,12 +13,14 @@ internal object SSConstants{
     const val FLUSH_EVENT_PAYLOAD_SIZE = 20L
     const val PERIODIC_FLUSH_EVENT_IN_SEC = 60
 
-    const val TAG_SUPRSEND = "suprsend"
+    const val TAG_SUPRSEND = "yep"
     const val USER_TOKEN = "user_token"
     const val EVENT = "event"
     const val DISTINCT_ID = "distinct_id"
     const val INSERT_ID = "\$insert_id"
     const val TIME = "\$time"
+    const val IDENTIFIED_ID = "\$identified_id"
+    const val IDENTIFY = "\$identify"
     const val PROPERTIES = "properties"
 
     const val APP_VERSION_STRING= "\$app_version_string"
@@ -78,6 +80,9 @@ internal object SSConstants{
     const val CONFIG_IS_APP_INSTALLED = "is_app_launched" // Mistakenly value was places wrong in ver 1 keep this as it is to avoid wrong stats
     const val CONFIG_APP_LAUNCH_TIME = "app_launch_time"
     const val CONFIG_DISTINCT_ID = "distinct_id"
+    // As soon as user call identify his distinct id is stored in distinct_id_try distinct id since this identify can fail due to network error
+    // In trackEvent we will retry with distinct_id_try value to recover from error
+    const val CONFIG_DISTINCT_ID_TRY = "distinct_id_try"
     const val CONFIG_FCM_PUSH_TOKEN = "fcm_push_token"
     const val CONFIG_FCM_TOKEN_SYNC_STATUS = "fcm_push_token_sync_status"
     const val CONFIG_XIAOMI_PUSH_TOKEN = "xiaomi_push_token"

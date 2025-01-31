@@ -26,8 +26,6 @@ internal object SSInternalUserPreference {
     var showOptOutChannels: Boolean = true
     var preferenceCallback: PreferenceCallback? = null
 
-    private const val DEBOUNCE_DELAY_MS = 2000L
-
     fun fetchAndSavePreferenceData(fetchRemote: Boolean): Response<PreferenceData> {
         return try {
             if (fetchRemote) {

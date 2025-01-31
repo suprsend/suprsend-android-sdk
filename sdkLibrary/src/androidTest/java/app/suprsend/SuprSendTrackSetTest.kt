@@ -1,11 +1,13 @@
 package app.suprsend
 
+import app.suprsend.base.AssetHelper
 import app.suprsend.base.BaseTest
 import app.suprsend.base.LocalStorage
 import app.suprsend.base.NetworkClient
 import app.suprsend.base.SSConstants
 import app.suprsend.base.TestConstants
 import app.suprsend.base.TokenGenerator
+import app.suprsend.base.assertMessageId
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ErrorType
 import app.suprsend.model.ResponseStatus
@@ -185,7 +187,11 @@ class SuprSendTrackSetTest : BaseTest() {
                 requestJson = any(),
                 headers = any()
             )
-        } returns ApiResponse(ResponseStatus.SUCCESS)
+        } returns ApiResponse(
+            status = ResponseStatus.SUCCESS,
+            statusCode = 200,
+            body = AssetHelper.readAssetFileToString("event_and_operator_response.json")
+        )
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
@@ -206,7 +212,7 @@ class SuprSendTrackSetTest : BaseTest() {
             put("time", System.currentTimeMillis())
             put("app", "test_sdk")
         })
-        Assert.assertEquals(true, actionStatus.isSuccess())
+        actionStatus.assertMessageId()
     }
 
     @Test
@@ -292,7 +298,11 @@ class SuprSendTrackSetTest : BaseTest() {
                 requestJson = any(),
                 headers = any()
             )
-        } returns ApiResponse(ResponseStatus.SUCCESS)
+        } returns ApiResponse(
+            ResponseStatus.SUCCESS,
+            200,
+            body = AssetHelper.readAssetFileToString("event_and_operator_response.json")
+        )
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
@@ -313,6 +323,6 @@ class SuprSendTrackSetTest : BaseTest() {
             put("time", System.currentTimeMillis())
             put("app", "test_sdk")
         })
-        Assert.assertEquals(true, actionStatus.isSuccess())
+        actionStatus.assertMessageId()
     }
 }

@@ -31,7 +31,7 @@ class PreferencesImpl : Preferences {
     override fun fetchUserPreference(fetchRemote: Boolean): Response<PreferenceData> {
         val response = SSInternalUserPreference.fetchAndSavePreferenceData(fetchRemote)
         if (fetchRemote)
-            SSInternalUserPreference.preferenceCallback?.onUpdate()
+            sendUpdate()
         return response
     }
 
@@ -47,13 +47,13 @@ class PreferencesImpl : Preferences {
         category: String
     ): Response<JSONObject> {
         val response = SSInternalUserPreference.fetchCategory(category)
-        SSInternalUserPreference.preferenceCallback?.onUpdate()
+        sendUpdate()
         return response
     }
 
     override fun fetchOverallChannelPreferences(): Response<JSONObject> {
         val response = SSInternalUserPreference.fetchOverallChannelPreferences()
-        SSInternalUserPreference.preferenceCallback?.onUpdate()
+        sendUpdate()
         return response
     }
 
@@ -63,7 +63,7 @@ class PreferencesImpl : Preferences {
     ): Response<JSONObject> {
         Logger.i(SSConstants.TAG_SUPRSEND,"updateCategoryPreference : $category : ${preference.name}")
         if (!NetworkInfo.isConnected()) {
-            SSInternalUserPreference.preferenceCallback?.onUpdate()
+            sendUpdate()
             return Response.Error(NoInternetException())
         }
         var response: Response<JSONObject>? = null
@@ -80,7 +80,9 @@ class PreferencesImpl : Preferences {
         val returnResponse= if (scheduleJob.isCancelled) {
             Response.Error(Exception("updateCategoryPreference ignored due to debounce: $category : ${preference.name}"))
         } else {
-            if (response?.isSuccess() != true) {
+            if (response?.isSuccess() == true) {
+                sendUpdate()
+            }else{
                 Logger.e(SSConstants.TAG_SUPRSEND, response?.getException()?.message ?: "updateCategoryPreference something went wrong : $category : ${preference.name}")
             }
             response ?: Response.Error(Exception("updateCategoryPreference something went wrong : $category : ${preference.name}"))
@@ -95,7 +97,7 @@ class PreferencesImpl : Preferences {
         preference: PreferenceOptions
     ): Response<JSONObject> {
         if (!NetworkInfo.isConnected()) {
-            SSInternalUserPreference.preferenceCallback?.onUpdate()
+            sendUpdate()
             return Response.Error(NoInternetException())
         }
         var response: Response<JSONObject>? = null
@@ -106,7 +108,9 @@ class PreferencesImpl : Preferences {
         return if (scheduleJob.isCancelled) {
             Response.Error(Exception("updateChannelPreferenceInCategory ignored due to debounce: $category : $channel : ${preference.name}"))
         } else {
-            if (response?.isSuccess() != true) {
+            if (response?.isSuccess() == true) {
+                sendUpdate()
+            }else{
                 Logger.e(SSConstants.TAG_SUPRSEND, response?.getException()?.message ?: "Something went wrong")
             }
             response ?: Response.Error(Exception("updateCategoryPreference something went wrong: $category : $channel"))
@@ -118,7 +122,7 @@ class PreferencesImpl : Preferences {
         channelPreferenceOptions: ChannelPreferenceOptions
     ): Response<JSONObject> {
         if (!NetworkInfo.isConnected()) {
-            SSInternalUserPreference.preferenceCallback?.onUpdate()
+            sendUpdate()
             return Response.Error(NoInternetException())
         }
         var response: Response<JSONObject>? = null
@@ -134,6 +138,10 @@ class PreferencesImpl : Preferences {
             }
             response ?: Response.Error(Exception("updateOverallChannelPreference something went wrong: $channel"))
         }
+    }
+
+    private fun sendUpdate() {
+        SSInternalUserPreference.preferenceCallback?.onUpdate(fetchUserPreference(false).getData()?:PreferenceData())
     }
 
 }

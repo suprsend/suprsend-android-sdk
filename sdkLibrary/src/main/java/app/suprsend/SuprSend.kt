@@ -113,12 +113,7 @@ class SuprSend private constructor() {
 
     @WorkerThread
     fun reset(unSubscribeNotification: Boolean) {
-        if (unSubscribeNotification)
-            SuprSendInternal.removeNotificationToken()
-        SSInternalUserPreference.clearUserPreference()
-        SuprSendInternal.suprSendData.distinctId = null
-        LocalStorage.remove(SSConstants.USER_TOKEN)
-        LocalStorage.remove(SSConstants.CONFIG_DISTINCT_ID)
+       SuprSendInternal.reset(unSubscribeNotification)
     }
 
     fun resetAsync(unSubscribeNotification: Boolean, actionStatusCallback: ActionStatusCallback? = null) {

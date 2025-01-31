@@ -1,8 +1,10 @@
 package app.suprsend
 
+import app.suprsend.base.AssetHelper
 import app.suprsend.base.BaseTest
 import app.suprsend.base.NetworkClient
 import app.suprsend.base.TestConstants
+import app.suprsend.base.assertMessageId
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ResponseStatus
 import app.suprsend.model.SuprSendOptions
@@ -40,7 +42,11 @@ class SuprSendJWTOffTest : BaseTest() {
                 requestJson = any(),
                 headers = any()
             )
-        } returns ApiResponse(ResponseStatus.SUCCESS)
+        } returns ApiResponse(
+            status = ResponseStatus.SUCCESS,
+            statusCode = 200,
+            body = AssetHelper.readAssetFileToString("event_and_operator_response.json")
+        )
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
@@ -52,6 +58,6 @@ class SuprSendJWTOffTest : BaseTest() {
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         val actionStatus = suprsend.identify("1231")
-        Assert.assertEquals(true, actionStatus.isSuccess())
+        actionStatus.assertMessageId()
     }
 }
