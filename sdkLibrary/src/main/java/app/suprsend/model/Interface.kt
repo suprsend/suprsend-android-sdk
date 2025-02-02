@@ -24,7 +24,7 @@ data class ApiResponse(
 fun ApiResponse.toResponse(): Response<JSONObject> {
     return if (this.isSuccess())
         Response.Success(JSONObject(body ?: ""))
-    else Response.Error(IllegalStateException("Something went wrong $statusCode"))
+    else Response.Error(ex = IllegalStateException("Something went wrong $statusCode"),message=this.message?:"")
 }
 
 

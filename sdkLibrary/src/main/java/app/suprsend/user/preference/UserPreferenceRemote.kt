@@ -15,7 +15,7 @@ object UserPreferenceRemote {
     var networkClient = NetworkClient()
 
     fun preference(tenantId: String?, showOptOutChannels: Boolean): ApiResponse {
-        return callApi(
+        return refreshTokenIfRequiredAndCallApi(
             route = "full_preference",
             queryParams = createSubUrl(
                 mapOf(
@@ -32,7 +32,7 @@ object UserPreferenceRemote {
         offset: Int?,
         showOptOutChannels: Boolean
     ): ApiResponse {
-        return callApi(
+        return refreshTokenIfRequiredAndCallApi(
             route = "category",
             queryParams = createSubUrl(
                 mapOf(
@@ -50,7 +50,7 @@ object UserPreferenceRemote {
         tenantId: String?,
         showOptOutChannels: Boolean
     ): ApiResponse {
-        return callApi(
+        return refreshTokenIfRequiredAndCallApi(
             route = "category/$category",
             queryParams = createSubUrl(
                 mapOf(
@@ -62,7 +62,7 @@ object UserPreferenceRemote {
     }
 
     fun fetchOverallChannelPreferences(): ApiResponse {
-        return callApi(
+        return refreshTokenIfRequiredAndCallApi(
             route = "channel_preference"
         )
     }
@@ -73,7 +73,7 @@ object UserPreferenceRemote {
         body: String,
         showOptOutChannels: Boolean
     ): ApiResponse {
-        return callApi(
+        return refreshTokenIfRequiredAndCallApi(
             route = "category/$category",
             requestJson = body,
             requestMethod = "PATCH",
@@ -98,14 +98,14 @@ object UserPreferenceRemote {
         chanelJO.put("is_restricted", isRestricted)
         chanelPrefJA.put(chanelJO)
         body.put("channel_preferences", chanelPrefJA)
-        return callApi(
+        return refreshTokenIfRequiredAndCallApi(
             route = "channel_preference",
             requestJson = body.toString(),
             requestMethod = "PATCH"
         )
     }
 
-    private fun callApi(
+    private fun refreshTokenIfRequiredAndCallApi(
         requestJson: String? = null,
         route: String,
         queryParams: String? = null,
@@ -117,7 +117,7 @@ object UserPreferenceRemote {
 
         if (!operationStatus.isSuccess()) {
             Logger.e(SSConstants.TAG_SUPRSEND, operationStatus.message ?: "No response", operationStatus.exception)
-            return ApiResponse(status = ResponseStatus.ERROR, statusCode = 401, message = operationStatus.message)
+            return operationStatus
         }
 
         val requestURI = if (queryParams == null) {

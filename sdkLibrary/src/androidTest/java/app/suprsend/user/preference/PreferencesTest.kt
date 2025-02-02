@@ -96,7 +96,7 @@ class PreferencesTest : BaseTest() {
      *      - OPT_OUT and Verify
      */
     @Test
-    fun verifyUpdateCategoryPreference() {
+    fun verifyUpdateCategoryAndChannelPreference() {
         val preferences = SuprSend.getInstance().user.getPreferences()
         var data = preferences.fetchUserPreference().getData()
 

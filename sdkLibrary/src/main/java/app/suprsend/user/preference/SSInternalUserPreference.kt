@@ -5,6 +5,7 @@ import android.content.Context
 import app.suprsend.SuprSendInternal
 import app.suprsend.base.Response
 import app.suprsend.base.SSConstants
+import app.suprsend.model.ApiResponse
 import app.suprsend.model.toResponse
 import app.suprsend.utils.forEach
 import app.suprsend.utils.forEachIndexed
@@ -28,8 +29,9 @@ internal object SSInternalUserPreference {
 
     fun fetchAndSavePreferenceData(fetchRemote: Boolean): Response<PreferenceData> {
         return try {
+            var apiResponse:ApiResponse? = null
             if (fetchRemote) {
-                val apiResponse = UserPreferenceRemote.preference(tenantId, showOptOutChannels)
+                apiResponse = UserPreferenceRemote.preference(tenantId, showOptOutChannels)
                 if (apiResponse.statusCode == 200) {
                     val response = apiResponse.body
                     if (!response.isNullOrBlank()) {
@@ -39,7 +41,7 @@ internal object SSInternalUserPreference {
             }
             val response = getPreferenceDataJO()
             return if (response == null) {
-                Response.Error(IllegalStateException("Something went wrong"))
+                Response.Error(ex= IllegalStateException("Preference data is not present"), message = if(fetchRemote) apiResponse?.message?:"" else "")
             } else {
                 val preferenceData = UserPreferenceParser.parse(response)
                 Response.Success(preferenceData)

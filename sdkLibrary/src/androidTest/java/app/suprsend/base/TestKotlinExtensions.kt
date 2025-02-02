@@ -22,3 +22,11 @@ fun ApiResponse.assertIsSuccess() {
 fun ApiResponse.assertIsFailure() {
     Assert.assertEquals(false, isSuccess())
 }
+
+fun <T> Response<T>.assertIsFailure() {
+    Assert.assertEquals(false, isSuccess())
+}
+
+fun <T> Response<T>.assertIsSuccess() {
+    Assert.assertEquals(true, isSuccess())
+}

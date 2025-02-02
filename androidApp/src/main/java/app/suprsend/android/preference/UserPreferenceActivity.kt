@@ -101,6 +101,18 @@ class UserPreferenceActivity : AppCompatActivity() {
             val data = preferences.fetchUserPreference(fetchRemote = true).getData() ?: return@launch
             showData(data)
         }
+
+        binding.testButton.setOnClickListener {
+            coroutineScope.launch {
+                var data = preferences.fetchCategories().getData() ?: return@launch
+                val category = data.getJSONArray("results").getJSONObject(0).getString("category")?:""
+                Log.i("yep",data.toString())
+                data = preferences.fetchCategory(category).getData() ?: return@launch
+                Log.i("yep",data.toString())
+                data = preferences.fetchOverallChannelPreferences().getData() ?: return@launch
+                Log.i("yep",data.toString())
+            }
+        }
     }
 
     override fun onResume() {

@@ -196,7 +196,7 @@ internal object SuprSendInternal {
                     }
                     refreshTokenIfRequired(distinctId, retryCount + 1)
                 } else {
-                    ApiResponse(status = ResponseStatus.ERROR, message = "Your token is expired, retried ${SSConstants.MAX_REFRESH_TOKEN_RETRY} times still it failed")
+                    ApiResponse(status = ResponseStatus.ERROR, statusCode = 401, message = "Your token is expired, retried ${SSConstants.MAX_REFRESH_TOKEN_RETRY} times still it failed")
                 }
             }
         }
