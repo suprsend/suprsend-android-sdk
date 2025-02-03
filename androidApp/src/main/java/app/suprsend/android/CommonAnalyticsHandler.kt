@@ -24,7 +24,7 @@ object CommonAnalyticsHandler {
 
     fun identify(identity: String) {
         suprSend.identityAsync(identity)
-        suprSend.user.addEmail(identity)
+        suprSend.user.addEmailAsync(identity)
         mixpanelAPI.identify(identity)
     }
 

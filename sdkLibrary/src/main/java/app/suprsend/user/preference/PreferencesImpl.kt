@@ -72,9 +72,9 @@ class PreferencesImpl : Preferences {
         }
         val scheduleJob = job.executeWithThrottleLast("Category$category", 2000, "$category ${preference.name}")
 
-        Logger.i(SSConstants.TAG_SUPRSEND, "isCancelled: $category : ${preference.name} : ${scheduleJob.isCancelled}")
-        Logger.i(SSConstants.TAG_SUPRSEND, "isActive: $category : ${preference.name} : ${scheduleJob.isActive}")
-        Logger.i(SSConstants.TAG_SUPRSEND, "isCompleted: $category : ${preference.name} : ${scheduleJob.isCompleted}")
+        Logger.v(SSConstants.TAG_SUPRSEND, "isCancelled: $category : ${preference.name} : ${scheduleJob.isCancelled}")
+        Logger.v(SSConstants.TAG_SUPRSEND, "isActive: $category : ${preference.name} : ${scheduleJob.isActive}")
+        Logger.v(SSConstants.TAG_SUPRSEND, "isCompleted: $category : ${preference.name} : ${scheduleJob.isCompleted}")
 
         val returnResponse = if (scheduleJob.isCancelled) {
             Response.Error(Exception("updateCategoryPreference ignored due to debounce: $category : ${preference.name}"))
@@ -86,7 +86,7 @@ class PreferencesImpl : Preferences {
             }
             response ?: Response.Error(Exception("updateCategoryPreference something went wrong : $category : ${preference.name}"))
         }
-        Logger.i(SSConstants.TAG_SUPRSEND, "returnResponse : $category : ${preference.name} : ${returnResponse.getData()} : ${returnResponse.getException()?.message}")
+        Logger.v(SSConstants.TAG_SUPRSEND, "Response Received : $category : ${preference.name} : ${returnResponse.getData()} : ${returnResponse.getException()?.message}")
         return returnResponse
     }
 
@@ -95,6 +95,7 @@ class PreferencesImpl : Preferences {
         channel: String,
         preference: PreferenceOptions
     ): Response<JSONObject> {
+        Logger.i(SSConstants.TAG_SUPRSEND, "updateChannelPreferenceInCategory : $category : $channel : ${preference.name}")
         if (!NetworkInfo.isConnected()) {
             sendUpdate()
             return Response.Error(NoInternetException())
@@ -103,7 +104,7 @@ class PreferencesImpl : Preferences {
         val job = CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.LAZY) {
             response = SSInternalUserPreference.updateChannelPreferenceInCategory(category, channel, preference)
         }
-        val scheduleJob = job.executeWithThrottleLast("Channel$category$channel", 2000, "$category : $channel : ${preference.name}")
+        val scheduleJob = job.executeWithThrottleLast("Category$category", 2000, "$category : $channel : ${preference.name}")
         return if (scheduleJob.isCancelled) {
             Response.Error(Exception("updateChannelPreferenceInCategory ignored due to debounce: $category : $channel : ${preference.name}"))
         } else {

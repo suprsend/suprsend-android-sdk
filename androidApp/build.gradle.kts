@@ -120,8 +120,6 @@ dependencies {
 }
 
 fun com.android.build.api.dsl.BuildType.addBuildConfigFields() {
-    buildConfigField("String", "XIAOMI_APP_ID", "\"${Deps.XIAOMI_APP_ID}\"")
-    buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
     buildConfigField("String", "SS_BASE_URL", "\"${Deps.SS_BASE_URL}\"")
     buildConfigField("String", "SS_INBOX_BASE_URL", "\"${Deps.SS_INBOX_BASE_URL}\"")
     buildConfigField("String", "SS_INBOX_SOCKET_URL", "\"${Deps.SS_INBOX_SOCKET_URL}\"")

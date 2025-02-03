@@ -19,15 +19,15 @@ fun Job.executeWithThrottleLast(
     val currentTime = System.currentTimeMillis()
     val (lastExecutionTime, existingJob) = jobsMap[key] ?: Pair(0L, null)
 
-    Logger.i(SSConstants.TAG_SUPRSEND, "Job Scheduling : $info")
+    Logger.v(SSConstants.TAG_SUPRSEND, "Job Scheduling : $info")
     val newJob = CoroutineScope(Dispatchers.IO).launch {
-        Logger.i(SSConstants.TAG_SUPRSEND, "Job executing : $info")
+        Logger.v(SSConstants.TAG_SUPRSEND, "Job executing : $info")
         delay(throttleTimeMillis)
         start()
         runBlocking {
             join()
         }
-        Logger.i(SSConstants.TAG_SUPRSEND, "Job completed : $info")
+        Logger.v(SSConstants.TAG_SUPRSEND, "Job completed : $info")
     }
     jobsMap[key] = Pair(currentTime, newJob)
 
@@ -35,10 +35,10 @@ fun Job.executeWithThrottleLast(
     if ((currentTime - lastExecutionTime) < throttleTimeMillis) {
         existingJob?.cancel() // Cancel any ongoing job for the key
         if (existingJob != null)
-            Logger.i(SSConstants.TAG_SUPRSEND, "Canceling job : $info")
+            Logger.v(SSConstants.TAG_SUPRSEND, "Canceling job : $info")
     }
     runBlocking {
-        Logger.i(SSConstants.TAG_SUPRSEND, "Job waiting : $info")
+        Logger.v(SSConstants.TAG_SUPRSEND, "Job waiting : $info")
         newJob.join()
     }
     return newJob

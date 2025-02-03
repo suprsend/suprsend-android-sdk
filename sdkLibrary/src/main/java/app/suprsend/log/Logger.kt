@@ -5,12 +5,18 @@ import app.suprsend.SuprSendInternal
 
 internal object Logger {
 
-    var logLevel = LogLevel.VERBOSE
+    var logLevel = LogLevel.OFF
 
     fun i(tag: String, message: String) {
         SuprSendInternal.loggerCallback?.i(tag, message)
         if (isLogAllowed(LogLevel.INFO.num))
             Log.i(tag, message)
+    }
+
+    fun v(tag: String, message: String) {
+        SuprSendInternal.loggerCallback?.v(tag, message)
+        if (isLogAllowed(LogLevel.VERBOSE.num))
+            Log.v(tag, message)
     }
 
     fun e(tag: String, message: String, throwable: Throwable? = null) {

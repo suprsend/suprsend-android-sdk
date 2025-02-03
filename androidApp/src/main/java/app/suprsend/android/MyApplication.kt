@@ -31,8 +31,11 @@ class MyApplication : Application() {
         AppCreator.context = this
 
         SuprSend.setLogger(object : LoggerCallback {
+            override fun v(tag: String, message: String) {
+                // you will receive sdk logs here
+            }
             override fun i(tag: String, message: String) {
-                // you will receive sdk info messages here
+                // you will receive sdk info logs here
             }
 
             override fun e(tag: String, message: String, throwable: Throwable?) {

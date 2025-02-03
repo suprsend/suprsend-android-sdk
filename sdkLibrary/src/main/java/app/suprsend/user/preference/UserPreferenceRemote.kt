@@ -7,6 +7,7 @@ import app.suprsend.base.createSubUrl
 import app.suprsend.log.Logger
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ResponseStatus
+import app.suprsend.utils.urlEncode
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -111,7 +112,7 @@ object UserPreferenceRemote {
         queryParams: String? = null,
         requestMethod: String = if (requestJson == null) "GET" else "POST"
     ): ApiResponse {
-        val distinctId = SuprSendInternal.suprSendData.distinctId ?: ""
+        val distinctId = urlEncode(SuprSendInternal.suprSendData.distinctId ?: "")
 
         val operationStatus = SuprSendInternal.refreshTokenIfRequired(distinctId = distinctId)
 
