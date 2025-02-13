@@ -1,12 +1,11 @@
 package app.suprsend.user.preference
 
-import app.suprsend.SuprSendInternal
+import app.suprsend.SSInternal
 import app.suprsend.base.NetworkClient
 import app.suprsend.base.SSConstants
 import app.suprsend.base.createSubUrl
 import app.suprsend.log.Logger
 import app.suprsend.model.ApiResponse
-import app.suprsend.model.ResponseStatus
 import app.suprsend.utils.urlEncode
 import org.json.JSONArray
 import org.json.JSONObject
@@ -112,9 +111,9 @@ object UserPreferenceRemote {
         queryParams: String? = null,
         requestMethod: String = if (requestJson == null) "GET" else "POST"
     ): ApiResponse {
-        val distinctId = urlEncode(SuprSendInternal.suprSendData.distinctId ?: "")
+        val distinctId = urlEncode(SSInternal.suprSendData.distinctId ?: "")
 
-        val operationStatus = SuprSendInternal.refreshTokenIfRequired(distinctId = distinctId)
+        val operationStatus = SSInternal.refreshTokenIfRequired(distinctId = distinctId)
 
         if (!operationStatus.isSuccess()) {
             Logger.e(SSConstants.TAG_SUPRSEND, operationStatus.message ?: "No response", operationStatus.exception)
@@ -126,15 +125,15 @@ object UserPreferenceRemote {
         } else {
             "v2/subscriber/${distinctId}/$route?$queryParams"
         }
-        val baseUrl = SuprSendInternal.suprSendData.host
+        val baseUrl = SSInternal.suprSendData.baseUrl
         val url = "$baseUrl/$requestURI"
 
         return networkClient.httpCall(
             url = url,
-            authorization = SuprSendInternal.suprSendData.publicApiKey ?: "",
+            authorization = SSInternal.suprSendData.publicApiKey ?: "",
             requestMethod = requestMethod,
             requestJson = requestJson,
-            headers = SuprSendInternal.addSSSignature()
+            headers = SSInternal.addSSSignature()
         )
     }
 }

@@ -11,7 +11,8 @@ import app.suprsend.log.Logger
 import app.suprsend.log.LoggerCallback
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ResponseStatus
-import app.suprsend.model.SuprSendOptions
+import app.suprsend.notification.NotificationActionType
+import app.suprsend.notification.NotificationActionVo
 import app.suprsend.user.User
 import app.suprsend.utils.runOnUIThread
 import com.google.android.gms.tasks.OnCompleteListener
@@ -24,7 +25,7 @@ class SuprSend private constructor() {
     val user = User()
 
     init {
-        if (FirebaseApp.getApps(SuprSendInternal.context).size > 0) {
+        if (FirebaseApp.getApps(SSInternal.context).size > 0) {
             FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
                     Logger.i(SSConstants.TAG_SUPRSEND, "Fetching FCM registration token failed")
@@ -39,7 +40,7 @@ class SuprSend private constructor() {
 
     @WorkerThread
     fun identify(distinctId: String): ApiResponse {
-        return SuprSendInternal.identity(
+        return SSInternal.identity(
             distinctId = distinctId
         )
     }
@@ -49,7 +50,7 @@ class SuprSend private constructor() {
             try {
                 val actionStatus = identify(distinctId)
                 actionStatusCallback?.let {
-                    SuprSendInternal.context.runOnUIThread { it.onComplete(actionStatus) }
+                    SSInternal.context.runOnUIThread { it.onComplete(actionStatus) }
                 }
             } catch (e: Exception) {
                 actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute identityAsync", exception = e))
@@ -58,16 +59,20 @@ class SuprSend private constructor() {
     }
 
     fun isIdentified(): Boolean {
-        return if (SuprSendInternal.suprSendData.userTokenFetcher == null) {
-            !SuprSendInternal.suprSendData.distinctId.isNullOrBlank()
+        return if (SSInternal.suprSendData.userTokenFetcher == null) {
+            !SSInternal.suprSendData.distinctId.isNullOrBlank()
         } else {
-            !SuprSendInternal.suprSendData.distinctId.isNullOrBlank() && !SuprSendInternal.getToken().isNullOrBlank()
+            !SSInternal.suprSendData.distinctId.isNullOrBlank() && !SSInternal.getToken().isNullOrBlank()
         }
+    }
+
+    fun getDistinctId(): String? {
+        return SSInternal.suprSendData.distinctId
     }
 
     @WorkerThread
     fun trackEvent(eventName: String): ApiResponse {
-        return SuprSendInternal.trackEvent(
+        return SSInternal.trackEvent(
             eventName = eventName
         )
     }
@@ -77,7 +82,7 @@ class SuprSend private constructor() {
             try {
                 val actionStatus = trackEvent(eventName)
                 actionStatusCallback?.let {
-                    SuprSendInternal.context.runOnUIThread {
+                    SSInternal.context.runOnUIThread {
                         it.onComplete(actionStatus)
                     }
                 }
@@ -89,7 +94,7 @@ class SuprSend private constructor() {
 
     @WorkerThread
     fun trackEvent(eventName: String, properties: JSONObject): ApiResponse {
-        return SuprSendInternal.trackEvent(
+        return SSInternal.trackEvent(
             eventName = eventName,
             properties = properties
         )
@@ -100,7 +105,7 @@ class SuprSend private constructor() {
             try {
                 val actionStatus = trackEvent(eventName, properties)
                 actionStatusCallback?.let {
-                    SuprSendInternal.context.runOnUIThread {
+                    SSInternal.context.runOnUIThread {
                         it.onComplete(actionStatus)
                     }
                 }
@@ -112,7 +117,7 @@ class SuprSend private constructor() {
 
     @WorkerThread
     fun reset(unSubscribeNotification: Boolean) {
-        SuprSendInternal.reset(unSubscribeNotification)
+        SSInternal.reset(unSubscribeNotification)
     }
 
     fun resetAsync(unSubscribeNotification: Boolean, actionStatusCallback: ActionStatusCallback? = null) {
@@ -125,6 +130,17 @@ class SuprSend private constructor() {
         }
     }
 
+    fun notificationClicked(notificationActionVo: NotificationActionVo) {
+        trackEventAsync(
+            eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
+            properties = JSONObject().apply {
+                put("id", notificationActionVo.notificationId)
+                if (notificationActionVo.notificationActionType == NotificationActionType.BUTTON) {
+                    put("label_id", notificationActionVo.id)
+                }
+            }
+        )
+    }
 
     fun setLogLevel(level: LogLevel) {
         Logger.logLevel = level
@@ -132,38 +148,45 @@ class SuprSend private constructor() {
 
 
     companion object {
-        private val instancesMap = hashMapOf<String, SuprSend>()
+        @Volatile
+        private var suprsend: SuprSend? = null
         fun getInstance(): SuprSend {
-            val uniqueId = "only_one_instance_support"
-            if (instancesMap.containsKey(uniqueId)) {
-                return instancesMap[uniqueId]!!
+            if (!SSInternal.isSuprSendDataInitialized()) {
+                throw IllegalStateException("Suprsend SDK is not initialized. Please use Suprsend.initialize() method to initialize.")
             }
-            val instance = SuprSend()
-            instancesMap[uniqueId] = instance
-            return instance
+            return suprsend ?: synchronized(this) {
+                suprsend ?: SuprSend().also { suprsend = it }
+            }
         }
 
-        fun initialize(
-            context: Context,
-            publicApiKey: String,
-            options: SuprSendOptions? = null,
-            userTokenFetcher: UserTokenFetcher? = null
-        ) {
-            SuprSendInternal.context = context.applicationContext
-            SuprSendInternal.suprSendData = SuprSendData(
-                host = options?.host?.removeSuffix("/") ?: SSConstants.DEFAULT_BASE_API_URL,
-                distinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID),
-                publicApiKey = publicApiKey,
-                userTokenFetcher = userTokenFetcher
-            )
+        fun initialize(context: Context, publicApiKey: String, baseUrl: String) {
+            SSInternal.context = context.applicationContext
+            SSInternal.suprSendData.publicApiKey = publicApiKey
+            SSInternal.suprSendData.distinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID)
+            SSInternal.suprSendData.baseUrl = baseUrl
+        }
+
+        fun setInboxBaseUrl(inboxBaseUrl: String) {
+            SSInternal.suprSendData.inboxBaseUrl = inboxBaseUrl
+        }
+
+        fun setUserTokenFetcher(userTokenFetcher: UserTokenFetcher?) {
+            SSInternal.suprSendData.userTokenFetcher = userTokenFetcher
+        }
+
+        fun setTenantId(tenantId: String?) {
+            if (tenantId.isNullOrBlank())
+                SSInternal.suprSendData.tenantId = null
+            else
+                SSInternal.suprSendData.tenantId = tenantId
         }
 
         fun setLogger(loggerCallback: LoggerCallback) {
-            SuprSendInternal.loggerCallback = loggerCallback
+            SSInternal.loggerCallback = loggerCallback
         }
 
         fun setNotificationCallback(notificationCallbackListener: NotificationCallbackListener) {
-            SuprSendInternal.suprSendData.notificationCallbackListener = notificationCallbackListener
+            SSInternal.suprSendData.notificationCallbackListener = notificationCallbackListener
         }
     }
 

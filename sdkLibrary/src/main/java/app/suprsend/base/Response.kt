@@ -4,7 +4,7 @@ sealed class Response<T> {
 
     data class Success<T>(val model: T) : Response<T>()
 
-    data class Error<T>(val ex: Exception,val message:String="") : Response<T>()
+    data class Error<T>(val ex: Exception, val message: String = "", val body: String? = null) : Response<T>()
 
     fun isSuccess(): Boolean {
         return this is Success<*>
@@ -16,5 +16,9 @@ sealed class Response<T> {
 
     fun getException(): Exception? {
         return (this as? Error<*>)?.ex
+    }
+
+    fun getErrorBody(): String? {
+        return (this as? Error<*>)?.body
     }
 }

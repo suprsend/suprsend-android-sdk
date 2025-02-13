@@ -25,6 +25,9 @@ android {
         multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
     signingConfigs {
         getByName("debug") {
@@ -121,12 +124,17 @@ dependencies {
 
 fun com.android.build.api.dsl.BuildType.addBuildConfigFields() {
     buildConfigField("String", "SS_BASE_URL", "\"${Deps.SS_BASE_URL}\"")
-    buildConfigField("String", "SS_INBOX_BASE_URL", "\"${Deps.SS_INBOX_BASE_URL}\"")
-    buildConfigField("String", "SS_INBOX_SOCKET_URL", "\"${Deps.SS_INBOX_SOCKET_URL}\"")
-    buildConfigField("String", "SS_INBOX_SUBSCRIBER_ID", "\"${Deps.SS_INBOX_SUBSCRIBER_ID}\"")
-    buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
-    buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
     buildConfigField("String", "SS_PUBLIC_API_KEY", "\"${Deps.SS_PUBLIC_API_KEY}\"")
+
+    buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
+    buildConfigField("String", "SS_INBOX_BASE_URL", "\"${Deps.SS_INBOX_BASE_URL}\"")
+//    buildConfigField("String", "INBOX_SECRET", "\"${Deps.INBOX_SECRET}\"")
+    buildConfigField("String", "SS_INBOX_SUBSCRIBER_ID", "\"${Deps.SS_INBOX_SUBSCRIBER_ID}\"")
+
+    buildConfigField("String", "SS_INBOX_SOCKET_URL", "\"${Deps.SS_INBOX_SOCKET_URL}\"")
+
     buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
+    buildConfigField("String", "SS_TENANT_ID", "\"${Deps.SS_TENANT_ID}\"")
+
 }
 tasks.register("testClasses")

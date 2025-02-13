@@ -1,7 +1,7 @@
 package app.suprsend.user.preference
 
+import app.suprsend.SSInternal
 import app.suprsend.SuprSend
-import app.suprsend.SuprSendInternal
 import app.suprsend.base.AssetHelper
 import app.suprsend.base.BaseTest
 import app.suprsend.base.NetworkClient
@@ -9,7 +9,6 @@ import app.suprsend.base.TestConstants
 import app.suprsend.base.assertIsSuccess
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ResponseStatus
-import app.suprsend.model.SuprSendOptions
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert
@@ -23,14 +22,13 @@ class PreferencesTest : BaseTest() {
     @Before
     fun setup() {
         UserPreferenceRemote.networkClient = networkClient
-        SuprSendInternal.networkClient = networkClient
+        SSInternal.networkClient = networkClient
 
         SuprSend.initialize(
             context = context,
+            
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                host = "https://collector-staging.suprsend.workers.dev"
-            )
+            baseUrl = "https://collector-staging.suprsend.workers.dev"
         )
 
         val suprSend = SuprSend.getInstance()

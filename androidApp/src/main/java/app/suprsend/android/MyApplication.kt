@@ -7,7 +7,6 @@ import app.suprsend.SuprSend
 import app.suprsend.UserTokenFetcher
 import app.suprsend.base.NetworkClient
 import app.suprsend.log.LoggerCallback
-import app.suprsend.model.SuprSendOptions
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.json.JSONObject
 import java.net.URLEncoder
@@ -16,16 +15,20 @@ class MyApplication : Application() {
 
     override fun onCreate() {
 
-        val isEnabled = defaultSharedPreferences.getBoolean("jwtToken", true)
-        val userTokenFetcher: UserTokenFetcher? = if (isEnabled) UserTokenFetcherImpl() else null
+
         SuprSend.initialize(
             context = this,
             publicApiKey = BuildConfig.SS_PUBLIC_API_KEY,
-            userTokenFetcher = userTokenFetcher,
-            options = SuprSendOptions(
-                host = BuildConfig.SS_BASE_URL
-            )
+            baseUrl = BuildConfig.SS_BASE_URL,
         )
+        CommonAnalyticsHandler.initialize(this)
+
+        val jwtTokenBoolean = defaultSharedPreferences.getBoolean("jwtToken", true)
+        if (jwtTokenBoolean) {
+            SuprSend.setUserTokenFetcher(UserTokenFetcherImpl())
+        } else {
+            SuprSend.setUserTokenFetcher(null)
+        }
 
         super.onCreate()
         AppCreator.context = this
@@ -44,9 +47,9 @@ class MyApplication : Application() {
             }
         })
 
-        SuprSend.setNotificationCallback(object :NotificationCallbackListener{
+        SuprSend.setNotificationCallback(object : NotificationCallbackListener {
             override fun onPushPayloadReceived(data: Map<String, String>) {
-                Log.i("app","onPushPayloadReceived : $data")
+                Log.i("app", "onPushPayloadReceived : $data")
             }
 
         })
@@ -55,9 +58,11 @@ class MyApplication : Application() {
 
 class UserTokenFetcherImpl : UserTokenFetcher {
 
+    private val networkClient = NetworkClient()
+
     override fun getToken(distinctId: String): String {
         return try {
-            val response = NetworkClient().httpCall(
+            val response = networkClient.httpCall(
                 requestMethod = "GET",
                 url = "${BuildConfig.SS_BASE_URL}/authentication-token/${URLEncoder.encode(distinctId, "utf-8")}"
             )

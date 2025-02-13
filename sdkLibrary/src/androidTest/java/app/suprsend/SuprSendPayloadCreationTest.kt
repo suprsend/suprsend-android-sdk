@@ -3,7 +3,6 @@ package app.suprsend
 import app.suprsend.base.BaseTest
 import app.suprsend.base.SSConstants
 import app.suprsend.base.TestConstants
-import app.suprsend.model.SuprSendOptions
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert
@@ -16,11 +15,10 @@ class SuprSendPayloadCreationTest : BaseTest() {
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            )
+            
+           baseUrl =  "https://collector-staging.suprsend.workers.dev"
         )
-        val payloadJO = SuprSendInternal.buildTrackEventPayload(
+        val payloadJO = SSInternal.buildTrackEventPayload(
             distinctId = "D1",
             eventName = "product_viewed",
             properties = JSONObject().apply {
@@ -38,7 +36,7 @@ class SuprSendPayloadCreationTest : BaseTest() {
 
     @Test
     fun verifyBuildOperatorPayloadJO() {
-        val payloadJO = SuprSendInternal.buildOperatorPayload(
+        val payloadJO = SSInternal.buildOperatorPayload(
             distinctId = "d1",
             operator = SSConstants.ADD,
             properties = JSONObject().apply {
@@ -58,7 +56,7 @@ class SuprSendPayloadCreationTest : BaseTest() {
      */
     @Test
     fun verifyBuildOperatorPayloadJA() {
-        val payloadJO = SuprSendInternal.buildOperatorPayload(
+        val payloadJO = SSInternal.buildOperatorPayload(
             distinctId = "d1",
             operator = SSConstants.REMOVE,
             propertiesJA = JSONArray().apply {

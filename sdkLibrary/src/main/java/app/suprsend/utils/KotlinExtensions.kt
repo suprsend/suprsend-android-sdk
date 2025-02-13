@@ -1,9 +1,13 @@
 package app.suprsend.utils
 
 import android.content.Context
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import android.os.Parcel
 import android.util.Patterns
+import app.suprsend.SSInternal
+import app.suprsend.inbox.SSInboxInternal
 import app.suprsend.log.Logger
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import org.json.JSONArray
@@ -165,6 +169,42 @@ internal fun urlEncode(value: String): String {
     return URLEncoder.encode(value, "utf-8")
 }
 
+internal fun <T> JSONArray.toMutableList(): MutableList<T> {
+    val items = mutableListOf<T>()
+    for (i in 0 until length()) {
+        items.add(get(i) as T)
+    }
+    return items
+}
+
+internal fun List<String>.toJsonArray(): JSONArray {
+    val jsonArray = JSONArray()
+    forEach {
+        jsonArray.put(it)
+    }
+    return jsonArray
+}
+
+fun Boolean?.isTrue(): Boolean {
+    return this == true
+}
+
+internal fun Parcel.safeString(): String {
+    return readString() ?: ""
+}
+
+
+fun Any?.convertToList(): List<String> {
+    return if (this is String) {
+        return listOf(this)
+    } else if (this is JSONArray) {
+        (this as JSONArray).convertToList<String>()
+    } else {
+        listOf()
+    }
+}
+
+
 internal fun <T> JSONArray.convertToList(): MutableList<T> {
     val items = mutableListOf<T>()
     for (i in 0 until length()) {
@@ -173,6 +213,16 @@ internal fun <T> JSONArray.convertToList(): MutableList<T> {
     return items
 }
 
-fun Boolean?.isTrue(): Boolean {
-    return this == true
+
+internal fun String.addTenantIdIfPresent(): String {
+    val tenantId = SSInboxInternal.inboxData.tenantId
+    if (tenantId.isNullOrBlank()) return this
+
+    val uri = Uri.parse(this)
+    val newUri = uri.buildUpon()
+        .appendQueryParameter("tenant_id", tenantId)
+        .build()
+
+    return newUri.toString()
 }
+

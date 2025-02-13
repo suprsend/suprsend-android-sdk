@@ -66,6 +66,7 @@ class NotificationRedirectionActivity : Activity() {
             }
         )
 
+
         // Remove notification
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as? NotificationManager
         if (notificationActionVo.notificationActionType == NotificationActionType.BUTTON)

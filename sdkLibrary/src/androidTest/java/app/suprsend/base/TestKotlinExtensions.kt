@@ -28,5 +28,8 @@ fun <T> Response<T>.assertIsFailure() {
 }
 
 fun <T> Response<T>.assertIsSuccess() {
+    if (!isSuccess()) {
+        Assert.assertEquals("", ((this as? Response.Error)?.message + (this as? Response.Error)?.ex?.message))
+    }
     Assert.assertEquals(true, isSuccess())
 }

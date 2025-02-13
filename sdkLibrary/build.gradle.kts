@@ -11,6 +11,7 @@ android {
     buildToolsVersion=Deps.Android.buildToolsVersion
 
     buildFeatures {
+//        dataBinding = true
         buildConfig = true
     }
 
@@ -61,9 +62,10 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging:${Deps.Firebase.messaging}")
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.38")
     implementation("androidx.core:core:1.1.0")
-
+    implementation ("io.socket:socket.io-client:2.0.0") {
+        exclude("org.json","json")
+    }
     implementation("com.auth0.android:jwtdecode:2.0.2")
-
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20230227")

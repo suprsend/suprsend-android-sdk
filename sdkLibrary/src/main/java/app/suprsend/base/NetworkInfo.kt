@@ -4,12 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
-import app.suprsend.SuprSendInternal
+import app.suprsend.SSInternal
 
 internal object NetworkInfo {
 
     fun getNetworkType(): NetworkType {
-        val context = SuprSendInternal.context
+        val context = SSInternal.context
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val info = cm.activeNetworkInfo
 
@@ -51,7 +51,7 @@ internal object NetworkInfo {
 
     @SuppressLint("MissingPermission")
     fun isConnected(): Boolean {
-        val context = SuprSendInternal.context
+        val context = SSInternal.context
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork = cm.activeNetworkInfo
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting

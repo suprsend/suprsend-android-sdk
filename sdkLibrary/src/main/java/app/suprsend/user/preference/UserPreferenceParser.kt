@@ -32,7 +32,7 @@ object UserPreferenceParser {
                 name = subCategoryJO.safeStringDefault("name"),
                 category = subCategoryJO.safeStringDefault("category"),
                 description = subCategoryJO.safeStringDefault("description"),
-                preferenceOptions = SSInternalUserPreference.getPreference(subCategoryJO.safeStringDefault("preference")),
+                preferenceOptions = SSPreferenceInternal.getPreference(subCategoryJO.safeStringDefault("preference")),
                 isEditable = subCategoryJO.safeBooleanDefault("is_editable"),
                 channels = getChannels(subCategoryJO.safeJsonArray("channels"))
             )
@@ -43,7 +43,7 @@ object UserPreferenceParser {
         return parseJA(channelJA) { channelJO ->
             Channel(
                 channel = channelJO.safeStringDefault("channel"),
-                preferenceOptions = SSInternalUserPreference.getPreference(channelJO.safeStringDefault("preference")),
+                preferenceOptions = SSPreferenceInternal.getPreference(channelJO.safeStringDefault("preference")),
                 isEditable = channelJO.safeBooleanDefault("is_editable")
             )
         }

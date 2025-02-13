@@ -7,7 +7,6 @@ import app.suprsend.base.TestConstants
 import app.suprsend.base.assertMessageId
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ResponseStatus
-import app.suprsend.model.SuprSendOptions
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert
@@ -22,11 +21,10 @@ class SuprSendJWTOffTest : BaseTest() {
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            )
+            
+            baseUrl = "https://collector-staging.suprsend.workers.dev"
         )
-        SuprSendInternal.networkClient = networkClient
+        SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         val actionStatus = suprsend.identify("1231")
@@ -50,11 +48,11 @@ class SuprSendJWTOffTest : BaseTest() {
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            )
+            
+            baseUrl = "https://collector-staging.suprsend.workers.dev"
         )
-        SuprSendInternal.networkClient = networkClient
+        SSInternal.networkClient = networkClient
+        SuprSend.setUserTokenFetcher(null)
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         val actionStatus = suprsend.identify("1231")

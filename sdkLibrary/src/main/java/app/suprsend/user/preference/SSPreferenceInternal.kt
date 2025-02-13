@@ -2,7 +2,7 @@ package app.suprsend.user.preference
 
 import android.annotation.SuppressLint
 import android.content.Context
-import app.suprsend.SuprSendInternal
+import app.suprsend.SSInternal
 import app.suprsend.base.Response
 import app.suprsend.base.SSConstants
 import app.suprsend.model.ApiResponse
@@ -14,14 +14,10 @@ import app.suprsend.utils.safeBoolean
 import app.suprsend.utils.safeJsonArray
 import app.suprsend.utils.safeString
 import app.suprsend.utils.safeStringDefault
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 
-internal object SSInternalUserPreference {
+internal object SSPreferenceInternal {
 
     var tenantId: String? = null
     var showOptOutChannels: Boolean = true
@@ -285,7 +281,7 @@ internal object SSInternalUserPreference {
 
     @SuppressLint("ApplySharedPref")
     internal fun clearUserPreference() {
-        SuprSendInternal.context.getSharedPreferences(SSConstants.SP_USER_PREFERENCES, Context.MODE_PRIVATE).edit().apply {
+        SSInternal.context.getSharedPreferences(SSConstants.SP_USER_PREFERENCES, Context.MODE_PRIVATE).edit().apply {
             putString(SSConstants.SP_USER_PREFERENCES, "")
             commit()
         }
@@ -352,14 +348,14 @@ internal object SSInternalUserPreference {
 
     @SuppressLint("ApplySharedPref")
     private fun savePreferenceData(preferenceResponse: String) {
-        SuprSendInternal.context.getSharedPreferences(SSConstants.SP_USER_PREFERENCES, Context.MODE_PRIVATE).edit().apply {
+        SSInternal.context.getSharedPreferences(SSConstants.SP_USER_PREFERENCES, Context.MODE_PRIVATE).edit().apply {
             putString(SSConstants.SP_USER_PREFERENCES, preferenceResponse)
             commit()
         }
     }
 
     private fun getPreferenceDataJO(): JSONObject? {
-        val response = SuprSendInternal.context.getSharedPreferences(SSConstants.SP_USER_PREFERENCES, Context.MODE_PRIVATE).getString(SSConstants.SP_USER_PREFERENCES, "")
+        val response = SSInternal.context.getSharedPreferences(SSConstants.SP_USER_PREFERENCES, Context.MODE_PRIVATE).getString(SSConstants.SP_USER_PREFERENCES, "")
         return if (response.isNullOrBlank()) {
             null
         } else {
@@ -368,26 +364,4 @@ internal object SSInternalUserPreference {
     }
 
 
-}
-
-fun CoroutineScope.executeWithThrottleLast(intervalMillis: Long, action: () -> Unit): (Any) -> Unit {
-    var job: Job? = null
-    var lastTime = 0L
-
-    return { event ->
-        val currentTime = System.currentTimeMillis()
-        job?.cancel() // Cancel any previously scheduled job
-
-        job = this.launch {
-            val timeSinceLast = currentTime - lastTime
-            if (timeSinceLast >= intervalMillis) {
-                lastTime = currentTime
-                action()
-            } else {
-                delay(intervalMillis - timeSinceLast)
-                lastTime = System.currentTimeMillis()
-                action()
-            }
-        }
-    }
 }

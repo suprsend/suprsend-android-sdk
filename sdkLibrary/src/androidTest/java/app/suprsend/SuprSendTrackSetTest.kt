@@ -10,7 +10,6 @@ import app.suprsend.base.assertMessageId
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ErrorType
 import app.suprsend.model.ResponseStatus
-import app.suprsend.model.SuprSendOptions
 import io.mockk.every
 import io.mockk.mockk
 import org.json.JSONObject
@@ -33,11 +32,10 @@ class SuprSendTrackSetTest : BaseTest() {
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            )
+            
+            baseUrl = "https://collector-staging.suprsend.workers.dev"
         )
-        SuprSendInternal.networkClient = networkClient
+        SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         var actionStatus = suprsend.trackEvent("Home Viewed")
@@ -68,11 +66,11 @@ class SuprSendTrackSetTest : BaseTest() {
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            )
+            
+            baseUrl = "https://collector-staging.suprsend.workers.dev"
         )
-        SuprSendInternal.networkClient = networkClient
+        SSInternal.networkClient = networkClient
+        SuprSend.setUserTokenFetcher(null)
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         var actionStatus = suprsend.identify("1231")
@@ -103,19 +101,18 @@ class SuprSendTrackSetTest : BaseTest() {
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            ),
-            userTokenFetcher = userTokenFetcher
+            
+            baseUrl = "https://collector-staging.suprsend.workers.dev",
         )
-        SuprSendInternal.networkClient = networkClient
+        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         var actionStatus = suprsend.identify("1231")
         Assert.assertEquals(true, actionStatus.isSuccess()) // Identity success
 
         //Lets store expire token
-        SuprSendInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() - 3000))
+        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() - 3000))
 
         actionStatus = suprsend.trackEvent("Home Viewed")
         Assert.assertEquals(false, actionStatus.isSuccess()) // Track event failure
@@ -145,18 +142,17 @@ class SuprSendTrackSetTest : BaseTest() {
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            ),
-            userTokenFetcher = userTokenFetcher
+            
+            baseUrl = "https://collector-staging.suprsend.workers.dev",
         )
-        SuprSendInternal.networkClient = networkClient
+        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         var actionStatus = suprsend.identify("1231")
         Assert.assertEquals(true, actionStatus.isSuccess()) // Identity success
 
-        SuprSendInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() - 3000))
+        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() - 3000))
         actionStatus = suprsend.trackEvent(eventName = SSConstants.S_EVENT_NOTIFICATION_DELIVERED,
             properties = JSONObject().apply {
                 put("id", "M1")
@@ -194,11 +190,10 @@ class SuprSendTrackSetTest : BaseTest() {
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            )
+            
+            baseUrl = "https://collector-staging.suprsend.workers.dev"
         )
-        SuprSendInternal.networkClient = networkClient
+        SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         var actionStatus = suprsend.identify("1231")
@@ -227,11 +222,10 @@ class SuprSendTrackSetTest : BaseTest() {
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            )
+            
+            baseUrl = "https://collector-staging.suprsend.workers.dev"
         )
-        SuprSendInternal.networkClient = networkClient
+        SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         var actionStatus = suprsend.identify("1231")
@@ -262,19 +256,18 @@ class SuprSendTrackSetTest : BaseTest() {
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            ),
-            userTokenFetcher = userTokenFetcher
+            
+            baseUrl = "https://collector-staging.suprsend.workers.dev"
         )
-        SuprSendInternal.networkClient = networkClient
+        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         var actionStatus = suprsend.identify("1231")
         Assert.assertEquals(true, actionStatus.isSuccess()) // Identity success
 
         //Lets store expire token
-        SuprSendInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() - 3000))
+        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() - 3000))
 
         actionStatus = suprsend.user.set("S1", "V1")
         Assert.assertEquals(false, actionStatus.isSuccess()) // Track event failure
@@ -305,11 +298,11 @@ class SuprSendTrackSetTest : BaseTest() {
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            )
+            
+            baseUrl = "https://collector-staging.suprsend.workers.dev"
         )
-        SuprSendInternal.networkClient = networkClient
+        SSInternal.networkClient = networkClient
+        SuprSend.setUserTokenFetcher(null)
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         var actionStatus = suprsend.identify("1231")

@@ -200,16 +200,6 @@
                 android:text="Set Preferred Language"
                 android:textSize="17sp" />
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/tenantIdEt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="10dp"
-                android:hint="Set Tenant Id"
-                android:text="karthick_qa_new"
-                tools:ignore="HardcodedText" />
-
             <androidx.appcompat.widget.AppCompatCheckBox
                 android:id="@+id/showOptOutChannelsCb"
                 android:layout_width="wrap_content"
@@ -228,12 +218,6 @@
                 android:text="User Preferences"
                 android:textSize="17sp" />
 
-            <androidx.appcompat.widget.AppCompatCheckBox
-                android:id="@+id/jwtTokenCb"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="JWT Token(Restart App on toggle)"
-                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/logoutTv"

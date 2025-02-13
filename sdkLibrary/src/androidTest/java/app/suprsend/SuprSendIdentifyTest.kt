@@ -9,7 +9,6 @@ import app.suprsend.base.assertMessageId
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ErrorType
 import app.suprsend.model.ResponseStatus
-import app.suprsend.model.SuprSendOptions
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert
@@ -23,13 +22,12 @@ class SuprSendIdentifyTest : BaseTest() {
         val userTokenFetcher = mockk<UserTokenFetcher>(relaxed = true)
         SuprSend.initialize(
             context = context,
+            
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            ),
-            userTokenFetcher = userTokenFetcher
+            baseUrl = TestConstants.SS_BASE_URL,
         )
-        SuprSendInternal.networkClient = networkClient
+        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         val actionStatus = suprsend.identify("")
@@ -52,13 +50,12 @@ class SuprSendIdentifyTest : BaseTest() {
         } returns ApiResponse(ResponseStatus.SUCCESS)
         SuprSend.initialize(
             context = context,
+            
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            ),
-            userTokenFetcher = userTokenFetcher
+                baseUrl = TestConstants.SS_BASE_URL,
         )
-        SuprSendInternal.networkClient = networkClient
+        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         var actionStatus = suprsend.identify("U1")
@@ -91,13 +88,12 @@ class SuprSendIdentifyTest : BaseTest() {
         } returns ApiResponse(ResponseStatus.SUCCESS)
         SuprSend.initialize(
             context = context,
+            
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            ),
-            userTokenFetcher = userTokenFetcher
+                baseUrl = TestConstants.SS_BASE_URL,
         )
-        SuprSendInternal.networkClient = networkClient
+        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         val actionStatus = suprsend.identify("1231")
@@ -125,13 +121,12 @@ class SuprSendIdentifyTest : BaseTest() {
         } returns ApiResponse(ResponseStatus.SUCCESS)
         SuprSend.initialize(
             context = context,
+            
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            ),
-            userTokenFetcher = userTokenFetcher
+                baseUrl = TestConstants.SS_BASE_URL,
         )
-        SuprSendInternal.networkClient = networkClient
+        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         val actionStatus = suprsend.identify("1231")
@@ -151,13 +146,12 @@ class SuprSendIdentifyTest : BaseTest() {
         } returns ApiResponse(ResponseStatus.ERROR)
         SuprSend.initialize(
             context = context,
+            
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            ),
-            userTokenFetcher = userTokenFetcher
+                baseUrl = TestConstants.SS_BASE_URL,
         )
-        SuprSendInternal.networkClient = networkClient
+        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         val actionStatus = suprsend.identify("1231")
@@ -183,13 +177,12 @@ class SuprSendIdentifyTest : BaseTest() {
         every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken()
         SuprSend.initialize(
             context = context,
+            
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            ),
-            userTokenFetcher = userTokenFetcher
+                baseUrl = TestConstants.SS_BASE_URL,
         )
-        SuprSendInternal.networkClient = networkClient
+        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         val actionStatus = suprsend.identify("1231")

@@ -1,7 +1,7 @@
 package app.suprsend.user
 
 import androidx.annotation.WorkerThread
-import app.suprsend.SuprSendInternal
+import app.suprsend.SSInternal
 import app.suprsend.base.ActionStatusCallback
 import app.suprsend.base.DeviceInfo
 import app.suprsend.base.LocalStorage
@@ -28,7 +28,7 @@ class User() {
 
     @WorkerThread
     fun setPreferredLanguage(language: String): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.SET,
             properties = JSONObject().apply {
                 put(SSConstants.PREFERRED_LANGUAGE, language)
@@ -41,7 +41,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = setPreferredLanguage(language)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -52,7 +52,7 @@ class User() {
 
     @WorkerThread
     fun setTimezone(timezone: String): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.SET,
             properties = JSONObject().apply {
                 put(SSConstants.TIME_ZONE, timezone)
@@ -65,7 +65,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = setTimezone(timezone)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -76,7 +76,7 @@ class User() {
 
     @WorkerThread
     fun set(key: String, value: Any): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.SET,
             properties = JSONObject().apply {
                 put(key, value)
@@ -88,7 +88,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = set(key, value)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -103,7 +103,7 @@ class User() {
             Logger.i(SSConstants.TAG_SUPRSEND, "data provided is empty")
             return ApiResponse(status = ResponseStatus.ERROR, message = "data provided is empty")
         }
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.SET,
             properties = properties
         )
@@ -113,7 +113,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = set(properties)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -124,7 +124,7 @@ class User() {
 
     @WorkerThread
     fun unSet(key: String): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.UNSET,
             propertiesJA = JSONArray().apply {
                 put(key)
@@ -136,7 +136,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = unSet(key)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -147,7 +147,7 @@ class User() {
 
     @WorkerThread
     fun unSet(keys: List<String>): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.UNSET,
             propertiesJA = JSONArray().apply {
                 keys.forEach { key ->
@@ -161,7 +161,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = unSet(keys)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -172,7 +172,7 @@ class User() {
 
     @WorkerThread
     fun setOnce(key: String, value: Any): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.SET_ONCE,
             properties = JSONObject().apply {
                 put(key, value)
@@ -184,7 +184,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = setOnce(key, value)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -195,7 +195,7 @@ class User() {
 
     @WorkerThread
     fun setOnce(properties: JSONObject): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.SET_ONCE,
             properties = properties
         )
@@ -205,7 +205,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = setOnce(properties)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -220,7 +220,7 @@ class User() {
      */
     @WorkerThread
     fun increment(key: String, value: Number): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.ADD,
             properties = JSONObject().apply {
                 put(key, value)
@@ -232,7 +232,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = increment(key, value)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -247,7 +247,7 @@ class User() {
      */
     @WorkerThread
     fun increment(properties: Map<String, Number>): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.ADD,
             properties = JSONObject().apply {
                 properties.forEach { (key, value) ->
@@ -261,7 +261,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = increment(properties)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -272,7 +272,7 @@ class User() {
 
     @WorkerThread
     fun append(key: String, value: Any): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.APPEND,
             properties = JSONObject().apply {
                 put(key, value)
@@ -284,7 +284,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = append(key, value)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -295,7 +295,7 @@ class User() {
 
     @WorkerThread
     fun append(properties: JSONObject): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.APPEND,
             properties = properties
         )
@@ -305,7 +305,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = append(properties)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -316,7 +316,7 @@ class User() {
 
     @WorkerThread
     fun remove(key: String, value: Any): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.REMOVE,
             properties = JSONObject().apply {
                 put(key, value)
@@ -328,7 +328,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = remove(key, value)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -339,7 +339,7 @@ class User() {
 
     @WorkerThread
     fun remove(properties: JSONObject): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.REMOVE,
             properties = properties
         )
@@ -349,7 +349,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = remove(properties)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -365,7 +365,7 @@ class User() {
                 status = ResponseStatus.ERROR, message = "Email is not valid : $email"
             )
         }
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.APPEND,
             properties = JSONObject().apply {
                 put(SSConstants.EMAIL, email)
@@ -378,7 +378,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = addEmail(email)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -394,7 +394,7 @@ class User() {
                 status = ResponseStatus.ERROR, message = "Email is not valid : $email"
             )
         }
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.REMOVE,
             properties = JSONObject().apply {
                 put(SSConstants.EMAIL, email)
@@ -407,7 +407,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = removeEmail(email)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -424,7 +424,7 @@ class User() {
                 message = "Mobile number is not valid : $mobile"
             )
         }
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.APPEND,
             properties = JSONObject().apply {
                 put(SSConstants.SMS, mobile)
@@ -437,7 +437,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = addSms(mobile)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -454,7 +454,7 @@ class User() {
                 message = "Mobile number is not valid : $mobile"
             )
         }
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.REMOVE,
             properties = JSONObject().apply {
                 put(SSConstants.SMS, mobile)
@@ -467,7 +467,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = removeSms(mobile)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -484,7 +484,7 @@ class User() {
                 message = "Mobile number is not valid : $mobile"
             )
         }
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.APPEND,
             properties = JSONObject().apply {
                 put(SSConstants.WHATS_APP, mobile)
@@ -497,7 +497,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = addWhatsapp(mobile)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -514,7 +514,7 @@ class User() {
                 message = "Mobile number is not valid : $mobile"
             )
         }
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.REMOVE,
             properties = JSONObject().apply {
                 put(SSConstants.WHATS_APP, mobile)
@@ -527,7 +527,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = removeWhatsapp(mobile)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -538,7 +538,7 @@ class User() {
 
     @WorkerThread
     fun addSlack(properties: JSONObject): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.APPEND,
             properties = JSONObject().apply {
                 put(SSConstants.SLACK, properties)
@@ -551,7 +551,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = addSlack(properties)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -562,7 +562,7 @@ class User() {
 
     @WorkerThread
     fun removeSlack(properties: JSONObject): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.REMOVE,
             properties = JSONObject().apply {
                 put(SSConstants.SLACK, properties)
@@ -575,7 +575,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = removeSlack(properties)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -586,7 +586,7 @@ class User() {
 
     @WorkerThread
     fun addMSTeams(properties: JSONObject): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.APPEND,
             properties = JSONObject().apply {
                 put(SSConstants.MS_TEAMS, properties)
@@ -599,7 +599,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = addMSTeams(properties)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -610,7 +610,7 @@ class User() {
 
     @WorkerThread
     fun removeMSTeams(properties: JSONObject): ApiResponse {
-        return SuprSendInternal.trackOperator(
+        return SSInternal.trackOperator(
             operator = SSConstants.REMOVE,
             properties = JSONObject().apply {
                 put(SSConstants.MS_TEAMS, properties)
@@ -623,7 +623,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = removeMSTeams(properties)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
@@ -649,7 +649,7 @@ class User() {
         jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
         jsonObject.put(SSConstants.DEVICE_ID, DeviceInfo.getDeviceId())
 
-        val actionStatus = SuprSendInternal.trackOperator(
+        val actionStatus = SSInternal.trackOperator(
             operator = SSConstants.APPEND,
             properties = jsonObject,
             ignoreFilter = true
@@ -664,7 +664,7 @@ class User() {
         sdkExecutorService.execute {
             try {
                 val actionStatus = setAndroidFcmPush(token)
-                SuprSendInternal.context.runOnUIThread {
+                SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {

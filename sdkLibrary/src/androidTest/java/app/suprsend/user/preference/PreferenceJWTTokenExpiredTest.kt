@@ -1,7 +1,7 @@
 package app.suprsend.user.preference
 
 import app.suprsend.SuprSend
-import app.suprsend.SuprSendInternal
+import app.suprsend.SSInternal
 import app.suprsend.UserTokenFetcher
 import app.suprsend.base.AssetHelper
 import app.suprsend.base.BaseTest
@@ -13,7 +13,6 @@ import app.suprsend.base.assertIsFailure
 import app.suprsend.base.assertIsSuccess
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ResponseStatus
-import app.suprsend.model.SuprSendOptions
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert
@@ -29,15 +28,14 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
 
     init {
         UserPreferenceRemote.networkClient = networkClient
-        SuprSendInternal.networkClient = networkClient
+        SSInternal.networkClient = networkClient
         SuprSend.initialize(
             context = context,
+            
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                host = "https://collector-staging.suprsend.workers.dev"
-            ),
-            userTokenFetcher = userTokenFetcher
+            baseUrl =  "https://collector-staging.suprsend.workers.dev"
         )
+        SuprSend.setUserTokenFetcher(userTokenFetcher)
 
         suprSend = SuprSend.getInstance()
         preferences = suprSend.user.getPreferences()
@@ -74,7 +72,7 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
     fun verifyTokenExpiredWhileFetchUserPreference() {
 
         //Expiring token before fetch call
-        SuprSendInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() -3000))
+        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() -3000))
         every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() -3000)
 
         //Even fetch full_preference has 200 response,even though test should fail since expired token is mocked
@@ -142,7 +140,7 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
         Assert.assertEquals(5, data?.channelPreferences?.size)
 
         //Expiring token before update call
-        SuprSendInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() -3000))
+        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() -3000))
         every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() -3000)
 
         var action = preferences.updateCategoryPreference(
@@ -202,7 +200,7 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
         Assert.assertEquals(5, data?.channelPreferences?.size)
 
         //Expiring token before update call
-        SuprSendInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() -3000))
+        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() -3000))
         every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() -3000)
 
         var action = preferences.updateChannelPreferenceInCategory(

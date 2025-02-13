@@ -5,9 +5,10 @@
     <string name="mark_unread">Mark UnRead</string>
     <string name="mark_read">Mark Read</string>
     <string name="click">Click</string>
-    <string name="action_url">Action Url</string>
-    <string name="two_str">%s %s</string>
     <string name="expiry">Expires in</string>
     <string name="createdOn">CreatedOn : </string>
     <string name="archive">Archive</string>
+    <string name="no_data_available">No data available</string>
+    <string name="no_internet">No internet connection available</string>
+    <string name="interacted">Interacted</string>
 </resources>

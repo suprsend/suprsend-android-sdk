@@ -8,12 +8,13 @@ import app.suprsend.base.LocalStorage
 import app.suprsend.base.NetworkClient
 import app.suprsend.base.NetworkInfo
 import app.suprsend.base.SSConstants
+import app.suprsend.inbox.SSInboxInternal
 import app.suprsend.log.Logger
 import app.suprsend.log.LoggerCallback
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ErrorType
 import app.suprsend.model.ResponseStatus
-import app.suprsend.user.preference.SSInternalUserPreference
+import app.suprsend.user.preference.SSPreferenceInternal
 import app.suprsend.utils.filterSSReservedKeys
 import com.auth0.android.jwt.JWT
 import org.json.JSONArray
@@ -21,16 +22,17 @@ import org.json.JSONObject
 import java.util.UUID
 
 @SuppressLint("StaticFieldLeak")
-internal object SuprSendInternal {
+internal object SSInternal {
 
     lateinit var context: Context
 
     var loggerCallback: LoggerCallback? = null
-    lateinit var suprSendData: SuprSendData
+    var suprSendData: SuprSendData = SuprSendData()
     var networkClient = NetworkClient()
 
     fun identity(
-        distinctId: String
+        distinctId: String,
+        force: Boolean = false
     ): ApiResponse {
 
         if (distinctId.isBlank()) {
@@ -42,7 +44,7 @@ internal object SuprSendInternal {
         }
 
         // other user already present
-        if (!suprSendData.distinctId.isNullOrBlank() && suprSendData.distinctId !== distinctId) {
+        if (!force && !suprSendData.distinctId.isNullOrBlank() && suprSendData.distinctId !== distinctId) {
             return ApiResponse(
                 status = ResponseStatus.ERROR,
                 errorType = ErrorType.VALIDATION_ERROR,
@@ -51,7 +53,7 @@ internal object SuprSendInternal {
         }
 
         val localDistinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID)
-        if (distinctId == localDistinctId) {
+        if (!force && distinctId == localDistinctId) {
             return ApiResponse(status = ResponseStatus.SUCCESS)
         }
         LocalStorage.setValue(SSConstants.CONFIG_DISTINCT_ID_TRY, distinctId)
@@ -61,7 +63,8 @@ internal object SuprSendInternal {
             properties = JSONObject().apply {
                 put(SSConstants.IDENTIFIED_ID, distinctId)
             },
-            ignoreFilter = true
+            ignoreFilter = true,
+            fromIdentify = true
         )
         if (apiResponse.status == ResponseStatus.SUCCESS) {
             LocalStorage.setValue(SSConstants.CONFIG_DISTINCT_ID, distinctId)
@@ -78,6 +81,7 @@ internal object SuprSendInternal {
         ignoreFilter: Boolean = false,
         // Only in case of identity method distinct id is passed externally else from all places it is taken from cache
         distinctId: String = suprSendData.distinctId ?: "",
+        fromIdentify: Boolean = false
     ): ApiResponse {
         try {
             var canBiPassDistinctId = false
@@ -96,19 +100,23 @@ internal object SuprSendInternal {
                     if (action != null)
                         return action
                 }
-                val operationStatus = refreshTokenIfRequired(distinctId = distinctId)
+                val operationStatus = refreshTokenIfRequired(distinctId = distinctId, fromIdentify = fromIdentify)
                 if (!operationStatus.isSuccess())
                     return operationStatus
             }
 
             val eventPayload = this.buildTrackEventPayload(distinctId, eventName, properties, ignoreFilter)
 
-            return networkClient.httpCall(
-                url = "${suprSendData.host}/v2/event",
+            val httpResponse = networkClient.httpCall(
+                url = "${suprSendData.baseUrl}/v2/event",
                 authorization = suprSendData.publicApiKey ?: "",
                 requestJson = eventPayload.toString(),
                 headers = addSSSignature()
             )
+            if (!httpResponse.isSuccess()) {
+                checkStatusCodeAndRemoveLocalToken(httpResponse.body)
+            }
+            return httpResponse
         } catch (e: Exception) {
             return ApiResponse(
                 status = ResponseStatus.ERROR,
@@ -148,12 +156,16 @@ internal object SuprSendInternal {
                 ignoreFilter = ignoreFilter
             )
 
-            return networkClient.httpCall(
-                url = "${suprSendData.host}/v2/event",
+            val httpResponse =  networkClient.httpCall(
+                url = "${suprSendData.baseUrl}/v2/event",
                 authorization = suprSendData.publicApiKey ?: "",
                 requestJson = eventPayload.toString(),
                 headers = addSSSignature()
             )
+            if (!httpResponse.isSuccess()) {
+                checkStatusCodeAndRemoveLocalToken(httpResponse.body)
+            }
+            return httpResponse
         } catch (e: Exception) {
             return ApiResponse(
                 status = ResponseStatus.ERROR,
@@ -162,7 +174,11 @@ internal object SuprSendInternal {
         }
     }
 
-    fun refreshTokenIfRequired(distinctId: String, retryCount: Int = 1): ApiResponse {
+    fun refreshTokenIfRequired(
+        distinctId: String,
+        retryCount: Int = 1,
+        fromIdentify: Boolean = false
+    ): ApiResponse {
         if (!NetworkInfo.isConnected()) {
             return ApiResponse(
                 status = ResponseStatus.ERROR,
@@ -170,13 +186,18 @@ internal object SuprSendInternal {
             )
         }
         val userTokenFetcher = suprSendData.userTokenFetcher
+        var userToken = getToken() ?: ""
         if (userTokenFetcher != null) {
-            var userToken = getToken() ?: ""
 
             if (userToken.isBlank()) {
-                Logger.i(SSConstants.TAG_SUPRSEND, "Fetching user token for first time")
+                Logger.v(SSConstants.TAG_SUPRSEND, "User token is blank")
                 userToken = userTokenFetcher.getToken(distinctId)
+                Logger.v(SSConstants.TAG_SUPRSEND, "Got $distinctId $userToken")
                 storeToken(userToken)
+                if (!fromIdentify) {
+                    val response = identity(distinctId, force = true)
+                    Logger.v(SSConstants.TAG_SUPRSEND, "Response : $response")
+                }
             }
             if (userToken.isBlank()) {
                 return ApiResponse(
@@ -189,9 +210,14 @@ internal object SuprSendInternal {
                 return if (retryCount <= SSConstants.MAX_REFRESH_TOKEN_RETRY) {
                     Logger.i(SSConstants.TAG_SUPRSEND, "User token is expired")
                     userToken = userTokenFetcher.getToken(distinctId)
-                    if (!isJWTTokenExpired(userToken))
+                    if (!isJWTTokenExpired(userToken)) {
                         storeToken(userToken)
-                    else {
+                        Logger.v(SSConstants.TAG_SUPRSEND, "Got $distinctId $userToken")
+                        if (!fromIdentify) {
+                            val response = identity(distinctId, force = true)
+                            Logger.v(SSConstants.TAG_SUPRSEND, "Response : $response")
+                        }
+                    } else {
                         Logger.e(SSConstants.TAG_SUPRSEND, "Invalid token has received : $userToken")
                     }
                     refreshTokenIfRequired(distinctId, retryCount + 1)
@@ -200,14 +226,14 @@ internal object SuprSendInternal {
                 }
             }
         }
-        return ApiResponse(status = ResponseStatus.SUCCESS, statusCode = 200, message = "refreshTokenIfRequired : Succeeded")
+        return ApiResponse(status = ResponseStatus.SUCCESS, statusCode = 200, message = "refreshTokenIfRequired : Succeeded : $userToken")
     }
 
     private fun isJWTTokenExpired(userToken: String): Boolean {
         val expiresOn = JWT(userToken).expiresAt?.time
         var hasExpired = true
         if (expiresOn != null) {
-            hasExpired = expiresOn <= System.currentTimeMillis()
+            hasExpired = expiresOn <= (System.currentTimeMillis() + 3000)
         }
         return hasExpired
     }
@@ -269,7 +295,8 @@ internal object SuprSendInternal {
     fun reset(unSubscribeNotification: Boolean) {
         if (unSubscribeNotification)
             removeNotificationToken()
-        SSInternalUserPreference.clearUserPreference()
+        SSPreferenceInternal.clearUserPreference()
+        SSInboxInternal.reset()
         suprSendData.distinctId = null
         LocalStorage.remove(SSConstants.USER_TOKEN)
         LocalStorage.remove(SSConstants.CONFIG_DISTINCT_ID)
@@ -337,6 +364,24 @@ internal object SuprSendInternal {
             )
         }
         return null
+    }
+
+    fun isSuprSendDataInitialized(): Boolean {
+        return !suprSendData.publicApiKey.isNullOrBlank()
+    }
+
+    fun checkStatusCodeAndRemoveLocalToken(errorBody: String?) {
+        try {
+            val errorResponseStr = errorBody ?: "{}"
+            val errorResponse = JSONObject(errorResponseStr)
+            val type = errorResponse.optJSONObject("error")?.optString("type")
+            if (type == "token_invalid") {
+                LocalStorage.remove(SSConstants.USER_TOKEN)
+                refreshTokenIfRequired(distinctId = suprSendData.distinctId ?: "")
+            }
+        } catch (e: Exception) {
+            Logger.e(SSConstants.TAG_SUPRSEND, e)
+        }
     }
 
 }

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.suprsend.SuprSend
+import app.suprsend.android.AppCreator
 import app.suprsend.android.BuildConfig
 import app.suprsend.android.databinding.UserPreferenceActivityBinding
 import app.suprsend.android.isLast
@@ -41,7 +42,7 @@ class UserPreferenceActivity : AppCompatActivity() {
         binding = UserPreferenceActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         SuprSend.getInstance().user.getPreferences().setPreferenceConfig(
-            tenantId = intent.extras?.get("tenantId").toString() ?: "",
+            tenantId = AppCreator.tenantId,
             showOptOutChannels = intent.extras?.get("showOptOutChannels").toString().toBoolean()
         )
         binding.categoriesRV.layoutManager = LinearLayoutManager(this@UserPreferenceActivity)

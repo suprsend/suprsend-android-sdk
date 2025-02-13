@@ -23,11 +23,11 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter() // Warning: this repository is going to shut down soon
+//        jcenter() // Warning: this repository is going to shut down soon
         maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
     }
 }
 
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+tasks.register<Delete>("clean") {
+    delete(layout.buildDirectory)
 }

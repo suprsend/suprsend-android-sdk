@@ -1,7 +1,7 @@
 package app.suprsend.fcm
 
 import app.suprsend.SuprSend
-import app.suprsend.SuprSendInternal
+import app.suprsend.SSInternal
 import app.suprsend.base.SSConstants
 import app.suprsend.log.Logger
 import app.suprsend.notification.SSNotificationHelper
@@ -13,7 +13,7 @@ class SSFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         try {
             SSNotificationHelper.showFCMNotification(applicationContext, remoteMessage)
-            SuprSendInternal.suprSendData.notificationCallbackListener?.onPushPayloadReceived(remoteMessage.data)
+            SSInternal.suprSendData.notificationCallbackListener?.onPushPayloadReceived(remoteMessage.data)
         } catch (e: Exception) {
             Logger.e(SSConstants.TAG_SUPRSEND, "onMessageReceived", e)
         }

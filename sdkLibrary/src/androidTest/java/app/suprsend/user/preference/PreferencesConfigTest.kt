@@ -8,7 +8,6 @@ import app.suprsend.base.TestConstants
 import app.suprsend.base.assertIsSuccess
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ResponseStatus
-import app.suprsend.model.SuprSendOptions
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert
@@ -36,10 +35,9 @@ class PreferencesDefaultConfigTest : BaseTest() {
         )
         SuprSend.initialize(
             context = context,
+            
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            options = SuprSendOptions(
-                "https://collector-staging.suprsend.workers.dev"
-            )
+            baseUrl = "https://collector-staging.suprsend.workers.dev"
         )
         val suprSend = SuprSend.getInstance()
         suprSend.reset(true)

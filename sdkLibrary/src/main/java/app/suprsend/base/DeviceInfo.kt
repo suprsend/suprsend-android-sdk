@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
 import app.suprsend.BuildConfig
-import app.suprsend.SuprSendInternal
+import app.suprsend.SSInternal
 import app.suprsend.log.Logger
 import org.json.JSONObject
 import java.util.Locale
@@ -28,21 +28,21 @@ internal object DeviceInfo {
     }
 
     fun getDeviceWidthPixel(): Int {
-        return SuprSendInternal.context.resources.displayMetrics.widthPixels
+        return SSInternal.context.resources.displayMetrics.widthPixels
     }
 
     fun getDeviceHeightPixels(): Int {
-        return SuprSendInternal.context.resources.displayMetrics.heightPixels
+        return SSInternal.context.resources.displayMetrics.heightPixels
     }
 
     @SuppressLint("HardwareIds")
     fun getDeviceId(): String {
-        return Settings.Secure.getString(SuprSendInternal.context.contentResolver, Settings.Secure.ANDROID_ID)
+        return Settings.Secure.getString(SSInternal.context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
     private fun versionName(): String {
         return try {
-            val info: PackageInfo = SuprSendInternal.context.packageManager.getPackageInfo(SuprSendInternal.context.packageName, 0)
+            val info: PackageInfo = SSInternal.context.packageManager.getPackageInfo(SSInternal.context.packageName, 0)
             info.versionName ?: UNKNOWN
         } catch (e: PackageManager.NameNotFoundException) {
             Logger.i(SSConstants.TAG_SUPRSEND, "Unable to get app version details")
@@ -52,7 +52,7 @@ internal object DeviceInfo {
 
     private fun versionCode(): String {
         return try {
-            val info: PackageInfo = SuprSendInternal.context.packageManager.getPackageInfo(SuprSendInternal.context.packageName, 0)
+            val info: PackageInfo = SSInternal.context.packageManager.getPackageInfo(SSInternal.context.packageName, 0)
             info.versionCode.toString()
         } catch (e: PackageManager.NameNotFoundException) {
             Logger.i(SSConstants.TAG_SUPRSEND, "Unable to get app version details")

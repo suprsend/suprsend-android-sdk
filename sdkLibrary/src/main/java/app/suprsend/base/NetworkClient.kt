@@ -13,7 +13,6 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-
 fun createSubUrl(keyValues: Map<String, String?>): String {
     var subUrl = ""
     keyValues.forEach { (key, value) ->
@@ -38,7 +37,7 @@ class NetworkClient {
                 status = ResponseStatus.ERROR,
                 statusCode = 500,
                 errorType = ErrorType.NETWORK_ERROR,
-                message = "network error"
+                message = "Internet connection is not available"
             )
         }
         var connection: HttpURLConnection? = null
@@ -95,8 +94,8 @@ class NetworkClient {
             connection?.disconnect()
         }
         val responseStr = response.toString()
-        Logger.i(SSConstants.TAG_SUPRSEND, "Response Received : $url \nCode : $statusCode")
-        Logger.i(SSConstants.TAG_SUPRSEND, "Response : $responseStr")
+        Logger.i(SSConstants.TAG_SUPRSEND, "API : $statusCode : $url")
+        Logger.i(SSConstants.TAG_SUPRSEND, "API Response : $responseStr")
 
         return ApiResponse(
             status = if (statusCode >= 400) ResponseStatus.ERROR else ResponseStatus.SUCCESS,
@@ -104,4 +103,5 @@ class NetworkClient {
             body = responseStr
         )
     }
+
 }

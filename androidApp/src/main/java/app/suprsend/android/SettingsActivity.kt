@@ -4,8 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
 import app.suprsend.android.databinding.ActivitySettingsBinding
 import app.suprsend.android.preference.UserPreferenceActivity
+import app.suprsend.inbox.SuprsendInbox
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -17,33 +19,35 @@ class SettingsActivity : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.emailEt.setText(getValue("email", "nikhilesh@suprsend.com"))
+        binding.emailEt.setText(AppCreator.getValue("email", "nikhilesh@suprsend.com"))
+        binding.emailEt.doOnTextChanged { text, _, _, _ ->
+            AppCreator.storeValue("email", text.toString())
+        }
         binding.emailTv.clickWithThrottle {
             val email = binding.emailEt.text.toString()
             CommonAnalyticsHandler.setEmail(email)
-            storeValue("email", email)
         }
         binding.unSetEmailTv.clickWithThrottle {
             val email = binding.emailEt.text.toString()
             CommonAnalyticsHandler.unSetEmail(email)
         }
 
-        binding.smsEt.setText(getValue("sms", "+918983364103"))
+        binding.smsEt.setText(AppCreator.getValue("sms", "+918983364103"))
         binding.smsTv.clickWithThrottle {
             val sms = binding.smsEt.text.toString()
             CommonAnalyticsHandler.setSms(sms)
-            storeValue("sms", sms)
+            AppCreator.storeValue("sms", sms)
         }
         binding.unSetSmsTv.clickWithThrottle {
             val sms = binding.smsEt.text.toString()
             CommonAnalyticsHandler.unSetSms(sms)
         }
 
-        binding.whatsAppEt.setText(getValue("whatsapp", "+918983364103"))
+        binding.whatsAppEt.setText(AppCreator.getValue("whatsapp", "+918983364103"))
         binding.whatsAppTv.clickWithThrottle {
             val whatsapp = binding.whatsAppEt.text.toString()
             CommonAnalyticsHandler.setWhatsApp(whatsapp)
-            storeValue("whatsapp", whatsapp)
+            AppCreator.storeValue("whatsapp", whatsapp)
         }
         binding.unSetWhatsAppTv.clickWithThrottle {
             val email = binding.whatsAppEt.text.toString()
@@ -65,45 +69,35 @@ class SettingsActivity : AppCompatActivity() {
         binding.logoutTv.clickWithThrottle {
             logout(false)
         }
-        val jwtTokenBoolean = defaultSharedPreferences.getBoolean("jwtToken",true)
-        binding.jwtTokenCb.isChecked=jwtTokenBoolean
-        binding.jwtTokenCb.setOnCheckedChangeListener { _, isChecked ->
-            defaultSharedPreferences.edit().apply {
-                putBoolean("jwtToken", isChecked)
-                apply()
-            }
-        }
+
         binding.logoutUnSubTv.clickWithThrottle {
             logout(true)
         }
 
         binding.userPreference.clickWithThrottle {
             val intent = Intent(this, UserPreferenceActivity::class.java)
-            intent.putExtra("tenantId",binding.tenantIdEt.text?.trim()?:"")
-            intent.putExtra("showOptOutChannels",binding.showOptOutChannelsCb.isChecked)
+            intent.putExtra("showOptOutChannels", binding.showOptOutChannelsCb.isChecked)
             startActivity(intent)
         }
-
-        binding.inboxSubscriberIdEt.setText(getValue("inboxSubscriberId", BuildConfig.SS_INBOX_SUBSCRIBER_ID))
-        binding.inboxStoreJsonEt.setText(getValue("inboxStoreJsonEt", getInboxStoreJson()))
-        binding.inbox.clickWithThrottle {
-            //TODO - Implement Inbox
-//            CommonAnalyticsHandler.set("inbox_visit_at", System.currentTimeMillis().toString())
-//            val intent = Intent(this, InboxActivity::class.java)
-//            val subscriberId = binding.inboxSubscriberIdEt.text.toString()
-//            val inboxStoreJson = binding.inboxStoreJsonEt.text.toString()
-//            intent.putExtra("inboxSubscriberId", subscriberId)
-//            intent.putExtra("inboxStoreJson", inboxStoreJson)
-//            startActivity(intent)
-//            storeValue("inboxSubscriberId", subscriberId)
-//            storeValue("inboxStoreJson", inboxStoreJson)
+        binding.inboxSubscriberIdEt.setText(AppCreator.getValue(AppConstants.PREF_INBOX_SUBSCRIBER_ID, BuildConfig.SS_INBOX_SUBSCRIBER_ID))
+        binding.inboxSubscriberIdEt.doOnTextChanged { text, _, _, _ ->
+            AppCreator.storeValue(AppConstants.PREF_INBOX_SUBSCRIBER_ID, text.toString())
         }
+
+        binding.inboxStoreJsonEt.doOnTextChanged { text, _, _, _ ->
+            AppCreator.storeValue(AppConstants.PREF_INBOX_STORE_JSON, text.toString())
+        }
+        binding.inboxStoreJsonEt.setText(AppCreator.getValue(AppConstants.PREF_INBOX_STORE_JSON, AppCreator.getInboxStoreJson(this)))
+        binding.inbox.clickWithThrottle {
+            CommonAnalyticsHandler.set("inbox_visit_at", System.currentTimeMillis().toString())
+            AppCreator.startInboxActivity(this)
+        }
+
     }
 
-    private fun getInboxStoreJson(): String {
-        return """
-[{"storeId":"Read","label":"Read","query":{"tags":"tab1","read":true,"archived":false}},{"storeId":"Unread","label":"Unread","query":{"read":false,"tags":"tab1","archived":false}},{"storeId":"Archived","label":"Archived","query":{"archived":true}},{"storeId":"All","label":"All"}]
-        """.trimIndent()
+    override fun onStart() {
+        super.onStart()
+        SuprsendInbox.getInstance().openConnection()
     }
 
     private fun logout(unSubscribeNotification: Boolean) {
@@ -114,15 +108,6 @@ class SettingsActivity : AppCompatActivity() {
         AppCreator.setEmail(this, "")
     }
 
-    private fun getValue(key: String, default: String = ""): String {
-        return defaultSharedPreferences.getString(key, default) ?: ""
-    }
-
-    private fun storeValue(key: String, value: String) {
-        defaultSharedPreferences.Edit {
-            putString(key, value)
-        }
-    }
 }
 
 fun View.clickWithThrottle(throttleTime: Long = 600L, action: () -> Unit) {

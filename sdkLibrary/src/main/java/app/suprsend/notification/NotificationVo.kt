@@ -148,7 +148,7 @@ data class NotificationVo(
 }
 
 data class NotificationActionVo(
-    val id: String?,
+    val id: String? = null,
     val title: String? = null,
     val link: String? = null,
     val iconDrawableName: String? = null,

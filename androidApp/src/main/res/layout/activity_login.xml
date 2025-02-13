@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
@@ -14,7 +13,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:hint="Email"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:text="n@s.c" />
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/passordEt"
@@ -23,7 +23,25 @@
             android:layout_marginTop="10dp"
             android:hint="Password"
             android:inputType="textPassword"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:text="asd" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/tenantIdEt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="Tenant ID"
+            android:singleLine="true"
+            android:text="karthick_qa_new" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/jwtTokenCb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Enable JWT Token"
+            tools:ignore="HardcodedText" />
 
         <Spinner
             android:id="@+id/userTypeSp"

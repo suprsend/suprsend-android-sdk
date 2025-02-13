@@ -6,4 +6,6 @@
 
     <color name="pref_title_text">#515151</color>
     <color name="pref_sub_text">#6C727F</color>
+    <color name="teal_700">#00796B</color>
+    <color name="white">#FFFFFF</color>
 </resources>

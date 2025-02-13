@@ -3,8 +3,14 @@ package app.suprsend.base
 internal object SSConstants {
 
     const val DEFAULT_BASE_API_URL = "https://hub.suprsend.com"
+    const val DEFAULT_STAGING_BASE_API_URL = "https://collector-staging.suprsend.workers.dev"
+
     const val DEFAULT_INBOX_BASE_API_URL = "https://inboxs.live"
+    const val DEFAULT_INBOX_STAGING_BASE_API_URL = "https://inbox-staging.inboxs.workers.dev"
+
     const val DEFAULT_INBOX_SOCKET_API_URL = "https://betainbox.suprsend.com"
+    const val DEFAULT_INBOX_STAGING_SOCKET_API_URL = "https://staging-inbox-api.suprsend.com"
+
     const val IMAGE_KIT_BASE_PATH = "https://ik.imagekit.io/l0quatz6utm"
 
     const val NOTIFICATION_PAYLOAD = "supr_send_n_pl"
@@ -13,10 +19,13 @@ internal object SSConstants {
     const val FLUSH_EVENT_PAYLOAD_SIZE = 20L
     const val PERIODIC_FLUSH_EVENT_IN_SEC = 60
 
-    const val TAG_SUPRSEND = "yep"
+    const val TAG_SUPRSEND = "suprsend"
+    const val TAG_SUPRSEND_INBOX = "suprsend_inbox"
     const val USER_TOKEN = "user_token"
     const val EVENT = "event"
     const val DISTINCT_ID = "distinct_id"
+    const val SUBSCRIBER_ID = "subscriber_id"
+    const val TENANT_ID = "tenant_id"
     const val INSERT_ID = "\$insert_id"
     const val TIME = "\$time"
     const val IDENTIFIED_ID = "\$identified_id"

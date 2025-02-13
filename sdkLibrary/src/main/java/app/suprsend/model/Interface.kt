@@ -3,10 +3,6 @@ package app.suprsend.model
 import app.suprsend.base.Response
 import org.json.JSONObject
 
-data class SuprSendOptions(
-    val host: String? = null
-)
-
 data class ApiResponse(
     val status: ResponseStatus,
     val statusCode: Int? = null,
