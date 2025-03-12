@@ -32,7 +32,7 @@ class InboxBellView : FrameLayout {
         val bellCount = SuprsendInbox.getInstance().getBellCount()
         countTv.visibility = if (bellCount == 0) View.GONE else View.VISIBLE
         countTv.text = if (bellCount > 99) {
-            "${99}+"
+            "99+"
         } else {
             bellCount.toString()
         }

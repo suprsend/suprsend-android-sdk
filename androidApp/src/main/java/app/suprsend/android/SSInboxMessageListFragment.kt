@@ -22,7 +22,6 @@ import kotlinx.coroutines.launch
 
 internal class SSInboxMessageListFragment : Fragment() {
 
-
     lateinit var binding: InboxMessageFragmentBinding
 
     private lateinit var adapter: SSInboxMessageAdapter
@@ -34,7 +33,6 @@ internal class SSInboxMessageListFragment : Fragment() {
     private lateinit var suprsendInbox: SuprsendInbox
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +67,7 @@ internal class SSInboxMessageListFragment : Fragment() {
         updateConnectionState()
         inboxStoreListener = object : InboxStoreListener {
             override fun bellCount(bellCount: Int) {
-                Log.i(AppConstants.TAG,"App: Bell count :$bellCount")
+                Log.i(AppConstants.TAG, "App: Bell count :$bellCount")
                 updateTabTitles()
             }
 
@@ -150,7 +148,7 @@ internal class SSInboxMessageListFragment : Fragment() {
             setTabTitle(tab, store)
             tab.tag = store.storeId
             binding.tabLayout.addTab(tab)
-            //On tab click fetch notification
+            // On tab click fetch notification
             binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab?) {
                     val storeId = tab?.tag as String

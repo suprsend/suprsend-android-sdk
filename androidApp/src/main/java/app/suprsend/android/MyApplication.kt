@@ -49,7 +49,7 @@ class MyApplication : Application() {
 
         SuprSend.setNotificationCallback(object : NotificationCallbackListener {
             override fun onPushPayloadReceived(data: Map<String, String>) {
-                Log.i("app", "onPushPayloadReceived : $data")
+                Log.i(AppConstants.TAG, "onPushPayloadReceived : $data")
             }
 
         })
@@ -68,7 +68,7 @@ class UserTokenFetcherImpl : UserTokenFetcher {
             )
             val responseJo = JSONObject(response.body ?: "{}")
             val token = responseJo.optString("token")
-            Log.i("suprsend", "Token Received $token")
+            Log.i(AppConstants.TAG, "Token Received $token")
             token
         } catch (e: Exception) {
             ""

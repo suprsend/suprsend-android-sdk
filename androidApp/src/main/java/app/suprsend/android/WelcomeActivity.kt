@@ -109,9 +109,8 @@ class WelcomeActivity : AppCompatActivity() {
                 if (!task.isSuccessful) {
                     msg = "Failed to subscribe to topic : $topicName"
                 }
-                Log.d("firebase", msg)
+                Log.d(AppConstants.TAG, msg)
                 Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
             }
     }
-
 }

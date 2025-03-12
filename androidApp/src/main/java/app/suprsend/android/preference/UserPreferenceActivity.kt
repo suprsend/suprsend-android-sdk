@@ -5,8 +5,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.suprsend.SuprSend
+import app.suprsend.android.AppConstants
 import app.suprsend.android.AppCreator
-import app.suprsend.android.BuildConfig
 import app.suprsend.android.databinding.UserPreferenceActivityBinding
 import app.suprsend.android.isLast
 import app.suprsend.android.logInfo
@@ -47,7 +47,7 @@ class UserPreferenceActivity : AppCompatActivity() {
         )
         binding.categoriesRV.layoutManager = LinearLayoutManager(this@UserPreferenceActivity)
         adapter = UserPreferenceRecyclerViewAdapter(
-            //Category Toggle from right side
+            // Category Toggle from right side
             categoryItemClick = { category, checked ->
                 coroutineScope.launch(Dispatchers.IO) {
                     val response = SuprSend.getInstance().user.getPreferences().updateCategoryPreference(
@@ -61,7 +61,7 @@ class UserPreferenceActivity : AppCompatActivity() {
                     }
                 }
             },
-            //Category Channel Item
+            // Category Channel Item
             channelItemClick = { category, channel, checked ->
                 coroutineScope.launch {
                     val response = SuprSend.getInstance().user.getPreferences().updateChannelPreferenceInCategory(
@@ -106,12 +106,12 @@ class UserPreferenceActivity : AppCompatActivity() {
         binding.testButton.setOnClickListener {
             coroutineScope.launch {
                 var data = preferences.fetchCategories().getData() ?: return@launch
-                val category = data.getJSONArray("results").getJSONObject(0).getString("category")?:""
-                Log.i("yep",data.toString())
+                val category = data.getJSONArray("results").getJSONObject(0).getString("category") ?: ""
+                Log.i(AppConstants.TAG, data.toString())
                 data = preferences.fetchCategory(category).getData() ?: return@launch
-                Log.i("yep",data.toString())
+                Log.i(AppConstants.TAG, data.toString())
                 data = preferences.fetchOverallChannelPreferences().getData() ?: return@launch
-                Log.i("yep",data.toString())
+                Log.i(AppConstants.TAG, data.toString())
             }
         }
     }
@@ -126,7 +126,7 @@ class UserPreferenceActivity : AppCompatActivity() {
             }
 
             override fun onError(response: Response<JSONObject>) {
-                Log.e("preference", "Response Json : ${response.getData()}")
+                Log.e(AppConstants.TAG, "Response Json : ${response.getData()}")
             }
         })
     }

@@ -92,7 +92,6 @@ class SettingsActivity : AppCompatActivity() {
             CommonAnalyticsHandler.set("inbox_visit_at", System.currentTimeMillis().toString())
             AppCreator.startInboxActivity(this)
         }
-
     }
 
     override fun onStart() {
@@ -107,7 +106,6 @@ class SettingsActivity : AppCompatActivity() {
         finishAffinity()
         AppCreator.setEmail(this, "")
     }
-
 }
 
 fun View.clickWithThrottle(throttleTime: Long = 600L, action: () -> Unit) {

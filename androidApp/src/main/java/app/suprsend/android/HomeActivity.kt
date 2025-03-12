@@ -70,7 +70,6 @@ class HomeActivity : AppCompatActivity() {
 
             override fun newNotification(notificationModel: InboxNotification) {
             }
-
         }
 
         SuprsendInbox.getInstance().registerCallback(inboxNotificationUpdateCallback)
@@ -116,5 +115,4 @@ class HomeActivity : AppCompatActivity() {
         super.onDestroy()
         SuprsendInbox.getInstance().unRegisterCallback(inboxNotificationUpdateCallback)
     }
-
 }

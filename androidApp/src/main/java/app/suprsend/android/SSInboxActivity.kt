@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentActivity
 
 class SSInboxActivity : FragmentActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -48,5 +47,4 @@ class SSInboxActivity : FragmentActivity() {
             Log.e(AppConstants.TAG, "", e)
         }
     }
-
 }

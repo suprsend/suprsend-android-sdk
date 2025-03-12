@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <!--If you are targeting to API 33 (Android 13) you will additional need to add POST_NOTIFICATIONS -->
@@ -72,10 +73,12 @@
             android:exported="false" />
 
         <!--FCM Start-->
+        <!--Suprsend push notification handler(app.suprsend.fcm.SSFirebaseMessagingService)-->
         <service
             android:name="app.suprsend.fcm.SSFirebaseMessagingService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

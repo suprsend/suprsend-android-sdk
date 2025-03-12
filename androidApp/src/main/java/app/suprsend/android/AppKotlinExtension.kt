@@ -20,10 +20,10 @@ import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
-import org.json.JSONArray
 import java.io.BufferedReader
 import java.text.SimpleDateFormat
 import java.util.Date
+import org.json.JSONArray
 
 fun View.layoutInflater(): LayoutInflater {
     return LayoutInflater.from(context)
@@ -41,7 +41,7 @@ fun <T> List<T>.isLast(index: Int): Boolean {
 }
 
 fun logInfo(message: String) {
-    Log.i("yep", message)
+    Log.i(AppConstants.TAG, message)
 }
 
 fun isNull(item: Any?): Boolean {
@@ -104,7 +104,6 @@ fun View.setVisible(isVisible: Boolean) {
         this.visibility = View.GONE
     }
 }
-
 
 fun Context.safeStartActivity(intent: Intent?) {
     intent ?: return
