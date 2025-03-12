@@ -1,5 +1,5 @@
-import java.util.Locale
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
+import java.util.Locale
 
 object Deps {
 
@@ -29,15 +29,16 @@ object Deps {
 
     //Prod
     var SS_BASE_URL = if (ISPROD) "https://hub.suprsend.com" else "https://collector-staging.suprsend.workers.dev"
+    var SS_PUBLIC_API_KEY = "XXXX"
+
+    //Preference & Inbox both has tenant id
+    val SS_TENANT_ID = "XXXX"
+
     var SS_INBOX_BASE_URL = if (ISPROD) "https://inboxs.live" else "https://inbox-staging.inboxs.workers.dev"
     var SS_INBOX_SOCKET_URL = if (ISPROD) "https://betainbox.suprsend.com" else "https://staging-inbox-api.suprsend.com"
     var SS_INBOX_SUBSCRIBER_ID = "XX"
 
     var SS_TOKEN = "XX"
-    var SS_SECRET = "XX"
-    var SS_PUBLIC_API_KEY = "XX"
-    val SS_TENANT_ID = "XX"
-    var INBOX_SECRET = "XX"
 
 
     const val XIAOMI_APP_ID = "XX"
@@ -50,12 +51,10 @@ object Deps {
     const val JITPACK_TOKEN = "XX"
 
     object Android {
-        const val minSdk = 19
-//      To run tests change this to min sdk 21 since mockk required min 21
-//      const val minSdk = 21
+        const val minSdk = 21
         const val targetSdk = 33
         const val compileSdk = 33
-        const val buildToolsVersion = "33.0.0"
+        const val buildToolsVersion = "35.0.0"
     }
 
     object Publication {
@@ -63,7 +62,7 @@ object Deps {
         var VERSION = SDK_VERSION_NAME
 
         const val PUBLISH_GROUP_ID = "com.suprsend"
-        var PUBLISH_ARTIFACT_ID = BUILD_TYPE.name.toLowerCase(Locale.getDefault())
+        var PUBLISH_ARTIFACT_ID = BUILD_TYPE.name.lowercase()
         var PUBLISH_ARTIFACT_VERSION = SDK_VERSION_NAME
         const val POM_NAME = "suprsend"
         var POM_DESCRIPTION = "Suprsend Android SDK release from commit id : ${"git rev-parse HEAD".execute().text().trim()}"
@@ -86,9 +85,11 @@ object Deps {
             const val VERSION = "1.9.22"
         }
     }
+
     object Firebase {
         const val messaging = "22.0.0"
     }
+
     const val material = "1.4.0"
 }
 
