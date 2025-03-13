@@ -18,6 +18,10 @@ class SettingsActivity : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.notificationTest.clickWithThrottle {
+            startActivity(Intent(this, NotificationTestActivity::class.java))
+        }
+
         binding.emailEt.setText(getValue("email", "nikhilesh@suprsend.com"))
         binding.emailTv.clickWithThrottle {
             val email = binding.emailEt.text.toString()

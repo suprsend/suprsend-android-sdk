@@ -11,7 +11,6 @@ import android.graphics.Color
 import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import app.suprsend.BuildConfig
@@ -41,12 +40,19 @@ import org.json.JSONObject
 
 object SSNotificationHelper {
 
-    fun showSSNotification(context: Context, notificationPayloadJson: String?) {
+    fun showSSNotification(
+        context: Context,
+        data: Map<String, String>
+    ) {
         try {
-            if (notificationPayloadJson.isNullOrBlank())
-                return
             appExecutorService.execute {
-                showRawNotification(context = context.applicationContext, rawNotification = notificationPayloadJson.getRawNotification())
+                if (data.hasSuprSendNotificationPayload()) {
+                    showRawNotification(
+                        context = context.applicationContext,
+                        rawNotification = data.getRawNotification(),
+                        data = data
+                    )
+                }
             }
         } catch (e: Exception) {
             Logger.e(SSFirebaseMessagingService.TAG, "Message data payload exception ", e)
@@ -59,7 +65,12 @@ object SSNotificationHelper {
             appExecutorService.execute {
                 Logger.i(SSFirebaseMessagingService.TAG, "Message Id : ${remoteMessage.messageId}")
                 if (remoteMessage.isSuprSendRemoteMessage()) {
-                    showRawNotification(context = context.applicationContext, rawNotification = remoteMessage.getRawNotification(), pushVendor = SSConstants.PUSH_VENDOR_FCM)
+                    showRawNotification(
+                        context = context.applicationContext,
+                        rawNotification = remoteMessage.getRawNotification(),
+                        pushVendor = SSConstants.PUSH_VENDOR_FCM,
+                        data = remoteMessage.data
+                    )
                 }
             }
         } catch (e: Exception) {
@@ -67,12 +78,20 @@ object SSNotificationHelper {
         }
     }
 
-    fun showXiaomiNotification(context: Context, miPushMessage: MiPushMessage) {
+    fun showXiaomiNotification(
+        context: Context,
+        miPushMessage: MiPushMessage
+    ) {
         try {
             appExecutorService.execute {
                 Logger.i(SSXiaomiReceiver.TAG, "Message Id : ${miPushMessage.messageId}")
                 if (miPushMessage.isSuprSendPush()) {
-                    showRawNotification(context = context.applicationContext, rawNotification = miPushMessage.getRawNotification(), pushVendor = SSConstants.PUSH_VENDOR_XIAOMI)
+                    showRawNotification(
+                        context = context.applicationContext,
+                        rawNotification = miPushMessage.getRawNotification(),
+                        pushVendor = SSConstants.PUSH_VENDOR_XIAOMI,
+                        data = mapOf()
+                    )
                 }
             }
         } catch (e: Exception) {
@@ -80,7 +99,12 @@ object SSNotificationHelper {
         }
     }
 
-    private fun showRawNotification(context: Context, rawNotification: RawNotification, pushVendor: String? = null) {
+    private fun showRawNotification(
+        context: Context,
+        rawNotification: RawNotification,
+        pushVendor: String? = null,
+        data: Map<String, String>
+    ) {
         try {
             Logger.i("notification", "showRawNotification $rawNotification")
 
@@ -92,8 +116,8 @@ object SSNotificationHelper {
 
             // Notification Delivered Event
             val areNotificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
-            if(!areNotificationsEnabled){
-                Logger.e("notification","Notifications are disabled please request the Manifest.permission.POST_NOTIFICATIONS permission")
+            if (!areNotificationsEnabled) {
+                Logger.e("notification", "Notifications are disabled please request the Manifest.permission.POST_NOTIFICATIONS permission")
             }
             val isChannelEnabled = rawNotification.channelId
                 ?.let { channelId ->
@@ -104,8 +128,8 @@ object SSNotificationHelper {
                         true
                     }
                 } ?: true
-            if(!isChannelEnabled){
-                Logger.e("notification","User has disabled the channel ${rawNotification.channelId}")
+            if (!isChannelEnabled) {
+                Logger.e("notification", "User has disabled the channel ${rawNotification.channelId}")
             }
             val instance = SSApi.getInstanceFromCachedApiKey()
             SSApiInternal.saveTrackEventPayload(
@@ -134,14 +158,24 @@ object SSNotificationHelper {
             }
 
             Logger.i("notification", "showNotificationInternal")
-            showNotificationInternal(context, areNotificationsEnabled, rawNotification.getNotificationVo())
+            showNotificationInternal(
+                context = context,
+                areNotificationsEnabled = areNotificationsEnabled,
+                notificationVo = rawNotification.getNotificationVo(),
+                data = data
+            )
 
         } catch (e: Exception) {
             Logger.e("notification", "showRawNotification", e)
         }
     }
 
-    private fun showNotificationInternal(context: Context, areNotificationsEnabled: Boolean, notificationVo: NotificationVo) {
+    private fun showNotificationInternal(
+        context: Context,
+        areNotificationsEnabled: Boolean,
+        notificationVo: NotificationVo,
+        data: Map<String, String>
+    ) {
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -156,13 +190,18 @@ object SSNotificationHelper {
         val notificationBuilder = NotificationCompat.Builder(context, notificationVo.notificationChannelVo.id)
 
         Logger.i("notification", "setBasicVo")
-        setBasicVo(context = context, notificationBuilder = notificationBuilder, notificationVo = notificationVo)
+        setBasicVo(context = context, notificationBuilder = notificationBuilder, notificationVo = notificationVo, data = data)
 
         Logger.i("notification", "setStyle")
-        setStyle(builder = notificationBuilder, notificationVo = notificationVo)
+        setStyle(builder = notificationBuilder, notificationVo = notificationVo, data = data)
 
         Logger.i("notification", "setNotificationAction")
-        setNotificationAction(context = context, notificationBuilder = notificationBuilder, notificationVo = notificationVo)
+        setNotificationAction(
+            context = context,
+            notificationBuilder = notificationBuilder,
+            notificationVo = notificationVo,
+            data = data
+        )
 
         Logger.i("notification", "notify")
 
@@ -197,14 +236,23 @@ object SSNotificationHelper {
         notificationManager.notify(notificationVo.id.hashCode(), notificationBuilder.build())
     }
 
-    private fun setNotificationAction(context: Context, notificationBuilder: NotificationCompat.Builder, notificationVo: NotificationVo) {
+    private fun setNotificationAction(
+        context: Context,
+        notificationBuilder: NotificationCompat.Builder,
+        notificationVo: NotificationVo,
+        data:Map<String,String>
+    ) {
 
         try {
             notificationVo.actions?.forEachIndexed { index, notificationActionVo ->
 
                 val actionIcon = context.getDrawableIdFromName(notificationActionVo.iconDrawableName) ?: 0
 
-                val actionIntent = NotificationRedirectionActivity.getIntent(context, notificationActionVo)
+                val actionIntent = NotificationRedirectionActivity.getIntent(
+                    context = context,
+                    notificationActionVo = notificationActionVo,
+                    data = data
+                )
 
                 actionIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
 
@@ -224,7 +272,12 @@ object SSNotificationHelper {
         }
     }
 
-    private fun setBasicVo(context: Context, notificationBuilder: NotificationCompat.Builder, notificationVo: NotificationVo) {
+    private fun setBasicVo(
+        context: Context,
+        notificationBuilder: NotificationCompat.Builder,
+        notificationVo: NotificationVo,
+        data:Map<String,String>
+    ) {
         val notificationBasicVo = notificationVo.notificationBasicVo
 
         notificationBuilder.setChannelId(notificationVo.notificationChannelVo.id)
@@ -352,7 +405,11 @@ object SSNotificationHelper {
         try {
             // Todo : set big text / picture notification content intent
             val notificationActionVo = notificationVo.getNotificationBodyActionVo()
-            val contentIntent = NotificationRedirectionActivity.getIntent(context, notificationActionVo)
+            val contentIntent = NotificationRedirectionActivity.getIntent(
+                context,
+                notificationActionVo,
+                data = data
+            )
             contentIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             val contentPI = PendingIntent.getActivity(context, System.currentTimeMillis().toInt(), contentIntent, getPendingIntentFlag())
             notificationBuilder.setContentIntent(contentPI)
@@ -392,9 +449,11 @@ object SSNotificationHelper {
                 NotificationChannelVisibility.PUBLIC -> {
                     Notification.VISIBILITY_PUBLIC
                 }
+
                 NotificationChannelVisibility.PRIVATE -> {
                     Notification.VISIBILITY_PRIVATE
                 }
+
                 NotificationChannelVisibility.SECRET -> {
                     Notification.VISIBILITY_SECRET
                 }
@@ -409,11 +468,35 @@ object SSNotificationHelper {
     }
 
 
-    private fun setStyle(builder: NotificationCompat.Builder, notificationVo: NotificationVo) {
+    private fun setStyle(
+        builder: NotificationCompat.Builder,
+        notificationVo: NotificationVo,
+        data: Map<String, String>
+    ) {
         handleInboxStyleVo(notificationVo, builder)
         handleBigTextVo(notificationVo, builder)
         handleBigPictureVo(notificationVo, builder)
+        handleCustomStyleVo(notificationVo, builder, data)
         handleMessagingStyleVo(notificationVo, builder)
+    }
+
+    private fun handleCustomStyleVo(notificationVo: NotificationVo, builder: NotificationCompat.Builder, data: Map<String, String>) {
+
+        //Collapsed View
+        SSApiInternal
+            .renderCollapsedNotificationView
+            ?.invoke(notificationVo.id, data)
+            ?.let { notificationRemoteView ->
+                builder.setCustomContentView(notificationRemoteView)
+            }
+
+        //Expanded View
+        SSApiInternal
+            .renderNotificationExpandedView
+            ?.invoke(notificationVo.id, data)
+            ?.let { notificationRemoteView ->
+                builder.setCustomBigContentView(notificationRemoteView)
+            }
     }
 
     private fun handleMessagingStyleVo(notificationVo: NotificationVo, builder: NotificationCompat.Builder) {
@@ -539,12 +622,36 @@ private fun Context.getIdentifierIdFromName(resourceName: String?, defType: Stri
 }
 
 fun RemoteMessage.isSuprSendRemoteMessage(): Boolean {
-    return data.containsKey(SSConstants.NOTIFICATION_PAYLOAD)
+    return data.hasSuprSendNotificationPayload()
 }
 
 fun RemoteMessage.getRawNotification(): RawNotification {
-    val notificationPayload = (data[SSConstants.NOTIFICATION_PAYLOAD] ?: "")
+    return data.getRawNotification()
+}
+
+fun Map<String, String>.hasSuprSendNotificationPayload(): Boolean {
+    return this.containsKey(SSConstants.NOTIFICATION_PAYLOAD)
+}
+
+fun Map<String, String>.getRawNotification(): RawNotification {
+    val notificationPayload = (this[SSConstants.NOTIFICATION_PAYLOAD] ?: "")
     return notificationPayload.getRawNotification()
+}
+
+internal fun Map<String, String>.getJsonObject(): JSONObject {
+    val jsonObject = JSONObject()
+    keys.forEach { key ->
+        jsonObject.put(key, get(key))
+    }
+    return jsonObject
+}
+
+internal fun JSONObject.getStringMap(): Map<String, String> {
+    val map = hashMapOf<String, String>()
+    keys().forEach { key ->
+        map[key] = getString(key)
+    }
+    return map
 }
 
 private fun String?.getRawNotification(): RawNotification {

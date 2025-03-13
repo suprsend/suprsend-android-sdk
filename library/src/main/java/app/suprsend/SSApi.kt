@@ -2,8 +2,10 @@ package app.suprsend
 
 import android.app.Application
 import android.content.Context
+import android.widget.RemoteViews
 import app.suprsend.base.BasicDetails
 import app.suprsend.base.LogLevel
+import app.suprsend.base.Logger
 import app.suprsend.base.PeriodicFlush
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
@@ -11,16 +13,15 @@ import app.suprsend.base.executorService
 import app.suprsend.base.filterSSReservedKeys
 import app.suprsend.base.uuid
 import app.suprsend.config.ConfigHelper
+import app.suprsend.inbox.SSInbox
+import app.suprsend.log.LoggerCallback
 import app.suprsend.user.UserLocalDatasource
 import app.suprsend.user.api.UserApiInternalContract
 import app.suprsend.xiaomi.SSXiaomiReceiver
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
-import com.xiaomi.mipush.sdk.Logger as XiaomiLogger
-import app.suprsend.base.Logger
-import app.suprsend.inbox.SSInbox
-import app.suprsend.log.LoggerCallback
 import com.xiaomi.mipush.sdk.MiPushClient
 import org.json.JSONObject
+import com.xiaomi.mipush.sdk.Logger as XiaomiLogger
 
 class SSApi
 private constructor(
@@ -45,6 +46,13 @@ private constructor(
     fun identify(uniqueId: String) {
         executorService.execute {
             SSApiInternal.identify(uniqueId)
+            SSApiInternal.flush()
+        }
+    }
+
+    fun notificationClicked(id: String, labelId: String? = null) {
+        executorService.execute {
+            SSApiInternal.notificationClicked(id = id, labelId = labelId)
             SSApiInternal.flush()
         }
     }
@@ -205,6 +213,18 @@ private constructor(
 
         fun getInstance(): SSApi {
             return getInstanceInternal()
+        }
+
+        fun renderCollapsedNotificationView(renderCollapsedNotificationView: (notificationId: String, data: Map<String, String>) -> RemoteViews?) {
+            SSApiInternal.renderCollapsedNotificationView = renderCollapsedNotificationView
+        }
+
+        fun renderNotificationExpandedView(renderNotificationExpandedView: (notificationId: String, data: Map<String, String>) -> RemoteViews?) {
+            SSApiInternal.renderNotificationExpandedView = renderNotificationExpandedView
+        }
+
+        fun notificationClickedListener(notificationClickedListener: ((notificationId: String, data: Map<String, String>) -> Unit)?) {
+            SSApiInternal.notificationClickedListener = notificationClickedListener
         }
 
         internal fun getInstanceFromCachedApiKey(): SSApi {

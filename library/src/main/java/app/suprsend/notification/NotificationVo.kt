@@ -5,7 +5,7 @@ import java.io.Serializable
 data class RawNotification(
     val id: String,
     val notificationGroupId: String,
-    val silentPush:Boolean = false,
+    val silentPush: Boolean = false,
 
     // Channel Details
     val channelId: String? = null,
@@ -27,6 +27,7 @@ data class RawNotification(
     val longDescription: String? = null,
     val tickerText: String? = null,
     val iconUrl: String? = null,
+    //BigPictureVo else BigTextVo
     val imageUrl: String? = null,
     val deeplink: String? = null,
     val sound: String? = null,
@@ -52,7 +53,7 @@ data class RawNotification(
     // Actions
     val actions: List<NotificationActionVo>? = null
 
-): Serializable {
+) : Serializable {
     fun getNotificationVo(): NotificationVo {
         var notificationVo = NotificationVo(
             id = id,
@@ -139,7 +140,8 @@ data class NotificationVo(
     val bigTextVo: BigTextVo? = null,
     val bigPictureVo: BigPictureVo? = null,
     val inboxStyleVo: InBoxStyleVo? = null,
-    val actions: List<NotificationActionVo>? = null
+    val actions: List<NotificationActionVo>? = null,
+    val data: Map<String, String>?=null
 ) {
     fun getNotificationBodyActionVo(): NotificationActionVo {
         val deeplink = notificationBasicVo.deeplink
@@ -167,7 +169,7 @@ data class NotificationChannelVo(
     val showBadge: Boolean,
     val channelLockScreenVisibility: NotificationChannelVisibility = NotificationChannelVisibility.PUBLIC,
     val channelImportance: NotificationChannelImportance = NotificationChannelImportance.HIGH,
-    val channelSound:String?
+    val channelSound: String?
 )
 
 enum class NotificationChannelVisibility {

@@ -99,3 +99,7 @@ fun isNull(item: Any?): Boolean {
 fun Boolean?.isTrue(): Boolean {
     return this == true
 }
+
+fun Context.readAssetFile(fileName:String): String {
+    return assets.open(fileName).bufferedReader().readText()
+}

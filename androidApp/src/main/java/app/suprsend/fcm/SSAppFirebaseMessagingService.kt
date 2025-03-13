@@ -2,6 +2,7 @@ package app.suprsend.fcm
 
 import android.util.Log
 import app.suprsend.SSApi
+import app.suprsend.android.AppConstants
 import app.suprsend.notification.SSNotificationHelper
 import app.suprsend.notification.isSuprSendRemoteMessage
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -16,7 +17,7 @@ class SSAppFirebaseMessagingService : FirebaseMessagingService() {
                 // Custom config event is sent in this custom fcm service for testing the custom payload
                 val jsonObject = JSONObject()
                 remoteMessage.data.keys.forEach { key ->
-                    if (!key.equals("supr_send_n_pl"))
+                    if (!key.equals(AppConstants.NOTIFICATION_PAYLOAD))
                         jsonObject.put(key, remoteMessage.data[key])
                 }
                 // Sending this earlier since flush will be done in showFCMNotification

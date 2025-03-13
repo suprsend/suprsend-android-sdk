@@ -3,6 +3,7 @@ package app.suprsend.xiaomi
 import android.content.Context
 import android.util.Log
 import app.suprsend.SSApi
+import app.suprsend.android.AppConstants
 import app.suprsend.android.toKotlinJsonObject
 import app.suprsend.fcm.SSAppFirebaseMessagingService
 import app.suprsend.notification.SSNotificationHelper
@@ -42,7 +43,7 @@ class SSAppXiaomiReceiver : PushMessageReceiver() {
             miPushMessage ?: return
             if (miPushMessage.isSuprSendPush()) {
                 val jsonObject = miPushMessage.content.toKotlinJsonObject()
-                jsonObject.remove("supr_send_n_pl")
+                jsonObject.remove(AppConstants.NOTIFICATION_PAYLOAD)
                 // Sending this earlier since flush will be done in showFCMNotification
                 SSApi.getInstance().track(SSAppFirebaseMessagingService.EVENT_NOTIFICATION_CUSTOM_CONFIG, jsonObject)
                 SSNotificationHelper.showXiaomiNotification(context, miPushMessage)

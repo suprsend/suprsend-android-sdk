@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#CFFFCF"
+    android:maxHeight="252dp"
+    android:orientation="vertical"
+    android:padding="10dp">
+    <!--Max height 48dp is required as recommended in android docs-->
+    <!--https://developer.android.com/develop/ui/views/notifications/custom-notification-->
+
+    <ImageView
+        android:id="@+id/iv_large_icon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_alarm"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/expandedTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="Expanded Notification" />
+
+    <TextView
+        android:id="@+id/expandedDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:textColor="#827F7F"
+        android:textSize="14sp"
+        tools:text="This is a large custom notification with more details." />
+</LinearLayout>

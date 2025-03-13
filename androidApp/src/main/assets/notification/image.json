@@ -1,0 +1,52 @@
+{
+  "id": "Image",
+  "channelId": "Channel 1",
+  "channelName": "Channel Name 1",
+  "channelDescription": "Channel 1 Description",
+  "channelShowBadge": true,
+  "channelLockScreenVisibility": "PUBLIC",
+  "channelImportance": "HIGH",
+  "priority": "HIGH",
+  "smallIconIdentifierName": "ic_alarm",
+  "color": "#FF0000",
+  "notificationTitle": "Image - Super Offer Deal Flat 99% Off 😃",
+  "subText": "Check",
+  "shortDescription": "Deal breaker flat 99% Off 😃 Deal breaker flat 99% Off 😃 Deal breaker flat 99% Off 😃",
+  "longDescription": null,
+  "tickerText": "A flash offer from ABC Store",
+  "iconUrl": null,
+  "imageUrl": "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
+  "deeplink": "https://google.com",
+  "category": "promo",
+  "group": "G",
+  "groupSubText": "CheckG",
+  "groupShowWhenTimeStamp": true,
+  "groupWhenTimeStamp": 1644895853000,
+  "sortKey": "a",
+  "autoCancel": true,
+  "timeoutAfter": null,
+  "onGoing": false,
+  "localOnly": true,
+  "showWhenTimeStamp": true,
+  "whenTimeStamp": 1644895853000,
+  "actions": [
+    {
+      "id": "21",
+      "title": "Google",
+      "link": "https://google.com",
+      "iconIdentifierName": "ic_5g"
+    },
+    {
+      "id": "22",
+      "title": "Slack",
+      "link": "https://slack.com",
+      "iconIdentifierName": null
+    },
+    {
+      "id": "23",
+      "title": "Youtube Deeplink",
+      "link": "vnd.youtube://4KnNVK-udTU",
+      "iconIdentifierName": null
+    }
+  ]
+}
