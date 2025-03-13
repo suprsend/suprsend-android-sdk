@@ -39,6 +39,9 @@
             android:name=".PlaceOrderActivity"
             android:exported="false" />
         <activity
+            android:name=".NotificationTestActivity"
+            android:exported="false" />
+        <activity
             android:name=".inbox.InboxActivity"
             android:exported="false" />
         <activity
@@ -153,6 +156,10 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
         <!--Xiaomi End-->
+
+        <receiver
+            android:name="app.suprsend.fcm.CustomNotificationClickReceiver"
+            android:exported="false" />
 
     </application>
 

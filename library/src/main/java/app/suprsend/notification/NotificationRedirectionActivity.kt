@@ -14,7 +14,7 @@ import app.suprsend.base.mapToEnum
 import org.json.JSONObject
 import java.io.Serializable
 
-class NotificationRedirectionActivity : Activity() {
+internal class NotificationRedirectionActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +38,7 @@ class NotificationRedirectionActivity : Activity() {
                 NotificationRedirection.NOTIFICATION_CLICKED -> {
                     handleNotificationActionClicked(activityExtras)
                 }
+
                 else -> {
                     // do nothing
                     Logger.i(TAG, "payload not handled")
@@ -55,14 +56,9 @@ class NotificationRedirectionActivity : Activity() {
         notificationActionVo ?: return
 
         val instance = SSApi.getInstanceFromCachedApiKey()
-        SSApiInternal.saveTrackEventPayload(
-            eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
-            propertiesJO = JSONObject().apply {
-                put("id", notificationActionVo.notificationId)
-                if(notificationActionVo.notificationActionType == NotificationActionType.BUTTON) {
-                    put("label_id", notificationActionVo.id)
-                }
-            }
+        SSApiInternal.notificationClicked(
+            id = notificationActionVo.notificationId ?: "",
+            labelId = if (notificationActionVo.notificationActionType == NotificationActionType.BUTTON) notificationActionVo.id else ""
         )
         instance.flush()
 
@@ -80,6 +76,11 @@ class NotificationRedirectionActivity : Activity() {
         }
         notificationActionIntent?.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         startActivity(notificationActionIntent)
+        val dataMap = intent.getStringExtra(DATA_JSON)?.let { JSONObject(it).getStringMap() } ?: mapOf()
+        SSApiInternal.notificationClickedListener?.invoke(
+            notificationActionVo.id ?: "",
+            dataMap
+        )
     }
 
     private fun getNotificationActionVo(activityExtras: Bundle): NotificationActionVo? {
@@ -88,12 +89,20 @@ class NotificationRedirectionActivity : Activity() {
 
 
     companion object {
-        const val TAG = "NRA"
+        private const val TAG = "NRA"
+        private const val DATA_JSON = "data_json"
 
-        fun getIntent(context: Context, notificationActionVo: NotificationActionVo): Intent {
+        fun getIntent(
+            context: Context,
+            notificationActionVo: NotificationActionVo,
+            data: Map<String, String>
+        ): Intent {
             val bundle = Bundle()
             bundle.putString(NotificationRedirection.FLOW_NAME, NotificationRedirection.NOTIFICATION_CLICKED.name)
             bundle.putSerializable(NotificationRedirection.FLOW_PAYLOAD, notificationActionVo)
+            val dataJo = data.getJsonObject()
+            dataJo.remove(SSConstants.NOTIFICATION_PAYLOAD)
+            bundle.putString(DATA_JSON, dataJo.toString())
             return Intent()
                 .setClass(context, NotificationRedirectionActivity::class.java)
                 .putExtras(bundle)

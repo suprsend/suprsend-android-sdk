@@ -1,5 +1,6 @@
 package app.suprsend
 
+import android.widget.RemoteViews
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
@@ -7,7 +8,6 @@ import app.suprsend.base.filterSSReservedKeys
 import app.suprsend.base.flushExecutorService
 import app.suprsend.base.isInValidKey
 import app.suprsend.base.size
-
 import app.suprsend.base.uuid
 import app.suprsend.config.ConfigHelper
 import app.suprsend.event.EventFlushHandler
@@ -21,11 +21,15 @@ import org.json.JSONObject
 
 internal object SSApiInternal {
 
-    var isFlushing = false
+    var renderCollapsedNotificationView: ((notificationId: String, data: Map<String, String>) -> RemoteViews?)? = null
+    var renderNotificationExpandedView: ((notificationId: String, data: Map<String, String>) -> RemoteViews?)? = null
+    var notificationClickedListener: ((notificationId: String, data: Map<String, String>) -> Unit)? = null
 
-    val userLocalDatasource = UserLocalDatasource()
+    private var isFlushing = false
 
-    var loggerCallback:LoggerCallback? = null
+    private val userLocalDatasource = UserLocalDatasource()
+
+    var loggerCallback: LoggerCallback? = null
 
     fun identify(uniqueId: String) {
         if (userLocalDatasource.getIdentity() == uniqueId) {
@@ -53,7 +57,7 @@ internal object SSApiInternal {
     }
 
     fun setSuperProperties(properties: JSONObject) {
-        if(properties.size()==0){
+        if (properties.size() == 0) {
             return
         }
         Logger.i(TAG, "Setting super properties $properties")
@@ -81,6 +85,18 @@ internal object SSApiInternal {
 
     fun purchaseMade(properties: JSONObject) {
         saveTrackEventPayload(eventName = SSConstants.S_EVENT_PURCHASE_MADE, propertiesJO = properties)
+    }
+
+    fun notificationClicked(id: String, labelId: String? = null) {
+        saveTrackEventPayload(
+            eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
+            propertiesJO = JSONObject().apply {
+                put("id", id)
+                if (labelId != null) {
+                    put("label_id", labelId)
+                }
+            }
+        )
     }
 
     //Todo : Need clarity cover test cases
@@ -112,15 +128,15 @@ internal object SSApiInternal {
             Logger.i(EventFlushHandler.TAG, "Flush event started")
             try {
                 EventFlushHandler.flush()
-            }catch (e:Exception){
-                Logger.e(EventFlushHandler.TAG, "Error occurred while flushing",e)
+            } catch (e: Exception) {
+                Logger.e(EventFlushHandler.TAG, "Error occurred while flushing", e)
             }
             isFlushing = false
             Logger.i(EventFlushHandler.TAG, "Flush event completed")
         }
     }
 
-    fun reset(unSubscribeNotification:Boolean) {
+    fun reset(unSubscribeNotification: Boolean) {
         val newID = uuid()
         val userId = userLocalDatasource.getIdentity()
         Logger.i(TAG, "reset : Current : $userId New : $newID")
@@ -162,6 +178,7 @@ internal object SSApiInternal {
             val jsonObject = JSONObject()
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, fcmToken)
             jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_FCM)
+            jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
             jsonObject.put(SSConstants.DEVICE_ID, getDeviceID())
             SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.APPEND)
         }
@@ -171,6 +188,7 @@ internal object SSApiInternal {
             val jsonObject = JSONObject()
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, xiaomiToken)
             jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_XIAOMI)
+            jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_XIAOMI)
             jsonObject.put(SSConstants.DEVICE_ID, getDeviceID())
             SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.APPEND)
         }
@@ -182,6 +200,7 @@ internal object SSApiInternal {
             val jsonObject = JSONObject()
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, fcmToken)
             jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_FCM)
+            jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
             jsonObject.put(SSConstants.DEVICE_ID, getDeviceID())
             SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.REMOVE)
         }
@@ -191,6 +210,7 @@ internal object SSApiInternal {
             val jsonObject = JSONObject()
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, xiaomiToken)
             jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_XIAOMI)
+            jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_XIAOMI)
             jsonObject.put(SSConstants.DEVICE_ID, getDeviceID())
             SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.REMOVE)
         }
@@ -247,12 +267,12 @@ internal object SSApiInternal {
         return ConfigHelper.get(SSConstants.CONFIG_API_BASE_URL) ?: SSConstants.DEFAULT_BASE_API_URL
     }
 
-    fun getInboxBaseUrl():String{
-        return ConfigHelper.get(SSConstants.CONFIG_INBOX_API_BASE_URL)?: SSConstants.DEFAULT_INBOX_BASE_API_URL
+    fun getInboxBaseUrl(): String {
+        return ConfigHelper.get(SSConstants.CONFIG_INBOX_API_BASE_URL) ?: SSConstants.DEFAULT_INBOX_BASE_API_URL
     }
 
-    fun getInboxSocketUrl():String{
-        return ConfigHelper.get(SSConstants.CONFIG_INBOX_SOCKET_BASE_URL)?: SSConstants.DEFAULT_INBOX_SOCKET_API_URL
+    fun getInboxSocketUrl(): String {
+        return ConfigHelper.get(SSConstants.CONFIG_INBOX_SOCKET_BASE_URL) ?: SSConstants.DEFAULT_INBOX_SOCKET_API_URL
     }
 
     const val TAG = "ssinternal"

@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import org.json.JSONArray
 import kotlin.math.abs
+import org.json.JSONObject
 
 fun View.layoutInflater(): LayoutInflater {
     return LayoutInflater.from(context)
@@ -62,6 +63,15 @@ fun <T> List<T>.isLast(index: Int): Boolean {
 fun logInfo(message: String) {
     Log.i("yep", message)
 }
+fun String?.toKotlinJsonObject(): JSONObject {
+    return try {
+        if (isNullOrBlank())
+            return JSONObject()
+        return JSONObject(this ?: "")
+    } catch (e: Exception) {
+        JSONObject()
+    }
+}
 
 fun TextView.prepend(content: String) {
     text = "$content$text"
@@ -88,4 +98,8 @@ fun isNull(item: Any?): Boolean {
 
 fun Boolean?.isTrue(): Boolean {
     return this == true
+}
+
+fun Context.readAssetFile(fileName:String): String {
+    return assets.open(fileName).bufferedReader().readText()
 }
