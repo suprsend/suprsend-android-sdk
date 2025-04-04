@@ -1,5 +1,5 @@
-import java.util.Locale
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
+import java.util.Locale
 
 object Deps {
 
@@ -28,28 +28,33 @@ object Deps {
     var APP_VERSION_NAME = if (ISPROD) "$SDK_VERSION_NAME-Prod" else "$SDK_VERSION_NAME-Stag"
 
     //Prod
-    var SS_API_BASE_URL = if (ISPROD) "https://hub.suprsend.com" else "https://collector-staging.suprsend.workers.dev"
-    var SS_API_INBOX_BASE_URL = if (ISPROD) "https://inboxs.live" else "https://inbox-staging.inboxs.workers.dev"
-    var SS_API_INBOX_SOCKET_URL = if (ISPROD) "https://betainbox.suprsend.com" else "https://staging-inbox-api.suprsend.com"
-    val SS_TENANT_ID = "null"
-    var SS_TOKEN = "XXXX"
-    var SS_SECRET = "XXXX"
+    var SS_BASE_URL = if (ISPROD) "https://hub.suprsend.com" else "https://collector-staging.suprsend.workers.dev"
+    var SS_PUBLIC_API_KEY = "XXXX"
 
-    const val XIAOMI_APP_ID = "XXXX"
-    const val XIAOMI_APP_KEY = "XXXX"
+    //Preference & Inbox both has tenant id
+    val SS_TENANT_ID = "XXXX"
 
-    const val OPPO_APP_KEY = "XXXX"
-    const val OPPO_APP_SECRET = "XXXX"
+    var SS_INBOX_BASE_URL = if (ISPROD) "https://inboxs.live" else "https://inbox-staging.inboxs.workers.dev"
+    var SS_INBOX_SOCKET_URL = if (ISPROD) "https://betainbox.suprsend.com" else "https://staging-inbox-api.suprsend.com"
+    var SS_INBOX_SUBSCRIBER_ID = "XX"
 
-    //Todo : Add jitpack publishing
-    const val MX_TOKEN = "XXXX"
-    const val JITPACK_TOKEN = "XXXX"
+    var SS_TOKEN = "XX"
+
+
+    const val XIAOMI_APP_ID = "XX"
+    const val XIAOMI_APP_KEY = "XX"
+
+    const val OPPO_APP_KEY = "XX"
+    const val OPPO_APP_SECRET = "XX"
+
+    const val MX_TOKEN = "XX"
+    const val JITPACK_TOKEN = "XX"
 
     object Android {
-        const val minSdk = 19
+        const val minSdk = 21
         const val targetSdk = 33
         const val compileSdk = 33
-        const val buildToolsVersion = "33.0.0"
+        const val buildToolsVersion = "35.0.0"
     }
 
     object Publication {
@@ -57,7 +62,7 @@ object Deps {
         var VERSION = SDK_VERSION_NAME
 
         const val PUBLISH_GROUP_ID = "com.suprsend"
-        var PUBLISH_ARTIFACT_ID = BUILD_TYPE.name.toLowerCase(Locale.getDefault())
+        var PUBLISH_ARTIFACT_ID = BUILD_TYPE.name.lowercase()
         var PUBLISH_ARTIFACT_VERSION = SDK_VERSION_NAME
         const val POM_NAME = "suprsend"
         var POM_DESCRIPTION = "Suprsend Android SDK release from commit id : ${"git rev-parse HEAD".execute().text().trim()}"
@@ -70,18 +75,21 @@ object Deps {
         const val POM_SCM_DEV_CONNECTION = "scm:git@github.com:suprsend/suprsend-android-sdk.git"
         const val POM_SCM_URL = "https://github.com/suprsend/suprsend-android-sdk"
 
-        const val OSSRH_USERNAME = "XXXX"
-        const val OSSRH_PASSWORD = "XXXX"
+        const val OSSRH_USERNAME = "XX"
+        const val OSSRH_PASSWORD = "XX"
     }
 
     object JetBrains {
         object Kotlin {
-            const val VERSION = "1.3.72"
+            // https://kotlinlang.org/docs/releases.html#release-details
+            const val VERSION = "1.9.22"
         }
     }
+
     object Firebase {
-        const val messaging = "20.2.4"
+        const val messaging = "22.0.0"
     }
+
     const val material = "1.4.0"
 }
 

@@ -2,19 +2,8 @@
 -dontwarn app.suprsend.**
 -keep class app.suprsend.**{*;}
 
-# Xiaomi
--keep class app.suprsend.xiaomi.SSXiaomiReceiver {*;}
-#SDK has been obfuscated and compressed to avoid class not found error due to re-obfuscation.
--keep class com.xiaomi.**
-#If the compiling Android version you are using is 23, you can prevent getting a false warning which makes it impossible to compile.
--dontwarn com.xiaomi.push.**
--keep class com.xiaomi.mipush.sdk.MiPushMessage {*;}
--keep class com.xiaomi.mipush.sdk.MiPushCommandMessage {*;}
--keep class com.xiaomi.mipush.sdk.PushMessageReceiver {*;}
--keep class com.xiaomi.mipush.sdk.MessageHandleService {*;}
--keep class com.xiaomi.push.service.XMJobService {*;}
--keep class com.xiaomi.push.service.XMPushService {*;}
--keep class com.xiaomi.mipush.sdk.PushMessageHandler {*;}
--keep class com.xiaomi.push.service.receivers.NetworkStatusReceiver {*;}
--keep class com.xiaomi.push.service.receivers.PingReceiver {*;}
--keep class com.xiaomi.mipush.sdk.NotificationClickedActivity {*;}
+# JWT needs this to generate token only required for testing
+# Idealy this will be generated at server
+-keep class com.auth0.android.jwt.** { *; }
+-keep class sun.misc.** { *; }
+-keep class com.google.gson.** { *; }

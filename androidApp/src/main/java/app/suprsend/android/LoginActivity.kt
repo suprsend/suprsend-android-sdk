@@ -4,8 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
+import app.suprsend.SuprSend
 import app.suprsend.android.databinding.ActivityLoginBinding
-import app.suprsend.base.getReadableDate
 
 class LoginActivity : AppCompatActivity() {
 
@@ -17,6 +18,10 @@ class LoginActivity : AppCompatActivity() {
 
         binding.userTypeSp.adapter = getSpinnerAdapter(this, arrayListOf("Retailer", "User"))
 
+        binding.tenantIdEt.setText(AppCreator.getValue(AppConstants.PREF_TENANT_ID, BuildConfig.SS_TENANT_ID))
+        binding.tenantIdEt.doOnTextChanged { text, _, _, _ ->
+            AppCreator.storeValue(AppConstants.PREF_TENANT_ID, text.toString())
+        }
         binding.loginTv.setOnClickListener {
             val email = binding.emailEt.text.toString()
             AppCreator.setEmail(this, email)
@@ -24,9 +29,26 @@ class LoginActivity : AppCompatActivity() {
             CommonAnalyticsHandler.increment("login_count", 1)
             CommonAnalyticsHandler.setOnce("first_login_at", getReadableDate())
             CommonAnalyticsHandler.setSuperProperties("user_type", binding.userTypeSp.selectedItem.toString())
+            AppCreator.tenantId = binding.tenantIdEt.text.toString()
+            SuprSend.setTenantId(AppCreator.tenantId)
             val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
             finishAffinity()
+        }
+
+        val jwtTokenBoolean = defaultSharedPreferences.getBoolean("jwtToken", true)
+        binding.jwtTokenCb.isChecked = jwtTokenBoolean
+
+        binding.jwtTokenCb.setOnCheckedChangeListener { _, isChecked ->
+            defaultSharedPreferences.edit().apply {
+                putBoolean("jwtToken", isChecked)
+                apply()
+            }
+            if (isChecked) {
+                SuprSend.setUserTokenFetcher(UserTokenFetcherImpl())
+            } else {
+                SuprSend.setUserTokenFetcher(null)
+            }
         }
 
         CommonAnalyticsHandler.track("login_screen_viewed")

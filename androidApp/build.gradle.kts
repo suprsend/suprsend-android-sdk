@@ -1,5 +1,8 @@
 plugins {
     id("com.android.application")
+    //id("org.jetbrains.kotlin.android")
+    //id("kotlin-android")
+    //kotlin("android")
     kotlin("android")
     kotlin("kapt")
     id("com.google.gms.google-services")
@@ -9,19 +12,22 @@ apply {
     from("$rootDir/ktlint.gradle")
 }
 android {
-
-    compileSdkVersion(Deps.Android.compileSdk)
-    buildToolsVersion(Deps.Android.buildToolsVersion)
+    namespace = "${Deps.SDK_PACKAGE_NAME}.android"
+    compileSdk = Deps.Android.compileSdk
+    buildToolsVersion= Deps.Android.buildToolsVersion
 
     defaultConfig {
         applicationId = "${Deps.SDK_PACKAGE_NAME}.android"
-        minSdkVersion(Deps.Android.minSdk)
-        targetSdkVersion(Deps.Android.targetSdk)
+        minSdk =Deps.Android.minSdk
+        targetSdk = Deps.Android.targetSdk
         versionCode = Deps.APP_VERSION_CODE
         versionName = Deps.APP_VERSION_NAME
         multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
     signingConfigs {
         getByName("debug") {
@@ -39,6 +45,7 @@ android {
     }
     buildFeatures {
         dataBinding = true
+        buildConfig = true
     }
 
     buildTypes {
@@ -88,8 +95,8 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics:18.2.1")
 
     if (Deps.RUN_LIB) {
-        implementation(project(":library"))
-        println("Using shared library")
+        implementation(project(":sdkLibrary"))
+        println("Using shared library :sdkLibrary")
     } else {
         val dependency = "${Deps.Publication.GROUP}:${Deps.Publication.PUBLISH_ARTIFACT_ID}:${Deps.Publication.VERSION}"
         implementation(dependency)
@@ -115,15 +122,19 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 }
 
-fun com.android.build.gradle.internal.dsl.BuildType.addBuildConfigFields() {
-    buildConfigField("String", "XIAOMI_APP_ID", "\"${Deps.XIAOMI_APP_ID}\"")
-    buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
+fun com.android.build.api.dsl.BuildType.addBuildConfigFields() {
     buildConfigField("String", "SS_BASE_URL", "\"${Deps.SS_BASE_URL}\"")
-    buildConfigField("String", "SS_INBOX_BASE_URL", "\"${Deps.SS_INBOX_BASE_URL}\"")
-    buildConfigField("String", "SS_INBOX_SOCKET_URL", "\"${Deps.SS_INBOX_SOCKET_URL}\"")
-    buildConfigField("String", "SS_INBOX_SUBSCRIBER_ID", "\"${Deps.SS_INBOX_SUBSCRIBER_ID}\"")
+    buildConfigField("String", "SS_PUBLIC_API_KEY", "\"${Deps.SS_PUBLIC_API_KEY}\"")
+
     buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
-    buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
-    buildConfigField("String", "SS_TENANT_ID", "\"${Deps.SS_TENANT_ID}\"")
+    buildConfigField("String", "SS_INBOX_BASE_URL", "\"${Deps.SS_INBOX_BASE_URL}\"")
+//    buildConfigField("String", "INBOX_SECRET", "\"${Deps.INBOX_SECRET}\"")
+    buildConfigField("String", "SS_INBOX_SUBSCRIBER_ID", "\"${Deps.SS_INBOX_SUBSCRIBER_ID}\"")
+
+    buildConfigField("String", "SS_INBOX_SOCKET_URL", "\"${Deps.SS_INBOX_SOCKET_URL}\"")
+
     buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
+    buildConfigField("String", "SS_TENANT_ID", "\"${Deps.SS_TENANT_ID}\"")
+
 }
+tasks.register("testClasses")

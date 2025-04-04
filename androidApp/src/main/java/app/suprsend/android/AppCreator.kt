@@ -3,12 +3,12 @@ package app.suprsend.android
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import com.bumptech.glide.Glide
 import io.noties.markwon.Markwon
 
@@ -17,6 +17,8 @@ object AppCreator {
     private const val BASE_IMAGE_SERVER_URL = "https://freeappcreator.in/heruku"
 
     lateinit var context: Context
+    var tenantId: String? = null
+    var inboxThemeConfig: InboxThemeConfig = InboxThemeConfig()
 
     val markWon: Markwon by lazy { Markwon.create(context) }
 
@@ -68,7 +70,7 @@ object AppCreator {
     val homeItemsList: List<BaseItem> by lazy {
         val list = arrayListOf<BaseItem>()
         list.add(BannerListVo((1..10).map { value ->
-            BannerVo("B$value", getBannerImage(value))
+            BannerVo("B$value", getProductImage())
         }))
         list.addAll((1..30).map { value ->
             ProductVo(
@@ -79,6 +81,28 @@ object AppCreator {
             )
         })
         list
+    }
+
+    fun getInboxStoreJson(context: Context): String {
+        return context.readStringFromAsset("inbox_stores.json")
+    }
+
+    fun getValue(key: String, default: String = ""): String {
+        return context.defaultSharedPreferences.getString(key, default) ?: ""
+    }
+
+    fun storeValue(key: String, value: String) {
+        context.defaultSharedPreferences.Edit {
+            putString(key, value)
+        }
+    }
+
+    fun startInboxActivity(activity: Activity) {
+
+        CommonAnalyticsHandler.initializeInbox()
+
+        val intent = Intent(activity, SSInboxActivity::class.java)
+        activity.startActivity(intent)
     }
 }
 
@@ -93,14 +117,10 @@ fun getSpinnerAdapter(context: Context, list: List<String>): ArrayAdapter<String
     return spinnerArrayAdapter
 }
 
-fun Activity.myToast(message: String) {
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-}
-
-val Context.defaultSharedPreferences: SharedPreferences
+internal val Context.defaultSharedPreferences: SharedPreferences
     get() = PreferenceManager.getDefaultSharedPreferences(this)
 
-inline fun SharedPreferences.Edit(func: SharedPreferences.Editor.() -> Unit) {
+internal inline fun SharedPreferences.Edit(func: SharedPreferences.Editor.() -> Unit) {
     val editor = edit()
     editor.func()
     editor.apply()
