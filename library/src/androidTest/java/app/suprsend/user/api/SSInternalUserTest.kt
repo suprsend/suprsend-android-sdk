@@ -506,7 +506,7 @@ class SSInternalUserTest : BaseTest() {
 
         assertEquals(1, eventsList.size)
         assertTrue(payload.has(operator))
-        assertEquals(3, propertiesPayload.size())
+        assertEquals(4, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.PUSH_ANDROID_TOKEN))
         assertEquals(SSConstants.PUSH_VENDOR_FCM, propertiesPayload.get(SSConstants.ID_PROVIDER))
         assertEquals("D1", propertiesPayload.get(SSConstants.DEVICE_ID))
@@ -528,7 +528,7 @@ class SSInternalUserTest : BaseTest() {
 
         assertEquals(1, eventsList.size)
         assertTrue(payload.has(operator))
-        assertEquals(3, propertiesPayload.size())
+        assertEquals(4, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.PUSH_ANDROID_TOKEN))
         assertEquals(SSConstants.PUSH_VENDOR_FCM, propertiesPayload.get(SSConstants.ID_PROVIDER))
         assertEquals("D1", propertiesPayload.get(SSConstants.DEVICE_ID))
@@ -550,7 +550,7 @@ class SSInternalUserTest : BaseTest() {
 
         assertEquals(1, eventsList.size)
         assertTrue(payload.has(operator))
-        assertEquals(3, propertiesPayload.size())
+        assertEquals(4, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.PUSH_ANDROID_TOKEN))
         assertEquals(SSConstants.PUSH_VENDOR_XIAOMI, propertiesPayload.get(SSConstants.ID_PROVIDER))
         assertEquals("D1", propertiesPayload.get(SSConstants.DEVICE_ID))
@@ -572,7 +572,7 @@ class SSInternalUserTest : BaseTest() {
 
         assertEquals(1, eventsList.size)
         assertTrue(payload.has(operator))
-        assertEquals(3, propertiesPayload.size())
+        assertEquals(4, propertiesPayload.size())
         assertEquals(testValue, propertiesPayload.get(SSConstants.PUSH_ANDROID_TOKEN))
         assertEquals(SSConstants.PUSH_VENDOR_XIAOMI, propertiesPayload.get(SSConstants.ID_PROVIDER))
         assertEquals("D1", propertiesPayload.get(SSConstants.DEVICE_ID))
