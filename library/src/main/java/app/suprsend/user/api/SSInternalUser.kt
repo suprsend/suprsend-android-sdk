@@ -255,7 +255,7 @@ internal object SSInternalUser {
 
         SdkAndroidCreator
             .eventLocalDatasource
-            .track(
+            .track( // storeOperatorPayload
                 body = PayloadCreator
                     .buildUserOperatorPayload(
                         distinctId = userLocalDatasource.getIdentity(),

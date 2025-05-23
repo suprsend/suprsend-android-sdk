@@ -59,7 +59,11 @@ object SSNotificationHelper {
             appExecutorService.execute {
                 Logger.i(SSFirebaseMessagingService.TAG, "Message Id : ${remoteMessage.messageId}")
                 if (remoteMessage.isSuprSendRemoteMessage()) {
-                    showRawNotification(context = context.applicationContext, rawNotification = remoteMessage.getRawNotification(), pushVendor = SSConstants.PUSH_VENDOR_FCM)
+                    showRawNotification( //showFCMNotification
+                        context = context.applicationContext,
+                        rawNotification = remoteMessage.getRawNotification(),
+                        pushVendor = SSConstants.PUSH_VENDOR_FCM
+                    )
                 }
             }
         } catch (e: Exception) {
@@ -281,7 +285,10 @@ object SSNotificationHelper {
                 notificationBuilder.color = Color.parseColor(stringColorCode)
         }
 
-        val smallIcon = context.getDrawableIdFromName(notificationBasicVo.smallIconDrawableName) ?: R.drawable.ic_notification
+        val smallIcon = context
+            .getDrawableIdFromName(notificationBasicVo.smallIconDrawableName)
+            ?: context.getDrawableIdFromName("ic_suprsend_app_icon")
+            ?: R.drawable.ic_notification
 
         notificationBuilder.setSmallIcon(smallIcon)
 

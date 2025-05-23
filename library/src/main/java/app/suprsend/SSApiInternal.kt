@@ -33,7 +33,7 @@ internal object SSApiInternal {
         }
         SdkAndroidCreator
             .eventLocalDatasource
-            .track(
+            .track( //identify
                 body = PayloadCreator
                     .buildIdentityEventPayload(
                         identifiedId = uniqueId,
@@ -142,7 +142,7 @@ internal object SSApiInternal {
         val superPropertiesLocalDataSource = SuperPropertiesLocalDataSource()
         SdkAndroidCreator
             .eventLocalDatasource
-            .track(
+            .track( //saveTrackEventPayload
                 body = PayloadCreator.buildTrackEventPayload(
                     eventName = eventName,
                     distinctId = userLocalDatasource.getIdentity(),
