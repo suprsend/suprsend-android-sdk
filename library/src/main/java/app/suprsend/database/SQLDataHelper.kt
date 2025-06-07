@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper
 import app.suprsend.base.Logger.e
 
 internal class SQLDataHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
-    private val db: SQLiteDatabase = writableDatabase
 
     override fun onCreate(db: SQLiteDatabase) {
         try {
@@ -42,7 +41,7 @@ internal class SQLDataHelper(context: Context?) : SQLiteOpenHelper(context, DATA
             contentValues.put(events_IsDirty, table_model_obj.isDirty)
             contentValues.put(events_TimeStamp, table_model_obj.timeStamp)
             contentValues.put(events_Uuid, table_model_obj.uuid)
-            db.insert(TABLENAME_events, null, contentValues)
+            writableDatabase.insert(TABLENAME_events, null, contentValues)
         } catch (e: Exception) {
             e("db", "insertEvents", e)
         }
@@ -53,7 +52,7 @@ internal class SQLDataHelper(context: Context?) : SQLiteOpenHelper(context, DATA
         var cursor: Cursor? = null
         try {
             val query = "select * from $TABLENAME_events where $events_IsDirty = $isDirty ORDER BY $events_TimeStamp LIMIT $limit"
-            cursor = db.rawQuery(query, null)
+            cursor = readableDatabase.rawQuery(query, null)
             if (cursor != null && cursor.moveToNext()) {
                 do {
                     val log = Event_Model()
@@ -78,7 +77,7 @@ internal class SQLDataHelper(context: Context?) : SQLiteOpenHelper(context, DATA
         contentValues.put(config_Key, table_model_obj.key)
         contentValues.put(config_Value, table_model_obj.value)
         try {
-            db.insert(TABLENAME_config, null, contentValues)
+            writableDatabase.insert(TABLENAME_config, null, contentValues)
         } catch (e: Exception) {
             e("db", "insertConfig", e)
         }
@@ -88,13 +87,13 @@ internal class SQLDataHelper(context: Context?) : SQLiteOpenHelper(context, DATA
         var cursor: Cursor? = null
         try {
             val q1 = " SELECT * FROM " + TABLENAME_config + " where " + config_Key + " ='" + table_model_obj.key + "'"
-            cursor = db.rawQuery(q1, null)
+            cursor = readableDatabase.rawQuery(q1, null)
             if (cursor != null && cursor.count > 0) {
                 if (cursor.moveToFirst()) {
                     val contentValues = ContentValues()
                     contentValues.put(config_Value, table_model_obj.value)
                     try {
-                        db.update(TABLENAME_config, contentValues, "$config_Key= ? ", arrayOf(table_model_obj.key))
+                        writableDatabase.update(TABLENAME_config, contentValues, "$config_Key= ? ", arrayOf(table_model_obj.key))
                     } catch (e: Exception) {
                         e("db", "insertConfigByKey", e)
                     }
@@ -112,7 +111,7 @@ internal class SQLDataHelper(context: Context?) : SQLiteOpenHelper(context, DATA
 
     fun deleteEventsByID(ids: String) {
         try {
-            db.execSQL("DELETE FROM $TABLENAME_events WHERE $events_Id IN ($ids)")
+            writableDatabase.execSQL("DELETE FROM $TABLENAME_events WHERE $events_Id IN ($ids)")
         } catch (e: Exception) {
             e("db", "deleteEventsByID", e)
         }
@@ -120,7 +119,7 @@ internal class SQLDataHelper(context: Context?) : SQLiteOpenHelper(context, DATA
 
     fun deleteAllEvents() {
         try {
-            db.execSQL("DELETE FROM $TABLENAME_events")
+            writableDatabase.execSQL("DELETE FROM $TABLENAME_events")
         } catch (e: Exception) {
             e("db", "deleteAllEvents", e)
         }
@@ -132,7 +131,7 @@ internal class SQLDataHelper(context: Context?) : SQLiteOpenHelper(context, DATA
         var cursor: Cursor? = null
         try {
             val query = "select * from $TABLENAME_config where $config_Key ='$key'"
-            cursor = db.rawQuery(query, null)
+            cursor = readableDatabase.rawQuery(query, null)
             if (cursor != null && cursor.moveToNext()) {
                 do {
                     log.id = cursor.getInt(cursor.getColumnIndexOrThrow(config_Id))
@@ -151,7 +150,7 @@ internal class SQLDataHelper(context: Context?) : SQLiteOpenHelper(context, DATA
 
     fun deleteAllConfigs() {
         try {
-            db.execSQL("DELETE FROM $TABLENAME_config")
+            writableDatabase.execSQL("DELETE FROM $TABLENAME_config")
         } catch (e: Exception) {
             e("db", "deleteAllConfigs", e)
         }

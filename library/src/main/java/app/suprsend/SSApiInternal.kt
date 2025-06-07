@@ -33,7 +33,7 @@ internal object SSApiInternal {
         }
         SdkAndroidCreator
             .eventLocalDatasource
-            .track(
+            .track( //identify
                 body = PayloadCreator
                     .buildIdentityEventPayload(
                         identifiedId = uniqueId,
@@ -142,7 +142,7 @@ internal object SSApiInternal {
         val superPropertiesLocalDataSource = SuperPropertiesLocalDataSource()
         SdkAndroidCreator
             .eventLocalDatasource
-            .track(
+            .track( //saveTrackEventPayload
                 body = PayloadCreator.buildTrackEventPayload(
                     eventName = eventName,
                     distinctId = userLocalDatasource.getIdentity(),
@@ -162,6 +162,7 @@ internal object SSApiInternal {
             val jsonObject = JSONObject()
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, fcmToken)
             jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_FCM)
+            jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
             jsonObject.put(SSConstants.DEVICE_ID, getDeviceID())
             SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.APPEND)
         }
@@ -171,6 +172,7 @@ internal object SSApiInternal {
             val jsonObject = JSONObject()
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, xiaomiToken)
             jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_XIAOMI)
+            jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_XIAOMI)
             jsonObject.put(SSConstants.DEVICE_ID, getDeviceID())
             SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.APPEND)
         }
@@ -182,6 +184,7 @@ internal object SSApiInternal {
             val jsonObject = JSONObject()
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, fcmToken)
             jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_FCM)
+            jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
             jsonObject.put(SSConstants.DEVICE_ID, getDeviceID())
             SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.REMOVE)
         }
@@ -191,6 +194,7 @@ internal object SSApiInternal {
             val jsonObject = JSONObject()
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, xiaomiToken)
             jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_XIAOMI)
+            jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_XIAOMI)
             jsonObject.put(SSConstants.DEVICE_ID, getDeviceID())
             SSInternalUser.storeOperatorPayload(properties = jsonObject, operator = SSConstants.REMOVE)
         }

@@ -8,6 +8,7 @@ import org.junit.Test
 class SSInboxInternalTest {
     @Test
     fun validateDefaultValues() {
+        SSInbox.clear()
 
         val notificationStoreConfig = NotificationStoreConfig(
             storeId = SSInbox.DEFAULT_STORE_ID,
