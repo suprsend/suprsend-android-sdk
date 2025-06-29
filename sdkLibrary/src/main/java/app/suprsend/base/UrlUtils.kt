@@ -6,7 +6,7 @@ internal object UrlUtils {
         return if (imagePath.contains("http")) {
             imagePath
         } else {
-            "${SSConstants.IMAGE_KIT_BASE_PATH}/tr:ar-2-1,q-$quality,fo-auto,w-$widthPixels/$imagePath"
+            "${SSConstants.IMAGE_KIT_BASE_PATH}/tr:ar-2-1,q-$quality,fo-auto,w-$widthPixels,f-webp/$imagePath"
         }
     }
 
@@ -14,7 +14,7 @@ internal object UrlUtils {
         return if (imagePath.contains("http")) {
             imagePath
         } else {
-            "${SSConstants.IMAGE_KIT_BASE_PATH}/tr:ar-1-1,q-$quality,r-max,w-$size/$imagePath"
+            "${SSConstants.IMAGE_KIT_BASE_PATH}/tr:ar-1-1,q-$quality,r-max,w-$size,f-webp/$imagePath"
         }
     }
 

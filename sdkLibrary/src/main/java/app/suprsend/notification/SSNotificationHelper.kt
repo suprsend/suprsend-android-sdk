@@ -257,7 +257,10 @@ object SSNotificationHelper {
                 notificationBuilder.color = Color.parseColor(stringColorCode)
         }
 
-        val smallIcon = context.getDrawableIdFromName(notificationBasicVo.smallIconDrawableName) ?: R.drawable.ic_notification
+        val smallIcon = context
+            .getDrawableIdFromName(notificationBasicVo.smallIconDrawableName)
+            ?: context.getDrawableIdFromName("ic_suprsend_app_icon")
+            ?: R.drawable.ic_notification
 
         notificationBuilder.setSmallIcon(smallIcon)
 
