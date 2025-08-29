@@ -200,6 +200,37 @@
                 android:text="Set Preferred Language"
                 android:textSize="17sp" />
 
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/androidFcmPushEt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:hint="Set Android FCM Push Token"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/androidFcmPushTv"
+                style="@style/btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Set Android FCM Push"
+                android:textSize="17sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/unSetAndroidFcmPushTv"
+                style="@style/btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="UnSet Android FCM Push"
+                android:textSize="17sp" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/userPreference"
                 style="@style/btn"

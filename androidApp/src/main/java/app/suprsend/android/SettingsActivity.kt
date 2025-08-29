@@ -69,6 +69,19 @@ class SettingsActivity : AppCompatActivity() {
             CommonAnalyticsHandler.setPreferredLanguage(binding.preferredLanguageEt.text.toString())
         }
 
+        binding.androidFcmPushEt.setText(getValue("androidFcmPush", ""))
+        binding.androidFcmPushTv.clickWithThrottle {
+            val androidFcmPush = binding.androidFcmPushEt.text.toString()
+            CommonAnalyticsHandler.setAndroidFcmPush(androidFcmPush)
+            storeValue("androidFcmPush", androidFcmPush)
+        }
+        binding.unSetAndroidFcmPushTv.clickWithThrottle {
+            val androidFcmPush = binding.androidFcmPushEt.text.toString()
+            CommonAnalyticsHandler.unSetAndroidFcmPush(androidFcmPush)
+            storeValue("androidFcmPush", "")
+            binding.androidFcmPushEt.setText("")
+        }
+
         binding.logoutTv.clickWithThrottle {
             logout(false)
         }

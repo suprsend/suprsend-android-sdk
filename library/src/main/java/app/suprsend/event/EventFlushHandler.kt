@@ -42,7 +42,7 @@ internal object EventFlushHandler {
     fun flushEvents(eventModelList: List<Event_Model>): HttPResponse {
         val requestJson = eventModelList.toJsonArray().toString()
 
-        val requestURI = "/event/"
+        val requestURI = "/v2/event/"
         val date = getDate()
 
         val authorization = createAuthorization(
