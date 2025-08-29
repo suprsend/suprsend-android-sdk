@@ -182,18 +182,18 @@ internal object SSInternalUser {
 
     fun setAndroidFcmPush(newToken: String) {
         val oldToken = SSApiInternal.getFcmToken()
-        if (oldToken != newToken) {
+        if (newToken != oldToken) {
             SSApiInternal.setFcmToken(newToken)
+            val jsonObject = JSONObject()
+            jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, newToken)
+            jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_FCM)
+            jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
+            jsonObject.put(SSConstants.DEVICE_ID, SSApiInternal.getDeviceID())
+            storeOperatorPayload(
+                properties = jsonObject,
+                operator = SSConstants.APPEND
+            )
         }
-        val jsonObject = JSONObject()
-        jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, newToken)
-        jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_FCM)
-        jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
-        jsonObject.put(SSConstants.DEVICE_ID, SSApiInternal.getDeviceID())
-        storeOperatorPayload(
-            properties = jsonObject,
-            operator = SSConstants.APPEND
-        )
     }
 
     fun unSetAndroidFcmPush(token: String) {

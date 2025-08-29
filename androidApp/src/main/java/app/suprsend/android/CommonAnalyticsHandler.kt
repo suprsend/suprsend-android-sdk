@@ -92,6 +92,14 @@ object CommonAnalyticsHandler {
         ssApi.getUser().unSetWhatsApp(email)
     }
 
+    fun setAndroidFcmPush(token: String) {
+        ssApi.getUser().setAndroidFcmPush(token)
+    }
+
+    fun unSetAndroidFcmPush(token: String) {
+        ssApi.getUser().unSetAndroidFcmPush(token)
+    }
+
     fun unset(key: String) {
         ssApi.getUser().unSet(key)
         mixpanelAPI.people.unset(key)
