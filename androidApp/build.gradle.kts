@@ -82,7 +82,7 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:${Deps.JetBrains.Kotlin.VERSION}")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.4")
 //    implementation(Deps.AndroidX.CORE_KTX)
     implementation("androidx.appcompat:appcompat:1.3.1")
     implementation("com.google.android.material:material:${Deps.material}")
