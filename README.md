@@ -1,8 +1,25 @@
 # suprsend-android-sdk
 
+## Compatibility
+
+This SDK is compatible with:
+
+- **JDK 1.8 / JVM target 1.8**: The library is compiled with JVM target 1.8, making it compatible with projects using JDK 1.8 and JVM target 1.8
+- **Kotlin 1.4+**: The library uses Kotlin API version 1.4 and is backward compatible with Kotlin 1.4+ (stdlib 1.8.22 is backward compatible with 1.4+)
+- **Kotlin 1.5, 1.6, 1.7, 1.8**: Fully supported and tested
+
+**Minimum Requirements:**
+- Kotlin 1.4 or higher
+- JDK 1.8 or higher (for building)
+- JVM target 1.8
+
 #Release Notes
 
 ```
+1.2.5
+- Performance improvements
+  - ANR fixes on slower devices
+
 1.0.3
 - User Preferences
 

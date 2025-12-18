@@ -31,11 +31,13 @@ android {
         buildConfig = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
+        apiVersion = "1.4" // Can only use stdlib APIs from Kotlin 1.4
+        languageVersion = "1.4" // Can only use language features from Kotlin 1.4
     }
     testOptions {
         unitTests.isReturnDefaultValues = true
