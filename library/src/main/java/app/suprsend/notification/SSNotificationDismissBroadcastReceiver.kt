@@ -8,6 +8,7 @@ import app.suprsend.SSApi
 import app.suprsend.SSApiInternal
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
+import app.suprsend.base.executorService
 import app.suprsend.base.mapToEnum
 import org.json.JSONObject
 
@@ -46,14 +47,16 @@ class SSNotificationDismissBroadcastReceiver : BroadcastReceiver() {
         Logger.i(TAG, "Notification dismissed")
         val notificationDismissVo = getNotificationDismissVo(activityExtras)
         notificationDismissVo ?: return
-        val instance = SSApi.getInstanceFromCachedApiKey()
-        SSApiInternal.saveTrackEventPayload(
-            eventName = SSConstants.S_EVENT_NOTIFICATION_DISMISS,
-            propertiesJO = JSONObject().apply {
-                put("id", notificationDismissVo.notificationId)
-            }
-        )
-        instance.flush()
+        executorService.execute {
+            val instance = SSApi.getInstanceFromCachedApiKey()
+            SSApiInternal.saveTrackEventPayload(
+                eventName = SSConstants.S_EVENT_NOTIFICATION_DISMISS,
+                propertiesJO = JSONObject().apply {
+                    put("id", notificationDismissVo.notificationId)
+                }
+            )
+            instance.flush()
+        }
     }
 
     private fun getNotificationDismissVo(activityExtras: Bundle): NotificationDismissVo? {

@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
-    kotlin("android")
-    kotlin("kapt")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
 }
@@ -9,14 +9,13 @@ apply {
     from("$rootDir/ktlint.gradle")
 }
 android {
-
-    compileSdkVersion(Deps.Android.compileSdk)
-    buildToolsVersion(Deps.Android.buildToolsVersion)
+    namespace = "${Deps.SDK_PACKAGE_NAME}.android"
+    compileSdk = Deps.Android.compileSdk
 
     defaultConfig {
         applicationId = "${Deps.SDK_PACKAGE_NAME}.android"
-        minSdkVersion(Deps.Android.minSdk)
-        targetSdkVersion(Deps.Android.targetSdk)
+        minSdk = Deps.Android.minSdk
+        targetSdk = Deps.Android.targetSdk
         versionCode = Deps.APP_VERSION_CODE
         versionName = Deps.APP_VERSION_NAME
         multiDexEnabled = true
@@ -39,6 +38,7 @@ android {
     }
     buildFeatures {
         dataBinding = true
+        buildConfig = true
     }
 
     buildTypes {
@@ -58,11 +58,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 //    packagingOptions {
 //        exclude("META-INF/ktor-client-core.kotlin_module")
@@ -104,8 +104,8 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.12.0")
     kapt("com.github.bumptech.glide:compiler:4.12.0")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("com.github.angads25:toggle:1.1.0")
     implementation ("io.noties.markwon:core:4.6.2")
     implementation ("io.noties.markwon:html:4.6.2")
@@ -115,7 +115,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 }
 
-fun com.android.build.gradle.internal.dsl.BuildType.addBuildConfigFields() {
+fun com.android.build.api.dsl.ApplicationBuildType.addBuildConfigFields() {
     buildConfigField("String", "XIAOMI_APP_ID", "\"${Deps.XIAOMI_APP_ID}\"")
     buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
     buildConfigField("String", "SS_BASE_URL", "\"${Deps.SS_BASE_URL}\"")

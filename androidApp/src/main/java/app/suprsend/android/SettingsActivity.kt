@@ -1,12 +1,22 @@
 package app.suprsend.android
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import app.suprsend.android.databinding.ActivitySettingsBinding
 import app.suprsend.android.inbox.InboxActivity
 import app.suprsend.android.preference.UserPreferenceActivity
+import app.suprsend.notification.SSNotificationHelper
+import org.json.JSONObject
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -94,6 +104,13 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(intent)
             storeValue("inboxSubscriberId", subscriberId)
             storeValue("inboxStoreJson", inboxStoreJson)
+        }
+
+        binding.testNotificationBtn.clickWithThrottle {
+            val jo = JSONObject(NotificationJson.getJson(this))
+            jo.put("id", System.currentTimeMillis().toString())
+            jo.put("whenTimeStamp", System.currentTimeMillis())
+            SSNotificationHelper.showSSNotification(this,jo.toString())
         }
     }
 

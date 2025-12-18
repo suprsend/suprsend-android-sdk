@@ -1,19 +1,17 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     id("com.android.library")
-    id("kotlin-android")
-    id("maven-publish")
-    id("signing")
+    id("org.jetbrains.kotlin.android")
+    id("com.vanniktech.maven.publish")
 }
 
 android {
-    compileSdkVersion(Deps.Android.compileSdk)
-    buildToolsVersion(Deps.Android.buildToolsVersion)
+    namespace = "app.suprsend"
+    compileSdk = Deps.Android.compileSdk
 
     defaultConfig {
-        minSdkVersion(Deps.Android.minSdk)
-        targetSdkVersion(Deps.Android.targetSdk)
-        versionCode = Deps.APP_VERSION_CODE
-        versionName = Deps.APP_VERSION_NAME
+        minSdk = Deps.Android.minSdk
 
         buildConfigField("String", "SS_SDK_VERSION_CODE", "\"${Deps.SDK_VERSION_CODE}\"")
         buildConfigField("String", "SS_SDK_VERSION_NAME", "\"${Deps.SDK_VERSION_NAME}\"")
@@ -29,14 +27,17 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
-    testOptions{
+    testOptions {
         unitTests.isReturnDefaultValues = true
         unitTests.isIncludeAndroidResources = true
     }
@@ -61,70 +62,37 @@ dependencies {
 
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            // Creates a Maven publication called "release".
-            create<MavenPublication>("release") {
-                // Applies the component for the release build variant.
-                from(components["release"])
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
 
-                // You can then customize attributes of the publication as shown below.
-                groupId = Deps.Publication.PUBLISH_GROUP_ID
-                artifactId = Deps.Publication.PUBLISH_ARTIFACT_ID
-                version = Deps.Publication.PUBLISH_ARTIFACT_VERSION
+    coordinates(
+        groupId = Deps.Publication.PUBLISH_GROUP_ID,
+        artifactId = Deps.Publication.PUBLISH_ARTIFACT_ID,
+        version = Deps.Publication.PUBLISH_ARTIFACT_VERSION
+    )
 
-//                artifact sourcesJar
+    pom {
+        name.set(Deps.Publication.POM_NAME)
+        description.set(Deps.Publication.POM_DESCRIPTION)
+        url.set(Deps.Publication.POM_URL)
 
-                pom {
-                    name.set(Deps.Publication.POM_NAME)
-                    description.set(Deps.Publication.POM_DESCRIPTION)
-                    url.set(Deps.Publication.POM_URL)
-                    setPackaging("aar")
-                    licenses {
-                        license {
-                            name.set(Deps.Publication.POM_LICENCE_NAME)
-                            url.set(Deps.Publication.POM_LICENCE_URL)
-                        }
-                    }
-                    developers {
-                        developer {
-                            name.set(Deps.Publication.POM_DEVELOPER_NAME)
-                            email.set(Deps.Publication.POM_DEVELOPER_EMAIL)
-                        }
-                        // Add all other devs here...
-                    }
-                    // Version control info - if you're using GitHub, follow the format as seen here
-                    scm {
-                        connection.set(Deps.Publication.POM_SCM_CONNECTION)
-                        developerConnection.set(Deps.Publication.POM_SCM_DEV_CONNECTION)
-                        url.set(Deps.Publication.POM_SCM_URL)
-                    }
-                }
+        licenses {
+            license {
+                name.set(Deps.Publication.POM_LICENCE_NAME)
+                url.set(Deps.Publication.POM_LICENCE_URL)
             }
         }
-        // The repository to publish to, Sonatype/MavenCentral
-        repositories {
-            maven {
-                name = "mavencentral"
-                if(Deps.SNAPSHOT != -1){
-                    setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-                }else{
-                    setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                }
-                credentials {
-                    username = Deps.Publication.OSSRH_USERNAME
-                    password = Deps.Publication.OSSRH_PASSWORD
-                }
+        developers {
+            developer {
+                name.set(Deps.Publication.POM_DEVELOPER_NAME)
+                email.set(Deps.Publication.POM_DEVELOPER_EMAIL)
             }
+        }
+        scm {
+            connection.set(Deps.Publication.POM_SCM_CONNECTION)
+            developerConnection.set(Deps.Publication.POM_SCM_DEV_CONNECTION)
+            url.set(Deps.Publication.POM_SCM_URL)
         }
     }
 }
-signing {
-    sign(publishing.publications)
-}
-
-
-//apply {
-//    from("$rootDir/publish.gradle")
-//}

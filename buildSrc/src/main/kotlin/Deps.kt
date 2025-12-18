@@ -8,22 +8,15 @@ object Deps {
     private const val MAJOR_VERSION = 1
     private const val MINOR_VERSION = 0
     private const val PATCH_VERSION = 4
-    const val SNAPSHOT = -1
     val BUILD_TYPE = BuildType.NATIVE
     private const val ISPROD = false
     const val RUN_LIB = false
 
     const val SDK_VERSION_CODE = MAJOR_VERSION * 1000 + (MINOR_VERSION * 100) + PATCH_VERSION
-    var SDK_VERSION_NAME = if (SNAPSHOT != -1) {
-        if (RUN_LIB)
-            "$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}.${SNAPSHOT}" + "-LOCAL"
-        else
-            "$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}.${SNAPSHOT}" + "-SNAPSHOT"
-    } else
-        "$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}"
+    var SDK_VERSION_NAME = "$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}"
 
     //App Details
-    var APP_VERSION_CODE = (10000 * MAJOR_VERSION) + (1000 * MINOR_VERSION) + (100 * PATCH_VERSION) + SNAPSHOT
+    var APP_VERSION_CODE = (10000 * MAJOR_VERSION) + (1000 * MINOR_VERSION) + (100 * PATCH_VERSION)
 
     var APP_VERSION_NAME = if (ISPROD) "$SDK_VERSION_NAME-Prod" else "$SDK_VERSION_NAME-Stag"
 
@@ -74,18 +67,15 @@ object Deps {
         const val POM_SCM_CONNECTION = "scm:git@github.com:suprsend/suprsend-android-sdk.git"
         const val POM_SCM_DEV_CONNECTION = "scm:git@github.com:suprsend/suprsend-android-sdk.git"
         const val POM_SCM_URL = "https://github.com/suprsend/suprsend-android-sdk"
-
-        const val OSSRH_USERNAME = "XXXX"
-        const val OSSRH_PASSWORD = "XXXX"
     }
 
     object JetBrains {
         object Kotlin {
-            const val VERSION = "1.3.72"
+            const val VERSION = "1.8.22"
         }
     }
     object Firebase {
-        const val messaging = "20.2.4"
+        const val messaging = "23.4.0"
     }
     const val material = "1.4.0"
 }

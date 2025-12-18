@@ -1,0 +1,51 @@
+{
+  "channelLockScreenVisibility": "PUBLIC",
+  "channelImportance": "HIGH",
+  "channelId": "Channel 1",
+  "channelShowBadge": true,
+  "channelDescription": "Channel 1 Description",
+  "channelName": "Channel Name 1",
+  "notificationTitle": "Text - Super Offer Deal Flat 99% Off 😃",
+  "longDescription": "The festive season is right around the corner and that can only mean one thing: discounts, discounts and discounts. Renovate your home, upgrade your wardrobe or gift a loved one: our special discounts will make it hard for you to resist picking more than just one product. What will be part of the offers?😃",
+  "shortDescription": "Deal breaker flat 99% Off 😃 Deal breaker flat 99% Off 😃 Deal breaker flat 99% Off 😃",
+  "groupSubText": "CheckG",
+  "color": "#FF0000",
+  "groupWhenTimeStamp": 1644895853000,
+  "imageUrl": null,
+  "timeoutAfter": null,
+  "id": "1766027455437",
+  "iconUrl": null,
+  "autoCancel": true,
+  "group": "G",
+  "showWhenTimeStamp": true,
+  "smallIconIdentifierName": "ic_alarm",
+  "deeplink": "https://google.com",
+
+  "priority": "HIGH",
+  "subText": "Check",
+  "groupShowWhenTimeStamp": true,
+  "sortKey": "a",
+  "tickerText": "A flash offer from ABC Store",
+  "category": "promo",
+  "actions": [
+    {
+      "iconIdentifierName": "ic_5g",
+      "link": "https://google.com",
+      "id": "21",
+      "title": "Google"
+    },
+    {
+      "iconIdentifierName": null,
+      "link": "https://slack.com",
+      "id": "22",
+      "title": "Slack"
+    },
+    {
+      "iconIdentifierName": null,
+      "link": "vnd.youtube://4KnNVK-udTU",
+      "id": "23",
+      "title": "Youtube Deeplink"
+    }
+  ],
+  "onGoing": false
+}
