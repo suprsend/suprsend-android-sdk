@@ -4,12 +4,21 @@
 
 This SDK is compatible with:
 
-- **JDK 1.8 / JVM target 1.8**: The library is compiled with JVM target 1.8, making it compatible with projects using JDK 1.8 and JVM target 1.8
-- **Kotlin 1.4+**: The library uses Kotlin API version 1.4 and is backward compatible with Kotlin 1.4+ (stdlib 1.8.22 is backward compatible with 1.4+)
-- **Kotlin 1.5, 1.6, 1.7, 1.8**: Fully supported and tested
+- **Android SDK**: 
+  - Minimum SDK: 19 (Android 4.4 KitKat)
+  - Target SDK: 33 (Android 13)
+  - Compile SDK: 33
+- **JDK / JVM**: 
+  - JDK 1.8 or higher (for building)
+  - JVM target 1.8
+  - The library is compiled with JVM target 1.8
+- **Kotlin**: 
+  - Kotlin 1.3.72 (used in SDK compilation)
+  - Compatible with Kotlin 1.3.72 and higher versions
 
 **Minimum Requirements:**
-- Kotlin 1.4 or higher
+- Android SDK 19 or higher
+- Kotlin 1.3.72 or higher
 - JDK 1.8 or higher (for building)
 - JVM target 1.8
 
