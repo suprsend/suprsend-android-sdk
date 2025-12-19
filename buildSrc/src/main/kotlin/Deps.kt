@@ -7,7 +7,7 @@ object Deps {
     const val SDK_PACKAGE_NAME = "app.suprsend"
     private const val MAJOR_VERSION = 1
     private const val MINOR_VERSION = 2
-    private const val PATCH_VERSION = 5
+    private const val PATCH_VERSION = 7
     val BUILD_TYPE = BuildType.NATIVE
     private const val ISPROD = false
     const val RUN_LIB = false
@@ -71,11 +71,11 @@ object Deps {
 
     object JetBrains {
         object Kotlin {
-            const val VERSION = "1.8.22"
+            const val VERSION = "1.3.72"
         }
     }
     object Firebase {
-        const val messaging = "23.4.0"
+        const val messaging = "20.2.4"
     }
     const val material = "1.4.0"
 }
