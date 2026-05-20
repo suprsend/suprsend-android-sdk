@@ -1,4 +1,13 @@
 #!/bin/bash
+# Change the version in Deps.kt
+# Change the BUILD_TYPE in Deps.kt
+# Run sh publish-bundle.sh
+# This will generate zip update it on https://central.sonatype.com/publishing
+# Click publish button
+# Publish Component
+# In deployment name enter the zip file name without extension
+# Upload zip
+# Submit
 
 ./gradlew clean
 ./gradlew :library:publishToMavenLocal

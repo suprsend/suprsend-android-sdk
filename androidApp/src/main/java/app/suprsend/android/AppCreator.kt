@@ -44,24 +44,14 @@ object AppCreator {
 
     fun getProductImage(): String {
         return when ((0..9).random()) {
-            0 -> "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
-            1 -> "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg"
-            2 -> "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg"
-            3 -> "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg"
-            4 -> "https://fakestoreapi.com/img/71z3kpMAYsL._AC_UY879_.jpg"
-            5 -> "https://fakestoreapi.com/img/61sbMiUnoGL._AC_UL640_QL65_ML3_.jpg"
-            6 -> "https://fakestoreapi.com/img/81XH0e8fefL._AC_UY879_.jpg"
-            7 -> "https://fakestoreapi.com/img/51UDEzMJVpL._AC_UL640_QL65_ML3_.jpg"
-            8 -> "https://fakestoreapi.com/img/71HblAHs5xL._AC_UY879_-2.jpg"
-            9 -> "https://fakestoreapi.com/img/51Y5NI-I5jL._AC_UX679_.jpg"
-            else -> "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
+            else -> "https://images.pexels.com/photos/5240020/pexels-photo-5240020.jpeg"
         }
     }
 
     fun getBannerImage(index: Int): String {
         return when ((1..2).random()) {
-            1 -> "$BASE_IMAGE_SERVER_URL/images/SizeD1200X400.jpg"
-            else -> "$BASE_IMAGE_SERVER_URL/images/womens_wear_resized1.jpg"
+            1 -> "https://images.pexels.com/photos/159045/the-interior-of-the-repair-interior-design-159045.jpeg"
+            else -> "https://images.pexels.com/photos/276267/pexels-photo-276267.jpeg"
         }
     }
 
