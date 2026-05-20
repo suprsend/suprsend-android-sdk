@@ -7,7 +7,6 @@ buildscript {
         mavenCentral()
         maven(url = "https://kotlin.bintray.com/kotlinx")
         maven(url = "https://maven.google.com")
-        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.1.0")
@@ -24,7 +23,6 @@ allprojects {
         google()
         mavenCentral()
         jcenter() // Warning: this repository is going to shut down soon
-        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
     }
 }
 

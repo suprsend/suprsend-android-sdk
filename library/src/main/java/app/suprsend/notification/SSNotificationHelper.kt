@@ -22,7 +22,7 @@ import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
 import app.suprsend.base.SdkAndroidCreator
 import app.suprsend.base.UrlUtils
-import app.suprsend.base.appExecutorService
+import app.suprsend.base.executorService
 import app.suprsend.base.mapToEnum
 import app.suprsend.base.safeBoolean
 import app.suprsend.base.safeJsonArray
@@ -45,7 +45,7 @@ object SSNotificationHelper {
         try {
             if (notificationPayloadJson.isNullOrBlank())
                 return
-            appExecutorService.execute {
+            executorService.execute {
                 showRawNotification(context = context.applicationContext, rawNotification = notificationPayloadJson.getRawNotification())
             }
         } catch (e: Exception) {
@@ -56,7 +56,7 @@ object SSNotificationHelper {
     fun showFCMNotification(context: Context, remoteMessage: RemoteMessage) {
         try {
             Logger.i("notification", "showFCMNotification")
-            appExecutorService.execute {
+            executorService.execute {
                 Logger.i(SSFirebaseMessagingService.TAG, "Message Id : ${remoteMessage.messageId}")
                 if (remoteMessage.isSuprSendRemoteMessage()) {
                     showRawNotification( //showFCMNotification
@@ -73,7 +73,7 @@ object SSNotificationHelper {
 
     fun showXiaomiNotification(context: Context, miPushMessage: MiPushMessage) {
         try {
-            appExecutorService.execute {
+            executorService.execute {
                 Logger.i(SSXiaomiReceiver.TAG, "Message Id : ${miPushMessage.messageId}")
                 if (miPushMessage.isSuprSendPush()) {
                     showRawNotification(context = context.applicationContext, rawNotification = miPushMessage.getRawNotification(), pushVendor = SSConstants.PUSH_VENDOR_XIAOMI)

@@ -10,6 +10,7 @@ import app.suprsend.SSApi
 import app.suprsend.SSApiInternal
 import app.suprsend.base.Logger
 import app.suprsend.base.SSConstants
+import app.suprsend.base.executorService
 import app.suprsend.base.mapToEnum
 import org.json.JSONObject
 import java.io.Serializable
@@ -54,17 +55,19 @@ class NotificationRedirectionActivity : Activity() {
         val notificationActionVo = getNotificationActionVo(activityExtras)
         notificationActionVo ?: return
 
-        val instance = SSApi.getInstanceFromCachedApiKey()
-        SSApiInternal.saveTrackEventPayload(
-            eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
-            propertiesJO = JSONObject().apply {
-                put("id", notificationActionVo.notificationId)
-                if(notificationActionVo.notificationActionType == NotificationActionType.BUTTON) {
-                    put("label_id", notificationActionVo.id)
+        executorService.execute {
+            val instance = SSApi.getInstanceFromCachedApiKey()
+            SSApiInternal.saveTrackEventPayload(
+                eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
+                propertiesJO = JSONObject().apply {
+                    put("id", notificationActionVo.notificationId)
+                    if (notificationActionVo.notificationActionType == NotificationActionType.BUTTON) {
+                        put("label_id", notificationActionVo.id)
+                    }
                 }
-            }
-        )
-        instance.flush()
+            )
+            instance.flush()
+        }
 
         // Remove notification
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as? NotificationManager

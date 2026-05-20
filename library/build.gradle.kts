@@ -1,3 +1,6 @@
+import java.io.File
+import java.security.MessageDigest
+
 plugins {
     id("com.android.library")
     id("kotlin-android")
@@ -62,6 +65,20 @@ dependencies {
 }
 
 afterEvaluate {
+    // Task to create sources JAR
+    val sourcesJar by tasks.creating(Jar::class) {
+        archiveClassifier.set("sources")
+        from(android.sourceSets.getByName("main").java.srcDirs)
+        // Kotlin sources are included in java.srcDirs for Android projects
+    }
+
+    // Task to create javadoc JAR (empty for Android/Kotlin, but required by Maven Central)
+    val javadocJar by tasks.creating(Jar::class) {
+        archiveClassifier.set("javadoc")
+        // For Android/Kotlin libraries, javadoc might be empty or minimal
+        // You can add actual javadoc generation here if needed
+    }
+    
     publishing {
         publications {
             // Creates a Maven publication called "release".
@@ -74,7 +91,9 @@ afterEvaluate {
                 artifactId = Deps.Publication.PUBLISH_ARTIFACT_ID
                 version = Deps.Publication.PUBLISH_ARTIFACT_VERSION
 
-//                artifact sourcesJar
+                // Add sources and javadoc artifacts
+                artifact(sourcesJar)
+                artifact(javadocJar)
 
                 pom {
                     name.set(Deps.Publication.POM_NAME)
@@ -103,28 +122,79 @@ afterEvaluate {
                 }
             }
         }
-        // The repository to publish to, Sonatype/MavenCentral
+        // The repository to publish to, Maven Central Portal (using new staging API)
         repositories {
             maven {
                 name = "mavencentral"
-                if(Deps.SNAPSHOT != -1){
-                    setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-                }else{
-                    setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                }
+                url = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
                 credentials {
-                    username = Deps.Publication.OSSRH_USERNAME
-                    password = Deps.Publication.OSSRH_PASSWORD
+                    username = project.findProperty("mavenCentralUsername") as String?
+                        ?: throw GradleException("mavenCentralUsername not found in gradle.properties")
+                    password = project.findProperty("mavenCentralPassword") as String?
+                        ?: throw GradleException("mavenCentralPassword not found in gradle.properties")
+                }
+            }
+        }
+    }
+    
+    signing {
+        sign(publishing.publications) // picks from gradle.properties signing.keyId, signing.password, signing.secretKeyRingFile
+    }
+    
+    // Task to print publication details for bundle script
+    tasks.register("printPublicationInfo") {
+        doLast {
+            val publication = publishing.publications.getByName("release") as org.gradle.api.publish.maven.MavenPublication
+            println("GROUP_ID=${publication.groupId}")
+            println("ARTIFACT_ID=${publication.artifactId}")
+            println("VERSION=${publication.version}")
+        }
+    }
+    
+    // Generate all checksums (MD5, SHA1, SHA256, SHA512) for published artifacts and .asc files
+    tasks.named("publishToMavenLocal").configure {
+        doLast {
+            val publication = publishing.publications.getByName("release") as org.gradle.api.publish.maven.MavenPublication
+            val groupId = publication.groupId.replace(".", "/")
+            val artifactId = publication.artifactId
+            val version = publication.version
+            val baseDir = File(System.getProperty("user.home"), ".m2/repository/$groupId/$artifactId/$version")
+            
+            fun generateChecksums(file: File, fileName: String) {
+                val fileBytes = file.readBytes()
+                val checksums = mapOf(
+                    "md5" to MessageDigest.getInstance("MD5"),
+                    "sha1" to MessageDigest.getInstance("SHA-1"),
+                    "sha256" to MessageDigest.getInstance("SHA-256"),
+                    "sha512" to MessageDigest.getInstance("SHA-512")
+                )
+                
+                checksums.forEach { (algorithm, digest) ->
+                    digest.update(fileBytes)
+                    val hash = digest.digest().joinToString("") { 
+                        val byteValue = it.toInt() and 0xff
+                        String.format("%02x", byteValue)
+                    }
+                    val checksumFile = File(baseDir, "$fileName.$algorithm")
+                    checksumFile.writeText(hash)
+                }
+            }
+            
+            if (baseDir.exists()) {
+                val files = baseDir.listFiles()
+                if (files != null) {
+                    for (file in files) {
+                        val fileName = file.name
+                        if (file.isFile &&
+                            !fileName.endsWith(".md5") && 
+                            !fileName.endsWith(".sha1") && 
+                            !fileName.endsWith(".sha256") && 
+                            !fileName.endsWith(".sha512")) {
+                            generateChecksums(file, fileName)
+                        }
+                    }
                 }
             }
         }
     }
 }
-signing {
-    sign(publishing.publications)
-}
-
-
-//apply {
-//    from("$rootDir/publish.gradle")
-//}

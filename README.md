@@ -1,8 +1,37 @@
 # suprsend-android-sdk
 
+## Compatibility
+
+This SDK is compatible with:
+
+- **Android SDK**: 
+  - Minimum SDK: 19 (Android 4.4 KitKat)
+  - Target SDK: 33 (Android 13)
+  - Compile SDK: 33
+- **JDK / JVM**: 
+  - JDK 1.8 or higher (for building)
+  - JVM target 1.8
+  - The library is compiled with JVM target 1.8
+- **Kotlin**: 
+  - Kotlin 1.3.72 (used in SDK compilation)
+  - Compatible with Kotlin 1.3.72 and higher versions
+
+**Minimum Requirements:**
+- Android SDK 19 or higher
+- Kotlin 1.3.72 or higher
+- JDK 1.8 or higher (for building)
+- JVM target 1.8
+
 #Release Notes
 
 ```
+1.2.6
+- Anr fix in init 
+
+1.2.5
+- Performance improvements
+  - ANR fixes on slower devices
+
 1.0.3
 - User Preferences
 

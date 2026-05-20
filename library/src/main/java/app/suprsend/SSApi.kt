@@ -133,47 +133,50 @@ private constructor(
                 return
             }
             SdkAndroidCreator.context = context.applicationContext
-            val basicDetails = BasicDetails(
-                apiKey = apiKey,
-                apiSecret = apiSecret,
-                apiBaseUrl = apiBaseUrl,
-                inboxBaseUrl = inboxApiBaseUrl,
-                inboxSocketUrl = inboxSocketApiBaseUrl
-            )
 
-            ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, basicDetails.getApiBaseUrl())
-            ConfigHelper.addOrUpdate(SSConstants.CONFIG_INBOX_API_BASE_URL, basicDetails.getInboxBaseUrl())
-            ConfigHelper.addOrUpdate(SSConstants.CONFIG_INBOX_SOCKET_BASE_URL, basicDetails.getInboxSocketUrl())
-            ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, basicDetails.apiKey)
-            ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_SECRET, basicDetails.apiSecret)
+            executorService.execute {
+                val basicDetails = BasicDetails(
+                    apiKey = apiKey,
+                    apiSecret = apiSecret,
+                    apiBaseUrl = apiBaseUrl,
+                    inboxBaseUrl = inboxApiBaseUrl,
+                    inboxSocketUrl = inboxSocketApiBaseUrl
+                )
 
-            // Anonymous user id generation
-            val userLocalDatasource = UserLocalDatasource()
-            val userId = userLocalDatasource.getIdentity()
-            if (userId.isBlank()) {
-                userLocalDatasource.identify(uuid())
-            }
+                ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_BASE_URL, basicDetails.getApiBaseUrl())
+                ConfigHelper.addOrUpdate(SSConstants.CONFIG_INBOX_API_BASE_URL, basicDetails.getInboxBaseUrl())
+                ConfigHelper.addOrUpdate(SSConstants.CONFIG_INBOX_SOCKET_BASE_URL, basicDetails.getInboxSocketUrl())
+                ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_KEY, basicDetails.apiKey)
+                ConfigHelper.addOrUpdate(SSConstants.CONFIG_API_SECRET, basicDetails.apiSecret)
 
-            // Device Properties
-            SSApiInternal.setDeviceId(SdkAndroidCreator.deviceInfo.getDeviceId())
+                // Anonymous user id generation
+                val userLocalDatasource = UserLocalDatasource()
+                val userId = userLocalDatasource.getIdentity()
+                if (userId.isBlank()) {
+                    userLocalDatasource.identify(uuid())
+                }
+
+                // Device Properties
+                SSApiInternal.setDeviceId(SdkAndroidCreator.deviceInfo.getDeviceId())
 
 
-            if (!SSApiInternal.isAppInstalled()) {
-                // App Launched
-                SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_INSTALLED)
-                SSApiInternal.setAppInstalled()
-            }
+                if (!SSApiInternal.isAppInstalled()) {
+                    // App Launched
+                    SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_INSTALLED)
+                    SSApiInternal.setAppInstalled()
+                }
 
-            /**
-             * Due to xiaomi integration on non xiaomi device application create is getting called twice so i have to add
-             * this below check to ignore app launch time if time is less than 1000ms
-             * manifest - android:process=":pushservice" - This is leading to creation of MyApplication twice on non xiaomi device
-             */
-            val currentTime = System.currentTimeMillis()
-            val isLaunched = (currentTime - SSApiInternal.getAppLaunchTime()) > 1000
-            if (isLaunched) {
-                SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_LAUNCHED)
-                SSApiInternal.setAppLaunchTime(currentTime)
+                /**
+                 * Due to xiaomi integration on non xiaomi device application create is getting called twice so i have to add
+                 * this below check to ignore app launch time if time is less than 1000ms
+                 * manifest - android:process=":pushservice" - This is leading to creation of MyApplication twice on non xiaomi device
+                 */
+                val currentTime = System.currentTimeMillis()
+                val isLaunched = (currentTime - SSApiInternal.getAppLaunchTime()) > 1000
+                if (isLaunched) {
+                    SSApiInternal.saveTrackEventPayload(SSConstants.S_EVENT_APP_LAUNCHED)
+                    SSApiInternal.setAppLaunchTime(currentTime)
+                }
             }
 
         }
