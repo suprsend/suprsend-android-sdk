@@ -25,6 +25,9 @@ This SDK is compatible with:
 #Release Notes
 
 ```
+1.2.6
+- Anr fix in init 
+
 1.2.5
 - Performance improvements
   - ANR fixes on slower devices
