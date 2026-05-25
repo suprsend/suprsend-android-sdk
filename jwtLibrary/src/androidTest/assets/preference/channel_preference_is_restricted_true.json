@@ -1,0 +1,24 @@
+{
+  "channel_preferences": [
+    {
+      "channel": "androidpush",
+      "is_restricted": true
+    },
+    {
+      "channel": "email",
+      "is_restricted": true
+    },
+    {
+      "channel": "inbox",
+      "is_restricted": false
+    },
+    {
+      "channel": "webpush",
+      "is_restricted": true
+    },
+    {
+      "channel": "whatsapp",
+      "is_restricted": false
+    }
+  ]
+}

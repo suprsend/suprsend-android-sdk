@@ -12,3 +12,5 @@ local.properties
 /buildSrc/build
 /androidApp/build
 /androidApp/.gradle
+/jwtApp/build/
+/jwtLibrary/build/

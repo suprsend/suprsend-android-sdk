@@ -5,9 +5,9 @@ object Deps {
 
     //Sdk Details
     const val SDK_PACKAGE_NAME = "app.suprsend"
-    private const val MAJOR_VERSION = 1
-    private const val MINOR_VERSION = 2
-    private const val PATCH_VERSION = 7
+    private const val MAJOR_VERSION = 2
+    private const val MINOR_VERSION = 0
+    private const val PATCH_VERSION = 0
     val BUILD_TYPE = BuildType.NATIVE
     private const val ISPROD = false
     const val RUN_LIB = false
@@ -32,6 +32,7 @@ object Deps {
     const val XIAOMI_APP_KEY = "XXXX"
 
     const val SS_BASE_URL = "XXXX"
+    const val SS_PUBLIC_API_KEY = "XXXX"
     const val SS_INBOX_BASE_URL = "XXXX"
     const val SS_INBOX_SOCKET_URL = "XXXX"
     const val SS_INBOX_SUBSCRIBER_ID = "XXXX"
