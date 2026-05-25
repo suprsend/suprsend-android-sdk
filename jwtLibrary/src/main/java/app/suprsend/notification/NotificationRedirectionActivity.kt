@@ -18,15 +18,15 @@ class NotificationRedirectionActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
-            val activityExtras = intent.extras
-            if (null == intent || activityExtras == null) {
+            val activityExtras = intent?.extras
+            if (activityExtras == null) {
                 Logger.i(SSConstants.TAG_SUPRSEND, "NRA:meta data not received in activityExtras")
                 return
             }
             handleFlowPayload(activityExtras)
-            finish()
         } catch (e: Exception) {
             Logger.e(SSConstants.TAG_SUPRSEND, "NRA:unable to handle meta data in handleFlowPayload", e)
+        } finally {
             finish()
         }
     }
@@ -72,14 +72,18 @@ class NotificationRedirectionActivity : Activity() {
         if (notificationActionVo.notificationActionType == NotificationActionType.BUTTON)
             notificationManager?.cancel((notificationActionVo.notificationId ?: "").hashCode())
 
-        // Target intent
+        // Target intent — must run in its own task. Otherwise the destination
+        // (browser / deeplink target) gets parented to NRA's task and ends up in Recents alongside it.
         val link = notificationActionVo.link
         val notificationActionIntent = if (!link.isNullOrBlank()) {
             Intent(Intent.ACTION_VIEW, Uri.parse(link))
         } else {
             packageManager.getLaunchIntentForPackage(packageName)
         }
-        notificationActionIntent?.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        notificationActionIntent?.flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+            Intent.FLAG_ACTIVITY_CLEAR_TOP or
+            Intent.FLAG_ACTIVITY_SINGLE_TOP
+        notificationActionIntent ?: return
         startActivity(notificationActionIntent)
     }
 
