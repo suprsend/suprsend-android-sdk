@@ -1,6 +1,7 @@
 package app.suprsend
 
 import android.content.Context
+import android.os.Build
 import androidx.annotation.WorkerThread
 import app.suprsend.base.ActionStatusCallback
 import app.suprsend.base.LocalStorage
@@ -15,6 +16,7 @@ import app.suprsend.model.ResponseStatus
 import app.suprsend.notification.NotificationActionType
 import app.suprsend.notification.NotificationActionVo
 import app.suprsend.user.User
+import app.suprsend.utils.ClientUserAgentBuilder
 import app.suprsend.utils.runOnUIThread
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
@@ -165,13 +167,31 @@ class SuprSend private constructor() {
             }
         }
 
-        fun initialize(context: Context, publicApiKey: String, baseUrl: String) {
-            SSInternal.context = context.applicationContext
-            SSInternal.suprSendData.publicApiKey = publicApiKey
-            SSInternal.suprSendData.distinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID)
-            SSInternal.suprSendData.baseUrl = baseUrl
-            // Drain any notification events queued offline; runs every 10s in the background.
-            EventFlushHandler.start()
+        fun initialize(
+            context: Context,
+            publicApiKey: String,
+            appInfo: AppInfo? = null, // When clientInfo is null then will respect this app info, for client they are intended to use appInfo not clientInfo(its for internal use)
+            clientInfo: ClientInfo? = null, // If you are passing client info then send app info here will not respect app info
+            baseUrl: String = SSConstants.DEFAULT_BASE_API_URL
+        ) {
+            try {
+                SSInternal.context = context.applicationContext
+                SSInternal.suprSendData.publicApiKey = publicApiKey
+                SSInternal.suprSendData.distinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID)
+                SSInternal.suprSendData.baseUrl = baseUrl
+                SSInternal.suprSendData.clientInfo = clientInfo ?: ClientInfo(appInfo = appInfo)
+                calculateUserAgentInfo()
+                // Drain any notification events queued offline; runs every 10s in the background.
+                EventFlushHandler.start()
+            }catch (e: Exception){
+                Logger.e(SSConstants.TAG_SUPRSEND,"initialize",e)
+            }
+        }
+
+        private fun calculateUserAgentInfo() {
+            val info = SSInternal.suprSendData.clientInfo ?: return
+            SSInternal.suprSendData.userAgent = ClientUserAgentBuilder.toUserAgentString(info)
+            SSInternal.suprSendData.clientUserAgentJson = ClientUserAgentBuilder.toJson(info).toString()
         }
 
         fun setInboxBaseUrl(inboxBaseUrl: String) {

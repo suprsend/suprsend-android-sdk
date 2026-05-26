@@ -15,5 +15,10 @@ internal data class SuprSendData(
     var userTokenFetcher: UserTokenFetcher? = null,
 
     //Push notification
-    var notificationCallbackListener: NotificationCallbackListener? = null
+    var notificationCallbackListener: NotificationCallbackListener? = null,
+
+    var clientInfo: ClientInfo? = null,
+
+    var userAgent: String? = null,
+    var clientUserAgentJson: String? = null
 )

@@ -304,12 +304,28 @@ internal object SSInternal {
     fun addSSSignature(
         headers: MutableMap<String, String>? = null
     ): Map<String, String>? {
+        val headersL = headers ?: hashMapOf()
+
+        // Mirrors web SDK ApiClient.getHeaders(): the two suprsend user-agent
+        // headers ride along with every outgoing request.
+        suprSendData.userAgent
+            ?.takeIf { it.isNotBlank() }
+            ?.let {
+                //Log.i(SSConstants.TAG_SUPRSEND, "X-Suprsend-User-Agent : $it")
+                headersL["X-Suprsend-User-Agent"] = it
+            }
+        suprSendData.clientUserAgentJson
+            ?.takeIf { it.isNotBlank() }
+            ?.let {
+                //Log.i(SSConstants.TAG_SUPRSEND, "X-Suprsend-Client-User-Agent : $it")
+                headersL["X-Suprsend-Client-User-Agent"] = it
+            }
+
         if (suprSendData.userTokenFetcher != null) {
-            val headersL = headers ?: hashMapOf()
             headersL["x-ss-signature"] = getToken() ?: ""
-            return headersL
         }
-        return headers
+
+        return headersL.ifEmpty { null }
     }
 
     fun reset(unSubscribeNotification: Boolean) {

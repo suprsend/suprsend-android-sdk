@@ -2,6 +2,7 @@ package app.suprsend.android
 
 import android.app.Application
 import android.util.Log
+import app.suprsend.AppInfo
 import app.suprsend.NotificationCallbackListener
 import app.suprsend.SuprSend
 import app.suprsend.UserTokenFetcher
@@ -19,7 +20,11 @@ class MyApplication : Application() {
         SuprSend.initialize(
             context = this,
             publicApiKey = BuildConfig.SS_PUBLIC_API_KEY,
-            baseUrl = BuildConfig.SS_BASE_URL
+            baseUrl = BuildConfig.SS_BASE_URL,
+            appInfo = AppInfo(
+                name = "Ecommerce",
+                version = BuildConfig.VERSION_NAME
+            )
         )
         CommonAnalyticsHandler.initialize(this)
 
