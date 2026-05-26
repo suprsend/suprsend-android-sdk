@@ -8,6 +8,7 @@ import app.suprsend.base.LocalStorage
 import app.suprsend.base.NetworkClient
 import app.suprsend.base.NetworkInfo
 import app.suprsend.base.SSConstants
+import app.suprsend.event.PayloadOfflineStore
 import app.suprsend.inbox.SSInboxInternal
 import app.suprsend.log.Logger
 import app.suprsend.log.LoggerCallback
@@ -84,16 +85,12 @@ internal object SSInternal {
         fromIdentify: Boolean = false
     ): ApiResponse {
         try {
-            var canBiPassDistinctId = false
-            if (listOf(
-                    SSConstants.S_EVENT_NOTIFICATION_DELIVERED,
-                    SSConstants.S_EVENT_NOTIFICATION_CLICKED,
-                    SSConstants.S_EVENT_NOTIFICATION_DISMISS
-                ).contains(eventName)
-            ) {
-                canBiPassDistinctId = true
-            }
-            if (!canBiPassDistinctId) {
+            val isNotificationEvent = listOf(
+                SSConstants.S_EVENT_NOTIFICATION_DELIVERED,
+                SSConstants.S_EVENT_NOTIFICATION_CLICKED,
+                SSConstants.S_EVENT_NOTIFICATION_DISMISS
+            ).contains(eventName)
+            if (!isNotificationEvent) {
                 // Trying to identify(recover) if user has called identify earlier
                 if (distinctId.isBlank()) {
                     val action = tryToIdentify("Distinct id is missing - trackEvent $eventName")
@@ -107,6 +104,17 @@ internal object SSInternal {
 
             val eventPayload = this.buildTrackEventPayload(distinctId, eventName, properties, ignoreFilter)
 
+            // Notification events must not be dropped when the device is offline.
+            // Persist the payload locally and let EventFlushHandler retry once connectivity returns.
+            if (isNotificationEvent && !NetworkInfo.isConnected()) {
+                PayloadOfflineStore.store(eventPayload)
+                Logger.i(SSConstants.TAG_SUPRSEND, "Offline - queued $eventName for later flush")
+                return ApiResponse(
+                    status = ResponseStatus.SUCCESS,
+                    message = "Internet not available, event queued for later flush"
+                )
+            }
+
             val httpResponse = networkClient.httpCall(
                 url = "${suprSendData.baseUrl}/v2/event",
                 authorization = suprSendData.publicApiKey ?: "",
@@ -114,6 +122,16 @@ internal object SSInternal {
                 headers = addSSSignature()
             )
             if (!httpResponse.isSuccess()) {
+                // Race condition: connectivity may have dropped mid-call. Persist the
+                // notification event so the periodic flush can still deliver it.
+                if (isNotificationEvent && httpResponse.errorType == ErrorType.NETWORK_ERROR) {
+                    PayloadOfflineStore.store(eventPayload)
+                    Logger.i(SSConstants.TAG_SUPRSEND, "Network error - queued $eventName for later flush")
+                    return ApiResponse(
+                        status = ResponseStatus.SUCCESS,
+                        message = "Internet not available, event queued for later flush"
+                    )
+                }
                 checkStatusCodeAndRemoveLocalToken(httpResponse.body)
             }
             return httpResponse
@@ -252,7 +270,8 @@ internal object SSInternal {
         eventPayload.put(SSConstants.TIME, System.currentTimeMillis())
 
         val filteredProperties = if (ignoreFilter) properties else properties.filterSSReservedKeys()
-        DeviceInfo.addDeviceInfoProperties(filteredProperties)
+        // We finalized to not send device properties in payload will send in header
+//        DeviceInfo.addDeviceInfoProperties(filteredProperties)
         eventPayload.put(SSConstants.PROPERTIES, filteredProperties)
 
         return eventPayload

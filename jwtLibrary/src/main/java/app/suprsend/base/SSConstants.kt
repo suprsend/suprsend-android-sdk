@@ -98,4 +98,9 @@ internal object SSConstants {
     const val CONFIG_FCM_TOKEN_SYNC_STATUS = "fcm_push_token_sync_status"
     const val CONFIG_DEVICE_ID = "device_id"
     const val CONFIG_NOTIFICATION_GROUP_SHOWN = "notification_group_shown_%s"
+
+    // Offline notification events queued when internet is not available
+    const val OFFLINE_NOTIFICATION_EVENTS = "offline_notification_events"
+    const val OFFLINE_NOTIFICATION_EVENTS_MAX_COUNT = 100
+    const val OFFLINE_NOTIFICATION_EVENTS_FLUSH_PERIOD_IN_SEC = 10
 }

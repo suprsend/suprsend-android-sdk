@@ -6,6 +6,7 @@ import app.suprsend.base.ActionStatusCallback
 import app.suprsend.base.LocalStorage
 import app.suprsend.base.SSConstants
 import app.suprsend.base.sdkExecutorService
+import app.suprsend.event.EventFlushHandler
 import app.suprsend.log.LogLevel
 import app.suprsend.log.Logger
 import app.suprsend.log.LoggerCallback
@@ -169,6 +170,8 @@ class SuprSend private constructor() {
             SSInternal.suprSendData.publicApiKey = publicApiKey
             SSInternal.suprSendData.distinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID)
             SSInternal.suprSendData.baseUrl = baseUrl
+            // Drain any notification events queued offline; runs every 10s in the background.
+            EventFlushHandler.start()
         }
 
         fun setInboxBaseUrl(inboxBaseUrl: String) {
