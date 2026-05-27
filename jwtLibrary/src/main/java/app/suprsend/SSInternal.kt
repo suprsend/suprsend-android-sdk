@@ -212,7 +212,10 @@ internal object SSInternal {
                 userToken = userTokenFetcher.getToken(distinctId)
                 Logger.v(SSConstants.TAG_SUPRSEND, "Got $distinctId $userToken")
                 storeToken(userToken)
-                if (!fromIdentify) {
+                // For happy case identify should not be called
+                val tryIdentity = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID_TRY)
+                val identifyIsFailed = !tryIdentity.isNullOrBlank()
+                if (!fromIdentify && identifyIsFailed) {
                     val response = identity(distinctId, force = true)
                     Logger.v(SSConstants.TAG_SUPRSEND, "Response : $response")
                 }
