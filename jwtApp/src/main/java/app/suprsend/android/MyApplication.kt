@@ -5,7 +5,7 @@ import android.util.Log
 import app.suprsend.AppInfo
 import app.suprsend.NotificationCallbackListener
 import app.suprsend.SuprSend
-import app.suprsend.UserTokenFetcher
+import app.suprsend.RefreshTokenCallback
 import app.suprsend.base.NetworkClient
 import app.suprsend.log.LoggerCallback
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -20,7 +20,7 @@ class MyApplication : Application() {
         SuprSend.initialize(
             context = this,
             publicApiKey = BuildConfig.SS_PUBLIC_API_KEY,
-            baseUrl = BuildConfig.SS_BASE_URL,
+            host = BuildConfig.SS_BASE_URL,
             appInfo = AppInfo(
                 name = "Ecommerce",
                 version = BuildConfig.VERSION_NAME
@@ -30,9 +30,9 @@ class MyApplication : Application() {
 
         val jwtTokenBoolean = defaultSharedPreferences.getBoolean("jwtToken", true)
         if (jwtTokenBoolean) {
-            SuprSend.setUserTokenFetcher(UserTokenFetcherImpl())
+            SuprSend.setRefreshTokenCallback(RefreshTokenCallbackImpl())
         } else {
-            SuprSend.setUserTokenFetcher(null)
+            SuprSend.setRefreshTokenCallback(null)
         }
 
         super.onCreate()
@@ -61,7 +61,7 @@ class MyApplication : Application() {
     }
 }
 
-class UserTokenFetcherImpl : UserTokenFetcher {
+class RefreshTokenCallbackImpl : RefreshTokenCallback {
 
     private val networkClient = NetworkClient()
 

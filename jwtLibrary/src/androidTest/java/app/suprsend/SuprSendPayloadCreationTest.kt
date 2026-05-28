@@ -16,7 +16,7 @@ class SuprSendPayloadCreationTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
-           baseUrl =  "https://collector-staging.suprsend.workers.dev"
+           host =  "https://collector-staging.suprsend.workers.dev"
         )
         val payloadJO = SSInternal.buildTrackEventPayload(
             distinctId = "D1",

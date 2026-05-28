@@ -26,6 +26,11 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
                 // Sending this earlier since flush will be done in showFCMNotification
                 SuprSend.getInstance().trackEventAsync(EVENT_NOTIFICATION_CUSTOM_CONFIG, jsonObject)
                 SSNotificationHelper.showFCMNotification(applicationContext, remoteMessage)
+            } else {
+                // This payload is not sent by SuprSend.
+                // Handle it based on your app requirements.
+                // You can read the custom data to show your own notification
+                // or execute any business-specific logic.
             }
         } catch (e: Exception) {
             Log.e(AppConstants.TAG, "onMessageReceived", e)

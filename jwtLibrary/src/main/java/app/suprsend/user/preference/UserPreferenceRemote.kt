@@ -125,7 +125,7 @@ object UserPreferenceRemote {
         } else {
             "v2/subscriber/${distinctId}/$route?$queryParams"
         }
-        val baseUrl = SSInternal.suprSendData.baseUrl
+        val baseUrl = SSInternal.suprSendData.host
         val url = "$baseUrl/$requestURI"
 
         return networkClient.httpCall(

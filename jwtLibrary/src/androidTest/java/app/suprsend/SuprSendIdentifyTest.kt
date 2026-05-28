@@ -19,14 +19,14 @@ class SuprSendIdentifyTest : BaseTest() {
 
     @Test
     fun verifyIdentityDistinctIdBlank() {
-        val userTokenFetcher = mockk<UserTokenFetcher>(relaxed = true)
+        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
         SuprSend.initialize(
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            baseUrl = TestConstants.SS_BASE_URL,
+            host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -38,8 +38,8 @@ class SuprSendIdentifyTest : BaseTest() {
 
     @Test
     fun verifyIdentityCalledWhenAlreadyIdentified() {
-        val userTokenFetcher = mockk<UserTokenFetcher>(relaxed = true)
-        every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken()
+        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
+        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken()
         every {
             networkClient.httpCall(
                 url = any(),
@@ -52,9 +52,9 @@ class SuprSendIdentifyTest : BaseTest() {
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-                baseUrl = TestConstants.SS_BASE_URL,
+                host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -70,8 +70,8 @@ class SuprSendIdentifyTest : BaseTest() {
 
     @Test
     fun verifyIdentityFailureAfter3Retries() {
-        val userTokenFetcher = mockk<UserTokenFetcher>(relaxed = true)
-        every { userTokenFetcher.getToken(any()) } returnsMany (
+        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
+        every { refreshTokenCallback.getToken(any()) } returnsMany (
                 listOf(
                     TokenGenerator.generateToken(System.currentTimeMillis() - 3000), // Expired Token
                     TokenGenerator.generateToken(System.currentTimeMillis() - 3000), // Expired Token
@@ -90,9 +90,9 @@ class SuprSendIdentifyTest : BaseTest() {
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-                baseUrl = TestConstants.SS_BASE_URL,
+                host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -103,8 +103,8 @@ class SuprSendIdentifyTest : BaseTest() {
 
     @Test
     fun verifyIdentityRecoveredAt3rdAttempt() {
-        val userTokenFetcher = mockk<UserTokenFetcher>(relaxed = true)
-        every { userTokenFetcher.getToken(any()) } returnsMany (
+        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
+        every { refreshTokenCallback.getToken(any()) } returnsMany (
                 listOf(
                     TokenGenerator.generateToken(System.currentTimeMillis() - 3000), // Expired Token
                     TokenGenerator.generateToken(System.currentTimeMillis() - 3000), // Expired Token
@@ -123,9 +123,9 @@ class SuprSendIdentifyTest : BaseTest() {
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-                baseUrl = TestConstants.SS_BASE_URL,
+                host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -135,7 +135,7 @@ class SuprSendIdentifyTest : BaseTest() {
 
     @Test
     fun verifyIdentityFailure() {
-        val userTokenFetcher = mockk<UserTokenFetcher>(relaxed = true)
+        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
         every {
             networkClient.httpCall(
                 url = any(),
@@ -148,9 +148,9 @@ class SuprSendIdentifyTest : BaseTest() {
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-                baseUrl = TestConstants.SS_BASE_URL,
+                host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -160,7 +160,7 @@ class SuprSendIdentifyTest : BaseTest() {
 
     @Test
     fun verifyIdentitySuccess() {
-        val userTokenFetcher = mockk<UserTokenFetcher>(relaxed = true)
+        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
         every {
             networkClient.httpCall(
                 url = any(),
@@ -174,14 +174,14 @@ class SuprSendIdentifyTest : BaseTest() {
             body = AssetHelper.readAssetFileToString("event_and_operator_response.json")
         )
 
-        every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken()
+        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken()
         SuprSend.initialize(
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-                baseUrl = TestConstants.SS_BASE_URL,
+                host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)

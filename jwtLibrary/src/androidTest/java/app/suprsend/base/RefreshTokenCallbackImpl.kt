@@ -1,10 +1,10 @@
 package app.suprsend.base
 
 import android.util.Log
-import app.suprsend.UserTokenFetcher
+import app.suprsend.RefreshTokenCallback
 import org.json.JSONObject
 
-class UserTokenFetcherImpl : UserTokenFetcher {
+class RefreshTokenCallbackImpl : RefreshTokenCallback {
     private val networkClient = NetworkClient()
 
     override fun getToken(distinctId: String): String {

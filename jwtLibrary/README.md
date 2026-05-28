@@ -46,7 +46,9 @@ implementation(project(":jwtLibrary"))
 
 ### AndroidManifest (FCM)
 
-Register the SDK’s messaging service in your app manifest:
+Firebase allows **one** `FirebaseMessagingService` per app. Choose either the SDK default or your own service (see [Push notifications — application-managed](#push-notifications--application-managed)).
+
+**Option A — SDK service (simplest)**
 
 ```xml
 <service
@@ -58,7 +60,21 @@ Register the SDK’s messaging service in your app manifest:
 </service>
 ```
 
-See `jwtApp` for a full integration example.
+**Option B — your own service**
+
+Register your class instead and **do not** declare `SSFirebaseMessagingService` (only one handler may receive `MESSAGING_EVENT`).
+
+```xml
+<service
+    android:name=".fcm.AppFirebaseMessagingService"
+    android:exported="false">
+    <intent-filter>
+        <action android:name="com.google.firebase.MESSAGING_EVENT" />
+    </intent-filter>
+</service>
+```
+
+See `jwtApp` for a full integration example (`AppFirebaseMessagingService`).
 
 ---
 
@@ -189,11 +205,76 @@ Each **sync** method has a matching `*Async(..., ActionStatusCallback?)` variant
 
 | Component | Role |
 |-----------|------|
-| `SSFirebaseMessagingService` | Displays notifications; syncs FCM token; forwards payload to `NotificationCallbackListener` |
-| `notificationClicked(NotificationActionVo)` | Track click analytics |
+| `SSFirebaseMessagingService` | Default handler: registers FCM token, displays Suprsend notifications, invokes `NotificationCallbackListener` |
+| `SSNotificationHelper.showFCMNotification` | Renders a Suprsend FCM payload (delivery/click/dismiss analytics included) |
+| `RemoteMessage.isSuprSendRemoteMessage()` | Returns `true` when the data map contains the Suprsend payload key (`supr_send_n_pl`) |
+| `notificationClicked(NotificationActionVo)` | Track notification tap analytics |
 | `NotificationRedirectionActivity` | Handles deep links from notifications (declared in library manifest) |
 
 Notification lifecycle events (`$notification_delivered`, `$notification_clicked`, `$notification_dismiss`) are queued offline when there is no network and flushed periodically.
+
+#### SDK-managed (default)
+
+If you declare `SSFirebaseMessagingService` in the manifest, the SDK registers the device token on refresh and displays incoming Suprsend pushes. Optionally observe payloads:
+
+```kotlin
+SuprSend.setNotificationCallback(object : NotificationCallbackListener {
+    override fun onPushPayloadReceived(data: Map<String, String>) {
+        // Invoked after the SDK processes the message
+    }
+})
+```
+
+#### Push notifications — application-managed
+
+Use this approach when your app must own **FCM token registration** and **notification rendering** (for example, to mix Suprsend campaigns with your own push types, silent/data messages, or custom UI).
+
+1. Declare **your** `FirebaseMessagingService` in the manifest (not `SSFirebaseMessagingService`).
+2. On token refresh, send the token to Suprsend so the subscriber can receive pushes.
+3. In `onMessageReceived`, branch on payload type: Suprsend vs everything else.
+
+Reference implementation: `jwtApp` → `AppFirebaseMessagingService`.
+
+```kotlin
+import app.suprsend.SuprSend
+import app.suprsend.notification.SSNotificationHelper
+import app.suprsend.notification.isSuprSendRemoteMessage
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
+
+class AppFirebaseMessagingService : FirebaseMessagingService() {
+
+    override fun onNewToken(token: String) {
+        // Register the device token with the current subscriber ($androidpush / FCM vendor).
+        // Call after identify(); safe to call again when the token rotates.
+        SuprSend.getInstance().user.setAndroidFcmPushAsync(token)
+    }
+
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        if (remoteMessage.isSuprSendRemoteMessage()) {
+            // Suprsend campaign: use the SDK helper for rendering, channels, grouping,
+            // deep links, and delivery/click/dismiss tracking.
+            SSNotificationHelper.showFCMNotification(applicationContext, remoteMessage)
+
+            // Optional: read extra data keys you attached in the Suprsend template
+            // (exclude supr_send_n_pl — that key holds the structured notification JSON).
+            // remoteMessage.data["your_custom_key"]?.let { ... }
+        } else {
+            // Non-Suprsend push: build your own notification or handle data-only payloads.
+            val title = remoteMessage.notification?.title ?: remoteMessage.data["title"]
+            val body = remoteMessage.notification?.body ?: remoteMessage.data["body"]
+            // showYourNotification(title, body, remoteMessage.data)
+        }
+    }
+}
+```
+
+| Step | API | Notes |
+|------|-----|-------|
+| Detect Suprsend payload | `remoteMessage.isSuprSendRemoteMessage()` | Checks for `supr_send_n_pl` in `RemoteMessage.data` |
+| Render Suprsend UI | `SSNotificationHelper.showFCMNotification(context, remoteMessage)` | No-op if the message is not a Suprsend payload |
+| Register FCM token | `user.setAndroidFcmPushAsync(token)` | Sync variant: `setAndroidFcmPush(token)` |
+| Track notification tap | `SuprSend.getInstance().notificationClicked(...)` | After user opens a Suprsend notification |
 
 ### Callbacks & models
 
@@ -243,7 +324,7 @@ The **`jwtApp`** module demonstrates:
 - `UserTokenFetcherImpl` fetching tokens from staging collector
 - Inbox UI with `SuprsendInbox` and `InboxStoreListener`
 - User preference screens via `user.getPreferences()`
-- FCM service registration
+- Application-managed FCM (`AppFirebaseMessagingService`: token registration + `isSuprSendRemoteMessage` / `showFCMNotification`)
 
 ---
 

@@ -33,7 +33,7 @@ class SuprSendTrackSetTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
-            baseUrl = "https://collector-staging.suprsend.workers.dev"
+            host = "https://collector-staging.suprsend.workers.dev"
         )
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
@@ -67,10 +67,10 @@ class SuprSendTrackSetTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
-            baseUrl = "https://collector-staging.suprsend.workers.dev"
+            host = "https://collector-staging.suprsend.workers.dev"
         )
         SSInternal.networkClient = networkClient
-        SuprSend.setUserTokenFetcher(null)
+        SuprSend.setRefreshTokenCallback(null)
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         var actionStatus = suprsend.identify("1231")
@@ -88,8 +88,8 @@ class SuprSendTrackSetTest : BaseTest() {
 
     @Test
     fun verifyTrackEventFailureDueToTokenExpired() {
-        val userTokenFetcher = mockk<UserTokenFetcher>(relaxed = true)
-        every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken() andThen TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
+        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
+        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken() andThen TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
         every {
             networkClient.httpCall(
                 url = any(),
@@ -102,9 +102,9 @@ class SuprSendTrackSetTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
-            baseUrl = "https://collector-staging.suprsend.workers.dev",
+            host = "https://collector-staging.suprsend.workers.dev",
         )
-        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -128,9 +128,9 @@ class SuprSendTrackSetTest : BaseTest() {
 
     @Test
     fun verifyTrackEventByPassNotificationEvent() {
-        val userTokenFetcher = mockk<UserTokenFetcher>(relaxed = true)
+        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
         // Even for expired token trackEvent method for notification events should succeed as it is bypassed from backend
-        every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken() andThen TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
+        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken() andThen TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
         every {
             networkClient.httpCall(
                 url = any(),
@@ -143,9 +143,9 @@ class SuprSendTrackSetTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
-            baseUrl = "https://collector-staging.suprsend.workers.dev",
+            host = "https://collector-staging.suprsend.workers.dev",
         )
-        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -191,7 +191,7 @@ class SuprSendTrackSetTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
-            baseUrl = "https://collector-staging.suprsend.workers.dev"
+            host = "https://collector-staging.suprsend.workers.dev"
         )
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
@@ -223,7 +223,7 @@ class SuprSendTrackSetTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
-            baseUrl = "https://collector-staging.suprsend.workers.dev"
+            host = "https://collector-staging.suprsend.workers.dev"
         )
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
@@ -243,8 +243,8 @@ class SuprSendTrackSetTest : BaseTest() {
 
     @Test
     fun verifySetOperatorFailureDueToTokenExpired() {
-        val userTokenFetcher = mockk<UserTokenFetcher>(relaxed = true)
-        every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken() andThen TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
+        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
+        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken() andThen TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
         every {
             networkClient.httpCall(
                 url = any(),
@@ -257,9 +257,9 @@ class SuprSendTrackSetTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
-            baseUrl = "https://collector-staging.suprsend.workers.dev"
+            host = "https://collector-staging.suprsend.workers.dev"
         )
-        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -299,10 +299,10 @@ class SuprSendTrackSetTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
-            baseUrl = "https://collector-staging.suprsend.workers.dev"
+            host = "https://collector-staging.suprsend.workers.dev"
         )
         SSInternal.networkClient = networkClient
-        SuprSend.setUserTokenFetcher(null)
+        SuprSend.setRefreshTokenCallback(null)
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         var actionStatus = suprsend.identify("1231")

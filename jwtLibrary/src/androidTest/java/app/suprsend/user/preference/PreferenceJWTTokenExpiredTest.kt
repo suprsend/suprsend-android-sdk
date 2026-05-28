@@ -2,7 +2,7 @@ package app.suprsend.user.preference
 
 import app.suprsend.SuprSend
 import app.suprsend.SSInternal
-import app.suprsend.UserTokenFetcher
+import app.suprsend.RefreshTokenCallback
 import app.suprsend.base.AssetHelper
 import app.suprsend.base.BaseTest
 import app.suprsend.base.NetworkClient
@@ -22,7 +22,7 @@ import org.junit.Test
 class PreferenceJWTTokenExpiredTest : BaseTest() {
 
     private val networkClient: NetworkClient = mockk(relaxed = true)
-    private val userTokenFetcher = mockk<UserTokenFetcher>(relaxed = true)
+    private val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
     var suprSend: SuprSend
     var preferences: Preferences
 
@@ -33,9 +33,9 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            baseUrl =  "https://collector-staging.suprsend.workers.dev"
+            host =  "https://collector-staging.suprsend.workers.dev"
         )
-        SuprSend.setUserTokenFetcher(userTokenFetcher)
+        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
 
         suprSend = SuprSend.getInstance()
         preferences = suprSend.user.getPreferences()
@@ -62,7 +62,7 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
     fun setUp() {
         suprSend.reset(true)
         //Need correct token for identify to succeed
-        every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken()
+        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken()
 
         val action = suprSend.identify("U1")
         action.assertIsSuccess()
@@ -73,7 +73,7 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
 
         //Expiring token before fetch call
         SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() -3000))
-        every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() -3000)
+        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() -3000)
 
         //Even fetch full_preference has 200 response,even though test should fail since expired token is mocked
         every {
@@ -95,7 +95,7 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
         Assert.assertEquals("Your token is expired, retried 3 times still it failed", (action as Response.Error).message)
 
         //If correct token is sent then fetch preference success
-        every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken()
+        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken()
         val action2 = preferences.fetchUserPreference(fetchRemote = true)
         action2.assertIsSuccess()
         Assert.assertEquals(5,action2.getData()?.sections?.size)
@@ -141,7 +141,7 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
 
         //Expiring token before update call
         SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() -3000))
-        every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() -3000)
+        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() -3000)
 
         var action = preferences.updateCategoryPreference(
             category = "refund-promotion",
@@ -153,7 +153,7 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
 
 
         //If correct token is sent then update preference should success
-        every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken()
+        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken()
         action = preferences.updateCategoryPreference(
             category = "refund-promotion",
             preference = PreferenceOptions.OPT_IN
@@ -201,7 +201,7 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
 
         //Expiring token before update call
         SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() -3000))
-        every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() -3000)
+        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() -3000)
 
         var action = preferences.updateChannelPreferenceInCategory(
             category = "refund-promotion",
@@ -214,7 +214,7 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
 
 
         //If correct token is sent then update preference should success
-        every { userTokenFetcher.getToken(any()) } returns TokenGenerator.generateToken()
+        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken()
         action = preferences.updateChannelPreferenceInCategory(
             category = "refund-promotion",
             preference = PreferenceOptions.OPT_IN,

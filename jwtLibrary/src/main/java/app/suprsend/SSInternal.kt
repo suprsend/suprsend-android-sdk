@@ -33,8 +33,15 @@ internal object SSInternal {
 
     fun identity(
         distinctId: String,
+        userToken: String? = null,
+        refreshTokenCallback: RefreshTokenCallback? = null,
         force: Boolean = false
     ): ApiResponse {
+        if (refreshTokenCallback != null)
+            SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+
+        if (userToken != null)
+            LocalStorage.setValue(SSConstants.USER_TOKEN, userToken)
 
         if (distinctId.isBlank()) {
             return ApiResponse(
@@ -116,7 +123,7 @@ internal object SSInternal {
             }
 
             val httpResponse = networkClient.httpCall(
-                url = "${suprSendData.baseUrl}/v2/event",
+                url = "${suprSendData.host}/v2/event",
                 authorization = suprSendData.publicApiKey ?: "",
                 requestJson = eventPayload.toString(),
                 headers = addSSSignature()
@@ -175,7 +182,7 @@ internal object SSInternal {
             )
 
             val httpResponse =  networkClient.httpCall(
-                url = "${suprSendData.baseUrl}/v2/event",
+                url = "${suprSendData.host}/v2/event",
                 authorization = suprSendData.publicApiKey ?: "",
                 requestJson = eventPayload.toString(),
                 headers = addSSSignature()
@@ -203,39 +210,26 @@ internal object SSInternal {
                 message = "Internet connection is not available"
             )
         }
-        val userTokenFetcher = suprSendData.userTokenFetcher
-        var userToken = getToken() ?: ""
-        if (userTokenFetcher != null) {
+        val refreshTokenCallback = suprSendData.refreshTokenCallback
 
-            if (userToken.isBlank()) {
-                Logger.v(SSConstants.TAG_SUPRSEND, "User token is blank")
-                userToken = userTokenFetcher.getToken(distinctId)
-                Logger.v(SSConstants.TAG_SUPRSEND, "Got $distinctId $userToken")
-                storeToken(userToken)
-                // For happy case identify should not be called
-                val tryIdentity = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID_TRY)
-                val identifyIsFailed = !tryIdentity.isNullOrBlank()
-                if (!fromIdentify && identifyIsFailed) {
-                    val response = identity(distinctId, force = true)
-                    Logger.v(SSConstants.TAG_SUPRSEND, "Response : $response")
-                }
-            }
-            if (userToken.isBlank()) {
-                return ApiResponse(
-                    status = ResponseStatus.ERROR,
-                    message = "User token is still null after calling getToken"
-                )
-            }
+        if (refreshTokenCallback != null) {
+            var userToken = getToken() ?: ""
 
             if (isJWTTokenExpired(userToken)) {
                 return if (retryCount <= SSConstants.MAX_REFRESH_TOKEN_RETRY) {
-                    Logger.i(SSConstants.TAG_SUPRSEND, "User token is expired")
-                    userToken = userTokenFetcher.getToken(distinctId)
+                    if(userToken.isBlank()){
+                        Logger.v(SSConstants.TAG_SUPRSEND, "User token is not present")
+                    }else{
+                        Logger.v(SSConstants.TAG_SUPRSEND, "User token is expired $userToken")
+                    }
+                    userToken = refreshTokenCallback.getToken(distinctId)
                     if (!isJWTTokenExpired(userToken)) {
                         storeToken(userToken)
                         Logger.v(SSConstants.TAG_SUPRSEND, "Got $distinctId $userToken")
-                        if (!fromIdentify) {
-                            val response = identity(distinctId, force = true)
+                        val tryIdentity = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID_TRY)
+                        val identifyFailedEarlier = !tryIdentity.isNullOrBlank()
+                        if (!fromIdentify && identifyFailedEarlier) {
+                            val response = identity(distinctId, force = true) // refresh
                             Logger.v(SSConstants.TAG_SUPRSEND, "Response : $response")
                         }
                     } else {
@@ -246,8 +240,9 @@ internal object SSInternal {
                     ApiResponse(status = ResponseStatus.ERROR, statusCode = 401, message = "Your token is expired, retried ${SSConstants.MAX_REFRESH_TOKEN_RETRY} times still it failed")
                 }
             }
+            return ApiResponse(status = ResponseStatus.SUCCESS, statusCode = 200, message = "refreshTokenIfRequired : Succeeded : $userToken")
         }
-        return ApiResponse(status = ResponseStatus.SUCCESS, statusCode = 200, message = "refreshTokenIfRequired : Succeeded : $userToken")
+        return ApiResponse(status = ResponseStatus.ERROR, statusCode = 401, message = "Your token is expired")
     }
 
     private fun isJWTTokenExpired(userToken: String): Boolean {
@@ -324,7 +319,7 @@ internal object SSInternal {
                 headersL["X-Suprsend-Client-User-Agent"] = it
             }
 
-        if (suprSendData.userTokenFetcher != null) {
+        if (suprSendData.refreshTokenCallback != null) {
             headersL["x-ss-signature"] = getToken() ?: ""
         }
 
@@ -392,7 +387,7 @@ internal object SSInternal {
         val tryDistinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID_TRY) ?: ""
         var action: ApiResponse? = null
         if (tryDistinctId.isNotBlank()) {
-            action = identity(tryDistinctId)
+            action = identity(tryDistinctId) // try to identify
         }
         if (action?.isSuccess() == false || tryDistinctId.isBlank()) {
             Logger.i(SSConstants.TAG_SUPRSEND, log)

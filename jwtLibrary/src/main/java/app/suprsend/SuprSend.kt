@@ -1,7 +1,6 @@
 package app.suprsend
 
 import android.content.Context
-import android.os.Build
 import androidx.annotation.WorkerThread
 import app.suprsend.base.ActionStatusCallback
 import app.suprsend.base.LocalStorage
@@ -22,7 +21,6 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.iid.InstanceIdResult
-import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
 
 class SuprSend private constructor() {
@@ -30,7 +28,7 @@ class SuprSend private constructor() {
     val user = User()
 
     init {
-        if (FirebaseApp.getApps(SSInternal.context).size > 0) {
+        if (FirebaseApp.getApps(SSInternal.context).isNotEmpty()) {
             FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(
                 OnCompleteListener<InstanceIdResult> { task ->
                     if (!task.isSuccessful) {
@@ -47,16 +45,18 @@ class SuprSend private constructor() {
     }
 
     @WorkerThread
-    fun identify(distinctId: String): ApiResponse {
-        return SSInternal.identity(
-            distinctId = distinctId
+    fun identify(distinctId: String, userToken: String? = null, refreshTokenCallback: RefreshTokenCallback? = null): ApiResponse {
+        return SSInternal.identity( // identify
+            distinctId = distinctId,
+            userToken = userToken,
+            refreshTokenCallback = refreshTokenCallback
         )
     }
 
-    fun identityAsync(distinctId: String, actionStatusCallback: ActionStatusCallback? = null) {
+    fun identityAsync(distinctId: String, refreshTokenCallback: RefreshTokenCallback? = null, actionStatusCallback: ActionStatusCallback? = null) {
         sdkExecutorService.execute {
             try {
-                val actionStatus = identify(distinctId)
+                val actionStatus = identify(distinctId,refreshTokenCallback= refreshTokenCallback)
                 actionStatusCallback?.let {
                     SSInternal.context.runOnUIThread { it.onComplete(actionStatus) }
                 }
@@ -66,11 +66,11 @@ class SuprSend private constructor() {
         }
     }
 
-    fun isIdentified(): Boolean {
-        return if (SSInternal.suprSendData.userTokenFetcher == null) {
-            !SSInternal.suprSendData.distinctId.isNullOrBlank()
-        } else {
+    fun isIdentified(checkUserToken: Boolean? = null): Boolean {
+        return if (checkUserToken == true) {
             !SSInternal.suprSendData.distinctId.isNullOrBlank() && !SSInternal.getToken().isNullOrBlank()
+        } else {
+            !SSInternal.suprSendData.distinctId.isNullOrBlank()
         }
     }
 
@@ -172,13 +172,13 @@ class SuprSend private constructor() {
             publicApiKey: String,
             appInfo: AppInfo? = null, // When clientInfo is null then will respect this app info, for client they are intended to use appInfo not clientInfo(its for internal use)
             clientInfo: ClientInfo? = null, // If you are passing client info then send app info here will not respect app info
-            baseUrl: String = SSConstants.DEFAULT_BASE_API_URL
+            host: String = SSConstants.DEFAULT_BASE_API_URL
         ) {
             try {
                 SSInternal.context = context.applicationContext
                 SSInternal.suprSendData.publicApiKey = publicApiKey
                 SSInternal.suprSendData.distinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID)
-                SSInternal.suprSendData.baseUrl = baseUrl
+                SSInternal.suprSendData.host = host
                 SSInternal.suprSendData.clientInfo = clientInfo ?: ClientInfo(appInfo = appInfo)
                 calculateUserAgentInfo()
                 // Drain any notification events queued offline; runs every 10s in the background.
@@ -198,8 +198,8 @@ class SuprSend private constructor() {
             SSInternal.suprSendData.inboxBaseUrl = inboxBaseUrl
         }
 
-        fun setUserTokenFetcher(userTokenFetcher: UserTokenFetcher?) {
-            SSInternal.suprSendData.userTokenFetcher = userTokenFetcher
+        fun setRefreshTokenCallback(refreshTokenCallback: RefreshTokenCallback?) {
+            SSInternal.suprSendData.refreshTokenCallback = refreshTokenCallback
         }
 
         fun setTenantId(tenantId: String?) {

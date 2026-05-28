@@ -44,7 +44,7 @@ class SuprSendClientUserAgentHeaderTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             clientInfo = sampleClientInfo(),
-            baseUrl = TestConstants.SS_BASE_URL
+            host = TestConstants.SS_BASE_URL
         )
 
         assertEquals(
@@ -59,7 +59,7 @@ class SuprSendClientUserAgentHeaderTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             clientInfo = sampleClientInfo(),
-            baseUrl = TestConstants.SS_BASE_URL
+            host = TestConstants.SS_BASE_URL
         )
 
         val json = JSONObject(SSInternal.suprSendData.clientUserAgentJson!!)
@@ -91,7 +91,7 @@ class SuprSendClientUserAgentHeaderTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             clientInfo = infoWithoutApp,
-            baseUrl = TestConstants.SS_BASE_URL
+            host = TestConstants.SS_BASE_URL
         )
 
         val json = JSONObject(SSInternal.suprSendData.clientUserAgentJson!!)
@@ -104,7 +104,7 @@ class SuprSendClientUserAgentHeaderTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             clientInfo = sampleClientInfo(),
-            baseUrl = TestConstants.SS_BASE_URL
+            host = TestConstants.SS_BASE_URL
         )
 
         val headers = SSInternal.addSSSignature()
@@ -131,7 +131,7 @@ class SuprSendClientUserAgentHeaderTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             clientInfo = sampleClientInfo(),
-            baseUrl = TestConstants.SS_BASE_URL
+            host = TestConstants.SS_BASE_URL
         )
 
         val callerHeaders = mutableMapOf("X-Test" to "value")
@@ -162,10 +162,10 @@ class SuprSendClientUserAgentHeaderTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             clientInfo = sampleClientInfo(),
-            baseUrl = TestConstants.SS_BASE_URL
+            host = TestConstants.SS_BASE_URL
         )
         SSInternal.networkClient = networkClient
-        SuprSend.setUserTokenFetcher(null)
+        SuprSend.setRefreshTokenCallback(null)
 
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)

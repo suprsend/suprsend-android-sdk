@@ -62,7 +62,7 @@ internal object EventFlushHandler {
             val entry = PayloadOfflineStore.peek() ?: break
 
             val response = SSInternal.networkClient.httpCall(
-                url = "${SSInternal.suprSendData.baseUrl}/v2/event",
+                url = "${SSInternal.suprSendData.host}/v2/event",
                 authorization = SSInternal.suprSendData.publicApiKey ?: "",
                 requestJson = entry.payloadJson,
                 headers = SSInternal.addSSSignature()
