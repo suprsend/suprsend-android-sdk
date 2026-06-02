@@ -169,10 +169,12 @@ afterEvaluate {
                     "sha512" to MessageDigest.getInstance("SHA-512")
                 )
                 
-                checksums.forEach { (algorithm, digest) ->
+                checksums.forEach { entry ->
+                    val algorithm = entry.key
+                    val digest = entry.value
                     digest.update(fileBytes)
-                    val hash = digest.digest().joinToString("") { 
-                        val byteValue = it.toInt() and 0xff
+                    val hash = digest.digest().joinToString("") { byte ->
+                        val byteValue = byte.toInt() and 0xff
                         String.format("%02x", byteValue)
                     }
                     val checksumFile = File(baseDir, "$fileName.$algorithm")

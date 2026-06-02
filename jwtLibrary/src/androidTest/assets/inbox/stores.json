@@ -1,0 +1,31 @@
+[
+  {
+    "storeId": "Read",
+    "label": "Read",
+    "query": {
+      "tags": ["tab1"],
+      "read": true,
+      "archived": false
+    }
+  },
+  {
+    "storeId": "Unread",
+    "label": "Unread",
+    "query": {
+      "read": false,
+      "tags": ["tab1"],
+      "archived": false
+    }
+  },
+  {
+    "storeId": "Archived",
+    "label": "Archived",
+    "query": {
+      "archived": true
+    }
+  },
+  {
+    "storeId": "All",
+    "label": "All"
+  }
+]

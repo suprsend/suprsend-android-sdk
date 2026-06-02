@@ -1,0 +1,35 @@
+{
+  "name": "Refund promotion",
+  "category": "refund-promotion",
+  "description": "updates",
+  "original_preference": "opt_out",
+  "preference": "opt_out",
+  "is_editable": true,
+  "channels": [
+    {
+      "channel": "androidpush",
+      "preference": "opt_out",
+      "is_editable": false
+    },
+    {
+      "channel": "email",
+      "preference": "opt_out",
+      "is_editable": false
+    },
+    {
+      "channel": "inbox",
+      "preference": "opt_out",
+      "is_editable": true
+    },
+    {
+      "channel": "webpush",
+      "preference": "opt_out",
+      "is_editable": false
+    },
+    {
+      "channel": "whatsapp",
+      "preference": "opt_out",
+      "is_editable": true
+    }
+  ]
+}

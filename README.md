@@ -25,6 +25,9 @@ This SDK is compatible with:
 #Release Notes
 
 ```
+2.0.0
+- Feature: JWT support on 2.0.0
+
 1.2.6
 - Anr fix in init 
 
