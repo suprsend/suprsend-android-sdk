@@ -1,0 +1,27 @@
+[
+  {
+    "storeId": "Read",
+    "label": "Read",
+    "query": {
+      "read": true
+    }
+  },
+  {
+    "storeId": "Unread",
+    "label": "Unread",
+    "query": {
+      "read": false
+    }
+  },
+  {
+    "storeId": "Archived",
+    "label": "Archived",
+    "query": {
+      "archived": true
+    }
+  },
+  {
+    "storeId": "All",
+    "label": "All"
+  }
+]

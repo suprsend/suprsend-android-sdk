@@ -1,0 +1,21 @@
+{
+  "statusBarColor": "#9E6B6B",
+  "navigationBarColor": "#9E6B6B",
+  "toolbarBgColor": "#E1B6BA",
+  "toolbarTitleColor": "#673AB7",
+  "toolbarTitle": "Hello Guys",
+  "screenBgColor": "#FFCDD2",
+  "cardBackgroundColor":"#FFFFFF",
+  "backButtonColor": "#FFFFFF",
+  "emptyScreenMessageTextColor": "#C2185B",
+  "emptyScreenMessage": "Guys No data available",
+  "messageTextColor":"#000000",
+  "bellIconColor":"#92D1CB",
+  "bellIconCountBgColor":"#E91E63",
+  "bellIconCountTextColor":"#FFFFFF",
+  "newUpdatesAvailableText":"Niks New Updates Available",
+  "newUpdatesAvailableTextColor":"#03A9F4",
+  "newUpdatesAvailablePosition":"top",
+  "inboxFetchInterval": 15000,
+  "cardBorderColor": "#e4e4e4"
+}

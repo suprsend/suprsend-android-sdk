@@ -1,0 +1,893 @@
+{
+  "sections": [
+    {
+      "name": null,
+      "subcategories": [
+        {
+          "name": "Refund promotion",
+          "category": "refund-promotion",
+          "description": "updates",
+          "original_preference": "opt_out",
+          "preference": "opt_out",
+          "is_editable": true,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_out",
+              "is_editable": true
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_out",
+              "is_editable": true
+            }
+          ]
+        },
+        {
+          "name": "Sub Category",
+          "category": "sub-category",
+          "description": "Sub category description",
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": false
+            }
+          ]
+        },
+        {
+          "name": "return",
+          "category": "return",
+          "description": null,
+          "original_preference": "opt_in",
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_out",
+              "is_editable": true
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_out",
+              "is_editable": true
+            }
+          ]
+        },
+        {
+          "name": "check bug1",
+          "category": "check-bug1",
+          "description": null,
+          "original_preference": "opt_in",
+          "preference": "opt_in",
+          "is_editable": true,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "email",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_out",
+              "is_editable": true
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_out",
+              "is_editable": true
+            }
+          ]
+        },
+        {
+          "name": "akhil-system",
+          "category": "akhil-system",
+          "description": "akhil-system",
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": false
+            }
+          ]
+        },
+        {
+          "name": "Trans-blocked",
+          "category": "trans-blocked",
+          "description": "Trans-blocked",
+          "original_preference": "opt_in",
+          "preference": "opt_in",
+          "is_editable": true,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "email",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": true
+            }
+          ]
+        },
+        {
+          "name": "Promo-blocked",
+          "category": "promo-blocked",
+          "description": "Promo-blocked",
+          "original_preference": "opt_in",
+          "preference": "opt_in",
+          "is_editable": true,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "email",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": true
+            }
+          ]
+        },
+        {
+          "name": "bug retest blocked",
+          "category": "bug-retest-blocked",
+          "description": "bug retest blocked",
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": true,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "email",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": true
+            }
+          ]
+        },
+        {
+          "name": "brand preference",
+          "category": "brand-preference",
+          "description": "To verify brand preference for karthick_qa_new",
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": true,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "email",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": true
+            }
+          ]
+        },
+        {
+          "name": "business opt out",
+          "category": "business-opt-out",
+          "description": null,
+          "original_preference": null,
+          "preference": "opt_out",
+          "is_editable": true,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_out",
+              "is_editable": true
+            },
+            {
+              "channel": "email",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_out",
+              "is_editable": true
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_out",
+              "is_editable": true
+            }
+          ]
+        },
+        {
+          "name": "user-android-preference",
+          "category": "user-android-preference",
+          "description": null,
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "email",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": true
+            }
+          ]
+        },
+        {
+          "name": "brand_null_user",
+          "category": "brand_null_user",
+          "description": null,
+          "original_preference": "opt_in",
+          "preference": "opt_in",
+          "is_editable": true,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "email",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": true
+            }
+          ]
+        },
+        {
+          "name": "tag$",
+          "category": "tag",
+          "description": null,
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "system section",
+      "description": "system section",
+      "subcategories": [
+        {
+          "name": "weekly-product-updates",
+          "category": "weekly-product-updates",
+          "description": "test1 recheck mbsdmhfbdhfbhfb",
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": false
+            }
+          ]
+        },
+        {
+          "name": "system android",
+          "category": "system-android",
+          "description": null,
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": false
+            }
+          ]
+        },
+        {
+          "name": "recheck system",
+          "category": "recheck-system",
+          "description": "recheck system",
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": false
+            }
+          ]
+        },
+        {
+          "name": "system retest category",
+          "category": "system-retest-category",
+          "description": "retest",
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": false
+            }
+          ]
+        },
+        {
+          "name": "Testing testing testing testing testing",
+          "category": "testing-testing-testing-testing-testing",
+          "description": "Testing testing testing testing testing",
+          "original_preference": "opt_out",
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": false
+            }
+          ]
+        },
+        {
+          "name": "Infra incident",
+          "category": "infra-incident",
+          "description": null,
+          "original_preference": "opt_in",
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Transactional karthick1",
+      "description": "Transactional karthick1",
+      "subcategories": [
+        {
+          "name": "test4",
+          "category": "test4",
+          "description": "test4 check",
+          "original_preference": "opt_in",
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": false
+            }
+          ]
+        },
+        {
+          "name": "trans2",
+          "category": "trans2",
+          "description": null,
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "new 5",
+      "subcategories": [
+        {
+          "name": "check bug2",
+          "category": "check-bug2",
+          "description": "random desc",
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": false
+            }
+          ]
+        },
+        {
+          "name": "Amount refunded",
+          "category": "amount-refunded",
+          "description": null,
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": true
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_out",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "return4",
+      "subcategories": [
+        {
+          "name": "return78",
+          "category": "return78",
+          "description": null,
+          "original_preference": null,
+          "preference": "opt_in",
+          "is_editable": false,
+          "channels": [
+            {
+              "channel": "androidpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "email",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "inbox",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "webpush",
+              "preference": "opt_in",
+              "is_editable": false
+            },
+            {
+              "channel": "whatsapp",
+              "preference": "opt_in",
+              "is_editable": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "channel_preferences": [
+    {
+      "channel": "androidpush",
+      "is_restricted": false
+    },
+    {
+      "channel": "email",
+      "is_restricted": true
+    },
+    {
+      "channel": "inbox",
+      "is_restricted": false
+    },
+    {
+      "channel": "webpush",
+      "is_restricted": true
+    },
+    {
+      "channel": "whatsapp",
+      "is_restricted": false
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="obj"
+            type="app.suprsend.user.preference.ChannelPreference" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/channel_preference_item_bg">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/prefNameTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:paddingEnd="10dp"
+            android:fontFamily="@font/inter_bold"
+            android:text="@{obj.channel}"
+            android:textColor="@color/pref_title_text"
+            app:layout_constraintBottom_toTopOf="@+id/prefDescTv"
+            app:layout_constraintEnd_toStartOf="@id/sectionArrowIV"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Email" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/prefDescTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="10dp"
+            android:fontFamily="@font/inter"
+            android:text="@string/allow_all_notifications"
+            android:textColor="@color/pref_sub_text"
+            app:layout_constraintBottom_toTopOf="@id/allPrefRG"
+            app:layout_constraintEnd_toStartOf="@id/sectionArrowIV"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefNameTv"
+            app:layout_goneMarginBottom="20dp" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/sectionArrowIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_section_arrow"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/prefNameTv"
+            tools:rotation="180" />
+
+        <RadioGroup
+            android:id="@+id/allPrefRG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefDescTv">
+
+            <RadioButton
+                android:id="@+id/allRb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:text="All" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/allRbDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="5dp"
+                android:fontFamily="@font/inter"
+                android:text="Allow All Notifications, except the ones that I have turned off"
+                android:textColor="@color/pref_sub_text" />
+
+
+            <RadioButton
+                android:id="@+id/requiredRb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:text="Required" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/requiredRbDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="5dp"
+                android:fontFamily="@font/inter"
+                android:text="Allow only important notifications related to account and security settings"
+                android:textColor="@color/pref_sub_text" />
+
+        </RadioGroup>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
