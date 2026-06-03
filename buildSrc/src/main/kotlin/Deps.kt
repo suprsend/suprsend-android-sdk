@@ -1,5 +1,5 @@
+import java.io.File
 import java.util.Locale
-import org.codehaus.groovy.runtime.ProcessGroovyMethods
 
 object Deps {
 
@@ -7,7 +7,7 @@ object Deps {
     const val SDK_PACKAGE_NAME = "app.suprsend"
     private const val MAJOR_VERSION = 2
     private const val MINOR_VERSION = 0
-    private const val PATCH_VERSION = 0
+    private const val PATCH_VERSION = 1
     val BUILD_TYPE = BuildType.NATIVE
     private const val ISPROD = false
     const val RUN_LIB = false
@@ -59,7 +59,8 @@ object Deps {
         var PUBLISH_ARTIFACT_ID = BUILD_TYPE.name.toLowerCase(Locale.getDefault())
         var PUBLISH_ARTIFACT_VERSION = SDK_VERSION_NAME
         const val POM_NAME = "suprsend"
-        var POM_DESCRIPTION = "Suprsend Android SDK release from commit id : ${"git rev-parse HEAD".execute().text().trim()}"
+        fun pomDescription(projectDir: File): String =
+            "Suprsend Android SDK release from commit id : ${Git.headCommitHash(projectDir)}"
         const val POM_URL = "https://github.com/suprsend/suprsend-android-sdk"
         const val POM_LICENCE_NAME = "The Apache Software License, Version 2.0"
         const val POM_LICENCE_URL = "http://www.apache.org/licenses/LICENSE-2.0.txt"
@@ -80,6 +81,3 @@ object Deps {
     }
     const val material = "1.4.0"
 }
-
-fun String.execute(): Process = ProcessGroovyMethods.execute(this)
-fun Process.text(): String = ProcessGroovyMethods.getText(this)
