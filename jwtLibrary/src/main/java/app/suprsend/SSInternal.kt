@@ -38,7 +38,7 @@ internal object SSInternal {
         force: Boolean = false
     ): ApiResponse {
         if (refreshTokenCallback != null)
-            SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+            suprSendData.refreshTokenCallback = refreshTokenCallback
 
         if (userToken != null)
             LocalStorage.setValue(SSConstants.USER_TOKEN, userToken)
