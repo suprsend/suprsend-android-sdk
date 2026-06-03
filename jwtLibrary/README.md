@@ -2,7 +2,7 @@
 
 Android library (`jwtLibrary`) for integrating [Suprsend](https://suprsend.com) in mobile apps. It covers user identity, event tracking, subscriber profile updates, push notifications (FCM), notification preferences, and the in-app notification inbox.
 
-This variant adds **JWT-based subscriber authentication**: when `RefreshTokenCallback` is configured, the SDK fetches, caches, and refreshes the subscriber JWT automatically.
+This variant adds **JWT-based subscriber authentication**: pass a `RefreshTokenCallback` (or `userToken`) to `identify` / `identityAsync` and the SDK caches and refreshes the subscriber JWT for later API calls.
 
 **Package:** `app.suprsend`  
 **Maven coordinates:** `com.suprsend:native:<version>` (see `buildSrc/Deps.kt` for the current version)
@@ -10,8 +10,29 @@ This variant adds **JWT-based subscriber authentication**: when `RefreshTokenCal
 | Document | Description |
 |----------|-------------|
 | [README.md](README.md) | Setup, auth, core SDK (`SuprSend`, `User`), events API |
-| [PREFERENCE.md](PREFERENCE.md) | Notification preferences (categories, channels) |
-| [INBOX.md](INBOX.md) | In-app inbox (feeds, real-time updates, stores) |
+| [docs/Integration.mdx](docs/Integration.mdx) | SDK integration guide (Mintlify) |
+| [docs/Push.mdx](docs/Push.mdx) | FCM push setup (Mintlify) |
+
+---
+
+## Preview documentation
+
+Mintlify sources for public docs live under `jwtLibrary/docs/`. From the repository root:
+
+1. **Install** the Mintlify CLI:
+   ```bash
+   npm i -g mint
+   ```
+2. **Go to** the docs directory:
+   ```bash
+   cd jwtLibrary/docs
+   ```
+3. **Run** the local preview server:
+   ```bash
+   mint dev
+   ```
+
+Open the URL printed in the terminal (typically `http://localhost:3000`) to preview **Integration** and **Push** pages.
 
 ---
 
@@ -33,7 +54,7 @@ This variant adds **JWT-based subscriber authentication**: when `RefreshTokenCal
 
 ```kotlin
 dependencies {
-    implementation("com.suprsend:native:0.0.2") // use version from your release
+    implementation("com.suprsend:native:2.0.1") // use version from your release
     implementation("com.google.firebase:firebase-messaging:<version>")
 }
 ```
@@ -89,20 +110,25 @@ SuprSend.initialize(
     appInfo = AppInfo(name = "MyApp", version = BuildConfig.VERSION_NAME)
 )
 
-// Optional: JWT auth (recommended for production)
-SuprSend.setRefreshTokenCallback(object : RefreshTokenCallback {
+// After login — pass JWT callback or token on identify (see Identify subscriber)
+val tokenCallback = object : RefreshTokenCallback {
     override fun getToken(distinctId: String): String {
         // Fetch JWT from YOUR backend — never embed secrets in the app
         return yourBackend.getSubscriberJwt(distinctId)
     }
-})
-
-// After login
-SuprSend.getInstance().identityAsync("user@example.com") { response ->
-    if (response.isSuccess()) {
-        SuprSend.getInstance().user.addEmailAsync("user@example.com")
-    }
 }
+
+SuprSend.getInstance().identityAsync(
+    distinctId = "user@example.com",
+    refreshTokenCallback = tokenCallback,
+    actionStatusCallback = object : ActionStatusCallback {
+        override fun onComplete(response: ApiResponse) {
+            if (response.isSuccess()) {
+                SuprSend.getInstance().user.addEmailAsync("user@example.com")
+            }
+        }
+    }
+)
 ```
 
 ---
@@ -114,17 +140,98 @@ Pass your workspace public API key to `SuprSend.initialize(publicApiKey = ...)`.
 
 ### JWT (this library)
 
-When `SuprSend.setRefreshTokenCallback(...)` is set:
+Enable JWT by passing `refreshTokenCallback` and/or `userToken` to `identify` / `identityAsync`. The callback is stored on the SDK for the session and used for all subsequent authenticated calls.
 
 1. Before events, profile updates, preferences, and inbox operations, the SDK calls `getToken(distinctId)` if no valid JWT is cached.
 2. Expired tokens are refreshed automatically (up to 3 retries). Invalid tokens are cleared and fetched again.
 3. `isIdentified(checkUserToken = true)` requires both `distinctId` and a non-blank JWT.
 
-Implement `RefreshTokenCallback.getToken()` to return a subscriber JWT from **your backend** (never issue JWTs inside the app). See `jwtApp` for a sample.
+Implement `RefreshTokenCallback.getToken()` to return a subscriber JWT from **your backend** (never issue JWTs inside the app). There is no global `setRefreshTokenCallback` — supply the callback on each login via `identify`, or pass a pre-fetched `userToken` when you already have one.
 
 ### Client metadata
 
 Pass `appInfo` (or `clientInfo`) in `initialize()` so the SDK can attach app and device metadata with outbound requests.
+
+---
+
+## Identify subscriber
+
+Call `identify` (or `identityAsync`) after login to bind the device to a subscriber. The SDK sends a `$identify` event, persists `distinctId` locally on success, and re-attaches any cached FCM token.
+
+### Signatures
+
+```kotlin
+// Sync — do not call on the main thread
+fun identify(
+    distinctId: String,
+    userToken: String? = null,
+    refreshTokenCallback: RefreshTokenCallback? = null
+): ApiResponse
+
+// Async — runs on a background executor; callback on the main thread
+fun identityAsync(
+    distinctId: String,
+    userToken: String? = null,
+    refreshTokenCallback: RefreshTokenCallback? = null,
+    actionStatusCallback: ActionStatusCallback? = null
+)
+```
+
+### Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `distinctId` | Required. Your subscriber identifier (email, user id, etc.). Must not be blank. |
+| `userToken` | Optional. Subscriber JWT to cache before the `$identify` request. Use when your app already has a token from your backend. |
+| `refreshTokenCallback` | Optional. If non-null, stores this callback on the SDK for token fetch/refresh on later API calls. Pass on login; required for JWT mode unless you only use `userToken`. |
+| `actionStatusCallback` | **Async only.** `ActionStatusCallback` invoked on the main thread with the `ApiResponse` from `identify`. |
+
+### JWT options
+
+You can supply a token in two ways (they can be combined):
+
+1. **Refresh callback** — pass `refreshTokenCallback` to `identify` / `identityAsync`; the SDK fetches/refreshes the JWT when needed and keeps the callback for the session.
+2. **Pre-fetched token** — pass `userToken` to cache a JWT before `$identify`; pair with `refreshTokenCallback` so expired tokens can still be renewed.
+
+When a callback is set, `identify` runs `refreshTokenIfRequired` before sending `$identify`. Ensure network connectivity and a valid token from your backend.
+
+### Behavior
+
+| Case | Result |
+|------|--------|
+| `distinctId` is blank | `ApiResponse` error (`VALIDATION_ERROR`) |
+| Another `distinctId` is already active | Error — call `reset()` before switching users |
+| Same `distinctId` as last successful identify | Success immediately (no new `$identify` request) |
+| `$identify` succeeds | `distinctId` saved; FCM token re-registered if available |
+| `$identify` fails (e.g. network, 401) | `distinctId` not updated; SDK may retry identify after a later token refresh |
+
+### Examples
+
+```kotlin
+// Async with JWT callback on login
+SuprSend.getInstance().identityAsync(
+    distinctId = "user@example.com",
+    refreshTokenCallback = tokenCallback,
+    actionStatusCallback = myCallback
+)
+
+// Sync with token from your login API (optional callback for refresh)
+val response = SuprSend.getInstance().identify(
+    distinctId = userId,
+    userToken = loginResponse.subscriberJwt,
+    refreshTokenCallback = tokenCallback
+)
+
+// Callback only — SDK fetches JWT before $identify
+SuprSend.getInstance().identify(
+    distinctId = userId,
+    refreshTokenCallback = object : RefreshTokenCallback {
+        override fun getToken(distinctId: String) = yourBackend.getSubscriberJwt(distinctId)
+    }
+)
+```
+
+Use `isIdentified()` to check whether a `distinctId` is set; use `isIdentified(checkUserToken = true)` when JWT mode is on and you need a cached token as well.
 
 ---
 
@@ -144,7 +251,6 @@ Methods for one-time SDK setup and global options. Most can be called before `ge
 |--------|-------------|
 | `initialize(context, publicApiKey, appInfo?, clientInfo?, host?)` | One-time setup. Restores `distinctId` from local storage. Starts offline notification event flush. |
 | `getInstance()` | Returns singleton instance. Throws if not initialized. |
-| `setRefreshTokenCallback(callback?)` | Enable or disable JWT auth (`null` = API-key-only mode). |
 | `setTenantId(tenantId)` | Multi-tenant workspace ID (optional). |
 | `setInboxBaseUrl(url)` | Sets inbox URL on internal config (inbox feature uses `SuprsendInbox.setBaseUrl` — see [INBOX.md](INBOX.md)). |
 | `setLogger(callback)` | Route SDK logs to your `LoggerCallback`. |
@@ -157,8 +263,8 @@ Methods for the active subscriber session (identity, events, reset). Requires `i
 | Method / property | Description |
 |-----------------|-------------|
 | `user` | `User` instance for profile operators and preferences. |
-| `identify(distinctId)` **sync** | Binds the device to a subscriber (`$identify` event). |
-| `identityAsync(distinctId, callback?)` | Async identify. |
+| `identify(distinctId, userToken?, refreshTokenCallback?)` **sync** | Binds device to subscriber via `$identify`. See [Identify subscriber](#identify-subscriber). |
+| `identityAsync(distinctId, userToken?, refreshTokenCallback?, actionStatusCallback?)` | Background `identify`; `actionStatusCallback` on main thread. |
 | `isIdentified(checkUserToken?)` | `true` if `distinctId` is set; pass `checkUserToken = true` to also require a non-blank JWT. |
 | `getDistinctId()` | Current distinct ID or `null`. |
 | `trackEvent(eventName)` **sync** | Track a custom event. |
@@ -283,7 +389,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
 | `ActionStatusCallback` | `onComplete(ApiResponse)` for async SDK calls |
 | `ApiResponse` | `status`, `statusCode`, `body`, `message`, `errorType`, `exception`; `isSuccess()` |
 | `Response<T>` | Inbox/preference results: `Success` / `Error` |
-| `RefreshTokenCallback` | `getToken(distinctId: String): String` |
+| `RefreshTokenCallback` | `getToken(distinctId: String): String` — pass to `identify` / `identityAsync`, not a standalone setter |
 | `NotificationCallbackListener` | `onPushPayloadReceived(data: Map<String, String>)` |
 | `LoggerCallback` | `v`, `i`, `e` log hooks |
 
@@ -320,8 +426,8 @@ Reserved event names tracked by the SDK:
 
 The **`jwtApp`** module demonstrates:
 
-- `SuprSend.initialize` + optional JWT toggle
-- `RefreshTokenCallback` fetching tokens from staging collector
+- `SuprSend.initialize` + JWT via `refreshTokenCallback` on `identify`
+- `RefreshTokenCallback` fetching tokens from your backend on login
 - Inbox UI with `SuprsendInbox` and `InboxStoreListener`
 - User preference screens via `user.getPreferences()`
 - Application-managed FCM (`AppFirebaseMessagingService`: token registration + `isSuprSendRemoteMessage` / `showFCMNotification`)

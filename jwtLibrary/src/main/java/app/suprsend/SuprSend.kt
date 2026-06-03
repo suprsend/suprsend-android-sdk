@@ -53,10 +53,10 @@ class SuprSend private constructor() {
         )
     }
 
-    fun identityAsync(distinctId: String, refreshTokenCallback: RefreshTokenCallback? = null, actionStatusCallback: ActionStatusCallback? = null) {
+    fun identityAsync(distinctId: String, userToken: String? = null, refreshTokenCallback: RefreshTokenCallback? = null, actionStatusCallback: ActionStatusCallback? = null) {
         sdkExecutorService.execute {
             try {
-                val actionStatus = identify(distinctId,refreshTokenCallback= refreshTokenCallback)
+                val actionStatus = identify(distinctId, userToken, refreshTokenCallback)
                 actionStatusCallback?.let {
                     SSInternal.context.runOnUIThread { it.onComplete(actionStatus) }
                 }
@@ -172,13 +172,13 @@ class SuprSend private constructor() {
             publicApiKey: String,
             appInfo: AppInfo? = null, // When clientInfo is null then will respect this app info, for client they are intended to use appInfo not clientInfo(its for internal use)
             clientInfo: ClientInfo? = null, // If you are passing client info then send app info here will not respect app info
-            host: String = SSConstants.DEFAULT_BASE_API_URL
+            host: String? = null
         ) {
             try {
                 SSInternal.context = context.applicationContext
                 SSInternal.suprSendData.publicApiKey = publicApiKey
                 SSInternal.suprSendData.distinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID)
-                SSInternal.suprSendData.host = host
+                SSInternal.suprSendData.host = host?:SSConstants.DEFAULT_BASE_API_URL
                 SSInternal.suprSendData.clientInfo = clientInfo ?: ClientInfo(appInfo = appInfo)
                 calculateUserAgentInfo()
                 // Drain any notification events queued offline; runs every 10s in the background.
