@@ -118,7 +118,7 @@ afterEvaluate {
 
                 pom {
                     name.set(Deps.Publication.POM_NAME)
-                    description.set(Deps.Publication.POM_DESCRIPTION)
+                    description.set(Deps.Publication.pomDescription(rootProject.projectDir))
                     url.set(Deps.Publication.POM_URL)
                     setPackaging("aar")
                     licenses {
