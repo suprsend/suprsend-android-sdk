@@ -41,7 +41,7 @@ implementation("com.google.firebase:firebase-messaging:20.2.4") // or latest ver
 
 Push feature can be implemented in two ways:
 
-#### Token Generation and Notification handled By SDK [Recommended]
+#### - Token Generation and Notification handled By SDK (Recommended)
 
 You may use this option if all of your android push notifications are to be handled via SuprSend SDK. We recommend you to use this method as it is just a single step process to just register the service in your application manifest and everything else will be ready.
 
@@ -60,7 +60,7 @@ You may use this option if all of your android push notifications are to be hand
 </service>
 ```
 
-#### Token Generation and Notification handled By Your Application
+#### - Token Generation and Notification handled By Your Application
 
 Use this approach when your app must own **FCM token registration** and **notification rendering** — for example, multiple push providers, to mix Suprsend campaigns with your own push types, silent/data messages.
 
@@ -117,12 +117,14 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
 }
 ```
 
-| Step                          | API                                                                | Notes                                                                   |
+| Step                          | API                                                                | Description                                                             |
 | ----------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------- |
 | Detect Suprsend payload       | `remoteMessage.isSuprSendRemoteMessage()`                          | Checks for `supr_send_n_pl` in `RemoteMessage.data`                     |
 | Render Suprsend UI            | `SSNotificationHelper.showFCMNotification(context, remoteMessage)` | No-op if the message is not a Suprsend payload                          |
 | Register FCM token (rotation) | `user.setAndroidFcmPushAsync(token)` in `onNewToken`               | Initial token: automatic on `SuprSend.getInstance()` after `identify()` |
 | Track notification tap        | `SuprSend.getInstance().notificationClicked(...)`                  | After the user opens a Suprsend notification                            |
+
+---
 
 ### Asking for permission - Android 13(API-33)
 
