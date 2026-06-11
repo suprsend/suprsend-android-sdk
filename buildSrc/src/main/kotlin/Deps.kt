@@ -73,7 +73,7 @@ object Deps {
         }
     }
     object Firebase {
-        const val messaging = "20.2.4"
+        const val messaging = "22.0.0"
     }
     const val material = "1.4.0"
 }
