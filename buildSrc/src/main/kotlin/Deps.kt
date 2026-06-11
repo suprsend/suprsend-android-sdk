@@ -21,24 +21,20 @@ object Deps {
     var APP_VERSION_NAME = if (ISPROD) "$SDK_VERSION_NAME-Prod" else "$SDK_VERSION_NAME-Stag"
 
     //Prod
-    var SS_API_BASE_URL = if (ISPROD) "https://hub.suprsend.com" else "https://collector-staging.suprsend.workers.dev"
-    var SS_API_INBOX_BASE_URL = if (ISPROD) "https://inboxs.live" else "https://inbox-staging.inboxs.workers.dev"
-    var SS_API_INBOX_SOCKET_URL = if (ISPROD) "https://betainbox.suprsend.com" else "https://staging-inbox-api.suprsend.com"
-    val SS_TENANT_ID = "null"
-    var SS_TOKEN = "XXXX"
-    var SS_SECRET = "XXXX"
+    val SS_TENANT_ID = "XXXX"
 
     const val XIAOMI_APP_ID = "XXXX"
     const val XIAOMI_APP_KEY = "XXXX"
 
-    const val SS_BASE_URL = "XXXX"
-    const val SS_PUBLIC_API_KEY = "XXXX"
-    const val SS_INBOX_BASE_URL = "XXXX"
-    const val SS_INBOX_SOCKET_URL = "XXXX"
-    const val SS_INBOX_SUBSCRIBER_ID = "XXXX"
-
     const val OPPO_APP_KEY = "XXXX"
     const val OPPO_APP_SECRET = "XXXX"
+
+    var SS_BASE_URL = "XXXX"
+    var SS_PUBLIC_API_KEY = "XXXX"
+    var SS_INBOX_BASE_URL = "XXXX"
+    var SS_INBOX_SOCKET_URL = "XXXX"
+    var SS_INBOX_SUBSCRIBER_ID = "XXXX"
+
 
     //Todo : Add jitpack publishing
     const val MX_TOKEN = "XXXX"

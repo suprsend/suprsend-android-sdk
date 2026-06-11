@@ -126,7 +126,6 @@ fun com.android.build.api.dsl.BuildType.addBuildConfigFields() {
     buildConfigField("String", "SS_BASE_URL", "\"${Deps.SS_BASE_URL}\"")
     buildConfigField("String", "SS_PUBLIC_API_KEY", "\"${Deps.SS_PUBLIC_API_KEY}\"")
 
-    buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
     buildConfigField("String", "SS_INBOX_BASE_URL", "\"${Deps.SS_INBOX_BASE_URL}\"")
 //    buildConfigField("String", "INBOX_SECRET", "\"${Deps.INBOX_SECRET}\"")
     buildConfigField("String", "SS_INBOX_SUBSCRIBER_ID", "\"${Deps.SS_INBOX_SUBSCRIBER_ID}\"")

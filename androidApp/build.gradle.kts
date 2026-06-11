@@ -122,8 +122,6 @@ fun com.android.build.gradle.internal.dsl.BuildType.addBuildConfigFields() {
     buildConfigField("String", "SS_INBOX_BASE_URL", "\"${Deps.SS_INBOX_BASE_URL}\"")
     buildConfigField("String", "SS_INBOX_SOCKET_URL", "\"${Deps.SS_INBOX_SOCKET_URL}\"")
     buildConfigField("String", "SS_INBOX_SUBSCRIBER_ID", "\"${Deps.SS_INBOX_SUBSCRIBER_ID}\"")
-    buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
-    buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
     buildConfigField("String", "SS_TENANT_ID", "\"${Deps.SS_TENANT_ID}\"")
     buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
 }
