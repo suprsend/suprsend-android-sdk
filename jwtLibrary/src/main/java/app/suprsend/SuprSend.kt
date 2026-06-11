@@ -17,10 +17,8 @@ import app.suprsend.notification.NotificationActionVo
 import app.suprsend.user.User
 import app.suprsend.utils.ClientUserAgentBuilder
 import app.suprsend.utils.runOnUIThread
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
-import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.iid.InstanceIdResult
+import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
 
 class SuprSend private constructor() {
@@ -29,18 +27,16 @@ class SuprSend private constructor() {
 
     init {
         if (FirebaseApp.getApps(SSInternal.context).isNotEmpty()) {
-            FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(
-                OnCompleteListener<InstanceIdResult> { task ->
-                    if (!task.isSuccessful) {
-                        Logger.i(SSConstants.TAG_SUPRSEND, "Fetching FCM registration token failed")
-                        return@OnCompleteListener
-                    }
-                    val token = task.result?.token
-                    if (!token.isNullOrBlank()) {
-                        user.setAndroidFcmPushAsync(token)
-                    }
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Logger.i(SSConstants.TAG_SUPRSEND, "Fetching FCM registration token failed")
+                    return@addOnCompleteListener
                 }
-            )
+                val token = task.result
+                if (!token.isNullOrBlank()) {
+                    user.setAndroidFcmPushAsync(token)
+                }
+            }
         }
     }
 
