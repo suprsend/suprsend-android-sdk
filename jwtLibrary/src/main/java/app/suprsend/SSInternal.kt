@@ -242,7 +242,7 @@ internal object SSInternal {
             }
             return ApiResponse(status = ResponseStatus.SUCCESS, statusCode = 200, message = "refreshTokenIfRequired : Succeeded : $userToken")
         }
-        return ApiResponse(status = ResponseStatus.ERROR, statusCode = 401, message = "Your token is expired")
+        return ApiResponse(status = ResponseStatus.SUCCESS, statusCode = 200, message = "JWT is disabled")
     }
 
     private fun isJWTTokenExpired(userToken: String): Boolean {
