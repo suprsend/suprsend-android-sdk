@@ -81,14 +81,7 @@ internal object SSConstants {
 
 
     // Config Helper Keys
-    const val CONFIG_API_KEY = "api_key"
-    const val CONFIG_API_SECRET = "app_secret"
-    const val CONFIG_API_BASE_URL = "api_base_url"
-    const val CONFIG_INBOX_API_BASE_URL = "inbox_api_base_url"
-    const val CONFIG_INBOX_SOCKET_BASE_URL = "inbox_socket_base_url"
-    const val CONFIG_USER_ID = "user_id"
-    const val CONFIG_IS_APP_INSTALLED = "is_app_launched" // Mistakenly value was places wrong in ver 1 keep this as it is to avoid wrong stats
-    const val CONFIG_APP_LAUNCH_TIME = "app_launch_time"
+    const val CONFIG_PUBLIC_KEY = "public_key"
     const val CONFIG_DISTINCT_ID = "distinct_id"
 
     // As soon as user call identify his distinct id is stored in distinct_id_try distinct id since this identify can fail due to network error

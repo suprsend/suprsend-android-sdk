@@ -155,8 +155,9 @@ class SuprSend private constructor() {
         @Volatile
         private var suprsend: SuprSend? = null
         fun getInstance(): SuprSend {
-            if (!SSInternal.isSuprSendDataInitialized()) {
-                throw IllegalStateException("Suprsend SDK is not initialized. Please use Suprsend.initialize() method to initialize.")
+            if (SSInternal.suprSendData.publicApiKey.isNullOrBlank()) {
+                val cachedPublicKey = LocalStorage.getValue(SSConstants.CONFIG_PUBLIC_KEY)
+                SSInternal.suprSendData.publicApiKey = cachedPublicKey
             }
             return suprsend ?: synchronized(this) {
                 suprsend ?: SuprSend().also { suprsend = it }
@@ -173,6 +174,7 @@ class SuprSend private constructor() {
             try {
                 SSInternal.context = context.applicationContext
                 SSInternal.suprSendData.publicApiKey = publicApiKey
+                LocalStorage.setValue(SSConstants.CONFIG_PUBLIC_KEY, publicApiKey)
                 SSInternal.suprSendData.distinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID)
                 SSInternal.suprSendData.host = host?:SSConstants.DEFAULT_BASE_API_URL
                 SSInternal.suprSendData.clientInfo = clientInfo ?: ClientInfo(appInfo = appInfo)
