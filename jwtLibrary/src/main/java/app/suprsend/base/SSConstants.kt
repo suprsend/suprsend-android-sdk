@@ -81,6 +81,7 @@ internal object SSConstants {
 
 
     // Config Helper Keys
+    const val CONFIG_HOST = "host"
     const val CONFIG_PUBLIC_KEY = "public_key"
     const val CONFIG_DISTINCT_ID = "distinct_id"
 
@@ -89,6 +90,7 @@ internal object SSConstants {
     const val CONFIG_DISTINCT_ID_TRY = "distinct_id_try"
     const val CONFIG_FCM_PUSH_TOKEN = "fcm_push_token"
     const val CONFIG_FCM_TOKEN_SYNC_STATUS = "fcm_push_token_sync_status"
+
     const val CONFIG_DEVICE_ID = "device_id"
     const val CONFIG_NOTIFICATION_GROUP_SHOWN = "notification_group_shown_%s"
 

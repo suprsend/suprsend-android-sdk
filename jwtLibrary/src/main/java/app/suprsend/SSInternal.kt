@@ -60,11 +60,12 @@ internal object SSInternal {
             )
         }
 
-        val localDistinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID)
+        val localDistinctId = SDKPref.distinctId
         if (!force && distinctId == localDistinctId) {
+            suprSendData.distinctId = distinctId
             return ApiResponse(status = ResponseStatus.SUCCESS)
         }
-        LocalStorage.setValue(SSConstants.CONFIG_DISTINCT_ID_TRY, distinctId)
+        SDKPref.distinctIdTry = distinctId
         val apiResponse = trackEvent(
             eventName = SSConstants.IDENTIFY,
             distinctId = distinctId,
@@ -75,8 +76,8 @@ internal object SSInternal {
             fromIdentify = true
         )
         if (apiResponse.status == ResponseStatus.SUCCESS) {
-            LocalStorage.setValue(SSConstants.CONFIG_DISTINCT_ID, distinctId)
-            LocalStorage.setValue(SSConstants.CONFIG_DISTINCT_ID_TRY, "")
+            SDKPref.distinctId = distinctId
+            SDKPref.distinctIdTry = null
             suprSendData.distinctId = distinctId
             appendNotificationToken()
         }
@@ -226,8 +227,8 @@ internal object SSInternal {
                     if (!isJWTTokenExpired(userToken)) {
                         storeToken(userToken)
                         Logger.v(SSConstants.TAG_SUPRSEND, "Got $distinctId $userToken")
-                        val tryIdentity = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID_TRY)
-                        val identifyFailedEarlier = !tryIdentity.isNullOrBlank()
+                        val tryDistinctIdentity = SDKPref.distinctIdTry
+                        val identifyFailedEarlier = !tryDistinctIdentity.isNullOrBlank()
                         if (!fromIdentify && identifyFailedEarlier) {
                             val response = identity(distinctId, force = true) // refresh
                             Logger.v(SSConstants.TAG_SUPRSEND, "Response : $response")
@@ -333,8 +334,8 @@ internal object SSInternal {
         SSInboxInternal.reset()
         suprSendData.distinctId = null
         LocalStorage.remove(SSConstants.USER_TOKEN)
-        LocalStorage.remove(SSConstants.CONFIG_DISTINCT_ID)
-        LocalStorage.remove(SSConstants.CONFIG_DISTINCT_ID_TRY)
+        SDKPref.distinctId = null
+        SDKPref.distinctIdTry = null
     }
 
 
@@ -352,23 +353,26 @@ internal object SSInternal {
 
     @WorkerThread
     private fun appendNotificationToken() {
-        val fcmToken = LocalStorage.getValue(SSConstants.CONFIG_FCM_PUSH_TOKEN)
+        val fcmToken = SDKPref.fcmToken
         if (!fcmToken.isNullOrBlank()) {
             val jsonObject = JSONObject()
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, fcmToken)
             jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
             jsonObject.put(SSConstants.DEVICE_ID, DeviceInfo.getDeviceId())
-            trackOperator(
+            val response = trackOperator(
                 operator = SSConstants.APPEND,
                 properties = jsonObject,
                 ignoreFilter = true
             )
+            if(response.isSuccess()){
+                SDKPref.fcmTokenSyncedToServer = true
+            }
         }
     }
 
     @WorkerThread
     private fun removeNotificationToken(): ApiResponse? {
-        val fcmToken = LocalStorage.getValue(SSConstants.CONFIG_FCM_PUSH_TOKEN)
+        val fcmToken = SDKPref.fcmToken
         if (!fcmToken.isNullOrBlank()) {
             val jsonObject = JSONObject()
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, fcmToken)
@@ -384,7 +388,7 @@ internal object SSInternal {
     }
 
     private fun tryToIdentify(log: String): ApiResponse? {
-        val tryDistinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID_TRY) ?: ""
+        val tryDistinctId = SDKPref.distinctIdTry?:""
         var action: ApiResponse? = null
         if (tryDistinctId.isNotBlank()) {
             action = identity(tryDistinctId) // try to identify

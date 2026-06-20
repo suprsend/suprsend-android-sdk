@@ -8,8 +8,7 @@ internal object LocalStorage {
     private const val SUPRSEND_PREF = "suprsend_pref"
 
     fun getValue(key: String): String? {
-        return SSInternal.context.getSharedPreferences(SUPRSEND_PREF, Context.MODE_PRIVATE)
-            .getString(key, "")
+        return SSInternal.context.getSharedPreferences(SUPRSEND_PREF, Context.MODE_PRIVATE).getString(key, "")
     }
 
     @SuppressLint("ApplySharedPref")

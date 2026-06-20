@@ -4,12 +4,12 @@ import android.app.Application
 import android.util.Log
 import app.suprsend.AppInfo
 import app.suprsend.NotificationCallbackListener
-import app.suprsend.SuprSend
 import app.suprsend.RefreshTokenCallback
-import app.suprsend.android.CommonAnalyticsHandler.suprSend
+import app.suprsend.SuprSend
 import app.suprsend.base.NetworkClient
 import app.suprsend.log.LogLevel
 import app.suprsend.log.LoggerCallback
+import app.suprsend.notification.NotificationActionVo
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.json.JSONObject
 import java.net.URLEncoder
@@ -17,10 +17,6 @@ import java.net.URLEncoder
 class MyApplication : Application() {
 
     override fun onCreate() {
-//        SuprSend.setContext(context = this)
-//        SuprSend.setHost(host = BuildConfig.SS_BASE_URL)
-
-        //or
 
         SuprSend.initialize(
             context = this,
@@ -63,6 +59,12 @@ class MyApplication : Application() {
                 Log.i(AppConstants.TAG, "onPushPayloadReceived : $data")
             }
 
+            override fun onNotificationClicked(notificationActionVo: NotificationActionVo, data: Map<String, String>) {
+                Log.i(
+                    AppConstants.TAG,
+                    "onNotificationClicked : id=${notificationActionVo.notificationId}, link=${notificationActionVo.link}, actionType=${notificationActionVo.notificationActionType}, data=$data"
+                )
+            }
         })
     }
 }

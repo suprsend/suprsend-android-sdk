@@ -39,7 +39,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         try {
-            Log.i(AppConstants.TAG, "FCM Token : $token")
+            Log.i(AppConstants.TAG, "FCM onNewToken : $token")
             val instance = SuprSend.getInstance()
             instance.user.setAndroidFcmPushAsync(token)
         } catch (e: Exception) {

@@ -1,6 +1,7 @@
 package app.suprsend.user
 
 import androidx.annotation.WorkerThread
+import app.suprsend.SDKPref
 import app.suprsend.SSInternal
 import app.suprsend.base.ActionStatusCallback
 import app.suprsend.base.DeviceInfo
@@ -634,16 +635,13 @@ class User() {
 
     @WorkerThread
     fun setAndroidFcmPush(token: String): ApiResponse {
-        val oldToken = LocalStorage.getValue(SSConstants.CONFIG_FCM_PUSH_TOKEN)
-        LocalStorage.setValue(SSConstants.CONFIG_FCM_PUSH_TOKEN, token)
-        if (oldToken != token) {
-            LocalStorage.setValue(SSConstants.CONFIG_FCM_TOKEN_SYNC_STATUS, "false")
-        } else {
-            val syncStatus = (LocalStorage.getValue(SSConstants.CONFIG_FCM_TOKEN_SYNC_STATUS) ?: "false").toBoolean()
-            if (syncStatus) {
-                return ApiResponse(status = ResponseStatus.SUCCESS, statusCode = 200, message = "FCM token is already sync")
-            }
+        val oldToken = SDKPref.fcmToken
+        if (oldToken == token) {
+            return ApiResponse(status = ResponseStatus.SUCCESS, statusCode = 200, message = "FCM token is already sync")
         }
+        SDKPref.fcmToken = token
+        SDKPref.fcmTokenSyncedToServer = false
+
         val jsonObject = JSONObject()
         jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, token)
         jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
@@ -655,7 +653,7 @@ class User() {
             ignoreFilter = true
         )
         if (actionStatus.isSuccess()) {
-            LocalStorage.setValue(SSConstants.CONFIG_FCM_TOKEN_SYNC_STATUS, "true")
+            SDKPref.fcmTokenSyncedToServer = true
         }
         return actionStatus
     }

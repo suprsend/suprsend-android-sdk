@@ -5,7 +5,9 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import app.suprsend.SSInternal
 import app.suprsend.SuprSend
 import app.suprsend.base.SSConstants
 import app.suprsend.log.Logger
@@ -54,6 +56,11 @@ class NotificationRedirectionActivity : Activity() {
         val notificationActionVo = getNotificationActionVo(activityExtras)
         notificationActionVo ?: return
 
+        SSInternal.suprSendData.notificationCallbackListener?.onNotificationClicked(
+            notificationActionVo,
+            getPushData(activityExtras)
+        )
+
         // Notification Clicked
         // Using instance since we have to schedule it on sdk thread
         SuprSend.getInstance().trackEventAsync(
@@ -91,13 +98,34 @@ class NotificationRedirectionActivity : Activity() {
         return activityExtras.get(NotificationRedirection.FLOW_PAYLOAD) as? NotificationActionVo
     }
 
+    private fun getPushData(activityExtras: Bundle): Map<String, String> {
+        return try {
+            @Suppress("DEPRECATION")
+            val raw = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                activityExtras.getSerializable(NotificationRedirection.FLOW_PUSH_DATA, HashMap::class.java)
+            } else {
+                activityExtras.getSerializable(NotificationRedirection.FLOW_PUSH_DATA)
+            }
+            @Suppress("UNCHECKED_CAST")
+            (raw as? HashMap<String, String>) ?: emptyMap()
+        } catch (e: Exception) {
+            emptyMap()
+        }
+    }
 
     companion object {
 
-        fun getIntent(context: Context, notificationActionVo: NotificationActionVo): Intent {
+        fun getIntent(
+            context: Context,
+            notificationActionVo: NotificationActionVo,
+            pushData: Map<String, String>? = null
+        ): Intent {
             val bundle = Bundle()
             bundle.putString(NotificationRedirection.FLOW_NAME, NotificationRedirection.NOTIFICATION_CLICKED.name)
             bundle.putSerializable(NotificationRedirection.FLOW_PAYLOAD, notificationActionVo)
+            if (!pushData.isNullOrEmpty()) {
+                bundle.putSerializable(NotificationRedirection.FLOW_PUSH_DATA, HashMap(pushData))
+            }
             return Intent()
                 .setClass(context, NotificationRedirectionActivity::class.java)
                 .putExtras(bundle)
@@ -111,6 +139,7 @@ enum class NotificationRedirection {
     companion object {
         const val FLOW_NAME = "flow_name"
         const val FLOW_PAYLOAD = "flow_payload"
+        const val FLOW_PUSH_DATA = "flow_push_data"
     }
 }
 

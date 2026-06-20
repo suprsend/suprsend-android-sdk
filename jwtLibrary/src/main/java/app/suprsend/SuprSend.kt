@@ -25,21 +25,6 @@ class SuprSend private constructor() {
 
     val user = User()
 
-    init {
-        if (FirebaseApp.getApps(SSInternal.context).isNotEmpty()) {
-            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Logger.i(SSConstants.TAG_SUPRSEND, "Fetching FCM registration token failed")
-                    return@addOnCompleteListener
-                }
-                val token = task.result
-                if (!token.isNullOrBlank()) {
-                    user.setAndroidFcmPushAsync(token)
-                }
-            }
-        }
-    }
-
     @WorkerThread
     fun identify(distinctId: String, userToken: String? = null, refreshTokenCallback: RefreshTokenCallback? = null): ApiResponse {
         return SSInternal.identity( // identify
@@ -134,7 +119,8 @@ class SuprSend private constructor() {
         }
     }
 
-    fun notificationClicked(notificationActionVo: NotificationActionVo) {
+    fun notificationClicked(notificationActionVo: NotificationActionVo, data: Map<String, String> = emptyMap()) {
+        SSInternal.suprSendData.notificationCallbackListener?.onNotificationClicked(notificationActionVo, data)
         trackEventAsync(
             eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
             properties = JSONObject().apply {
@@ -155,20 +141,40 @@ class SuprSend private constructor() {
         @Volatile
         private var suprsend: SuprSend? = null
         fun getInstance(): SuprSend {
-            if (SSInternal.suprSendData.publicApiKey.isNullOrBlank()) {
-                val cachedPublicKey = LocalStorage.getValue(SSConstants.CONFIG_PUBLIC_KEY)
-                SSInternal.suprSendData.publicApiKey = cachedPublicKey
-            }
             return suprsend ?: synchronized(this) {
                 suprsend ?: SuprSend().also { suprsend = it }
             }
         }
 
-        fun setContext(context: Context){
-            SSInternal.context = context.applicationContext
+        fun initCache(){
+            SSInternal.suprSendData.publicApiKey = SDKPref.publicKey
+            SSInternal.suprSendData.distinctId = SDKPref.distinctId
+            SSInternal.suprSendData.host = SDKPref.host ?: SSConstants.DEFAULT_BASE_API_URL
         }
-        fun setHost(host: String?){
-            SSInternal.suprSendData.host = host?:SSConstants.DEFAULT_BASE_API_URL
+
+        fun initialize(context: Context, host: String?) {
+            SSInternal.context = context.applicationContext
+            initCache()
+            if (host != null)
+                SDKPref.host = host
+            registerFCMToken()
+        }
+
+        private fun registerFCMToken() {
+            sdkExecutorService.execute {
+                if (FirebaseApp.getApps(SSInternal.context).isNotEmpty()) {
+                    FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                        if (!task.isSuccessful) {
+                            Logger.i(SSConstants.TAG_SUPRSEND, "Fetching FCM registration token failed")
+                            return@addOnCompleteListener
+                        }
+                        val token = task.result
+                        if (!token.isNullOrBlank()) {
+                            getInstance().user.setAndroidFcmPushAsync(token)
+                        }
+                    }
+                }
+            }
         }
 
         fun initialize(
@@ -179,11 +185,9 @@ class SuprSend private constructor() {
             host: String? = null
         ) {
             try {
-                setContext(context)
+                initialize(context, host)
                 SSInternal.suprSendData.publicApiKey = publicApiKey
-                LocalStorage.setValue(SSConstants.CONFIG_PUBLIC_KEY, publicApiKey)
-                SSInternal.suprSendData.distinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID)
-                setHost(host)
+                SDKPref.publicKey = publicApiKey
                 SSInternal.suprSendData.clientInfo = clientInfo ?: ClientInfo(appInfo = appInfo)
                 calculateUserAgentInfo()
                 // Drain any notification events queued offline; runs every 10s in the background.
