@@ -1,9 +1,7 @@
 package app.suprsend.android
 
-import android.annotation.SuppressLint
 import android.content.Context
 import app.suprsend.SuprSend
-import app.suprsend.android.AppCreator.context
 import app.suprsend.android.AppCreator.getValue
 import app.suprsend.inbox.InboxStore
 import app.suprsend.inbox.SuprsendInbox
@@ -14,28 +12,19 @@ import org.json.JSONObject
 
 object CommonAnalyticsHandler {
 
-    private lateinit var suprSend: SuprSend
+    private val suprSend: SuprSend by lazy { SuprSend.getInstance() }
 
-    @SuppressLint("StaticFieldLeak")
-    private lateinit var mixpanelAPI: MixpanelAPI
-
-    fun initialize(context: Context) {
-        if (this::suprSend.isInitialized)
-            return
-        suprSend = SuprSend.getInstance()
-        suprSend.setLogLevel(LogLevel.VERBOSE)
-        mixpanelAPI = MixpanelAPI.getInstance(context, BuildConfig.MX_TOKEN)
-    }
+    private val mixpanelAPI: MixpanelAPI by lazy { MixpanelAPI.getInstance(AppCreator.context, BuildConfig.MX_TOKEN) }
 
     fun initializeInbox() {
 
         val subscriberId = getValue(AppConstants.PREF_INBOX_SUBSCRIBER_ID, BuildConfig.SS_INBOX_SUBSCRIBER_ID)
         val tenantId = getValue(AppConstants.PREF_TENANT_ID, "").ifBlank { null }
 
-        val inboxStoreJson = getValue(AppConstants.PREF_INBOX_STORE_JSON, AppCreator.getInboxStoreJson(context))
+        val inboxStoreJson = getValue(AppConstants.PREF_INBOX_STORE_JSON, AppCreator.getInboxStoreJson(AppCreator.context))
         val inboxStoreList = if (inboxStoreJson.isBlank()) null else InboxStore.from(JSONArray(inboxStoreJson))
 
-        val inboxThemeConfig = InboxThemeConfig(JSONObject(context.readStringFromAsset("inbox_screen_theme.json")))
+        val inboxThemeConfig = InboxThemeConfig(JSONObject(AppCreator.context.readStringFromAsset("inbox_screen_theme.json")))
         AppCreator.inboxThemeConfig = inboxThemeConfig
 
         SuprsendInbox.setBaseUrl("https://inbox-staging.inboxs.workers.dev")

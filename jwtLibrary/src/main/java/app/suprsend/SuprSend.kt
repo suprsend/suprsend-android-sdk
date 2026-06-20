@@ -164,6 +164,13 @@ class SuprSend private constructor() {
             }
         }
 
+        fun setContext(context: Context){
+            SSInternal.context = context.applicationContext
+        }
+        fun setHost(host: String?){
+            SSInternal.suprSendData.host = host?:SSConstants.DEFAULT_BASE_API_URL
+        }
+
         fun initialize(
             context: Context,
             publicApiKey: String,
@@ -172,11 +179,11 @@ class SuprSend private constructor() {
             host: String? = null
         ) {
             try {
-                SSInternal.context = context.applicationContext
+                setContext(context)
                 SSInternal.suprSendData.publicApiKey = publicApiKey
                 LocalStorage.setValue(SSConstants.CONFIG_PUBLIC_KEY, publicApiKey)
                 SSInternal.suprSendData.distinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID)
-                SSInternal.suprSendData.host = host?:SSConstants.DEFAULT_BASE_API_URL
+                setHost(host)
                 SSInternal.suprSendData.clientInfo = clientInfo ?: ClientInfo(appInfo = appInfo)
                 calculateUserAgentInfo()
                 // Drain any notification events queued offline; runs every 10s in the background.
