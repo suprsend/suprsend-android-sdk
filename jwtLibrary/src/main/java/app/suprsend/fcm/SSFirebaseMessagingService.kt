@@ -12,7 +12,7 @@ class SSFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         try {
-            SuprSend.initialize(context = this, host = null)
+            SuprSend.initialize(context = this)
             SSNotificationHelper.showFCMNotification(applicationContext, remoteMessage)
             SSInternal.suprSendData.notificationCallbackListener?.onPushPayloadReceived(remoteMessage.data)
         } catch (e: Exception) {

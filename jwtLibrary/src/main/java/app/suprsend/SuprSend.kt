@@ -156,7 +156,7 @@ class SuprSend private constructor() {
             SSInternal.suprSendData.host = (SDKPref.host?.ifBlank { null }) ?: SSConstants.DEFAULT_BASE_API_URL
         }
 
-        fun initialize(context: Context, host: String?) {
+        fun initialize(context: Context, host: String? = null) {
             SSInternal.context = context.applicationContext
             initCache()
             if (host != null) {
