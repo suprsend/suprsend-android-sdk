@@ -149,14 +149,20 @@ class SuprSend private constructor() {
         fun initCache(){
             SSInternal.suprSendData.publicApiKey = SDKPref.publicKey
             SSInternal.suprSendData.distinctId = SDKPref.distinctId
-            SSInternal.suprSendData.host = SDKPref.host ?: SSConstants.DEFAULT_BASE_API_URL
+            initHostFromCache()
+        }
+
+        private fun initHostFromCache() {
+            SSInternal.suprSendData.host = (SDKPref.host?.ifBlank { null }) ?: SSConstants.DEFAULT_BASE_API_URL
         }
 
         fun initialize(context: Context, host: String?) {
             SSInternal.context = context.applicationContext
             initCache()
-            if (host != null)
+            if (host != null) {
                 SDKPref.host = host
+                SSInternal.suprSendData.host = host
+            }
             registerFCMToken()
         }
 
@@ -186,6 +192,10 @@ class SuprSend private constructor() {
         ) {
             try {
                 initialize(context, host)
+                if (host == null) {
+                    SDKPref.host = null
+                    initHostFromCache()
+                }
                 SSInternal.suprSendData.publicApiKey = publicApiKey
                 SDKPref.publicKey = publicApiKey
                 SSInternal.suprSendData.clientInfo = clientInfo ?: ClientInfo(appInfo = appInfo)
