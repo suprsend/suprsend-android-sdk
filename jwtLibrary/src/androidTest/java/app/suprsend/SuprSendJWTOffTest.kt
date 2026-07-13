@@ -52,7 +52,7 @@ class SuprSendJWTOffTest : BaseTest() {
             host = "https://collector-staging.suprsend.workers.dev"
         )
         SSInternal.networkClient = networkClient
-        SuprSend.setRefreshTokenCallback(null)
+        SuprSend.setRefreshUserToken(null)
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         val actionStatus = suprsend.identify("1231")

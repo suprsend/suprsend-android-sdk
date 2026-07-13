@@ -1,5 +1,5 @@
 package app.suprsend
 
-interface RefreshTokenCallback {
+interface RefreshUserTokenCallback {
     fun getToken(distinctId: String): String
 }

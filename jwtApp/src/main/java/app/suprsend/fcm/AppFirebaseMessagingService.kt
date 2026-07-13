@@ -41,7 +41,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
         try {
             Log.i(AppConstants.TAG, "FCM onNewToken : $token")
             val instance = SuprSend.getInstance()
-            instance.user.setAndroidFcmPushAsync(token)
+            instance.user.addFcmPushAsync(token)
         } catch (e: Exception) {
             Log.e(AppConstants.TAG, "onNewToken", e)
         }

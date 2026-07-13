@@ -1,10 +1,11 @@
 package app.suprsend.android
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import app.suprsend.AppInfo
 import app.suprsend.NotificationCallbackListener
-import app.suprsend.RefreshTokenCallback
+import app.suprsend.RefreshUserTokenCallback
 import app.suprsend.SuprSend
 import app.suprsend.base.NetworkClient
 import app.suprsend.log.LogLevel
@@ -32,9 +33,9 @@ class MyApplication : Application() {
 
         val jwtTokenBoolean = defaultSharedPreferences.getBoolean("jwtToken", true)
         if (jwtTokenBoolean) {
-            SuprSend.setRefreshTokenCallback(RefreshTokenCallbackImpl())
+            SuprSend.setRefreshUserToken(RefreshUserTokenCallbackImpl())
         } else {
-            SuprSend.setRefreshTokenCallback(null)
+            SuprSend.setRefreshUserToken(null)
         }
 
         super.onCreate()
@@ -55,7 +56,7 @@ class MyApplication : Application() {
         })
 
         SuprSend.setNotificationCallback(object : NotificationCallbackListener {
-            override fun onPushPayloadReceived(data: Map<String, String>) {
+            override fun onPushPayloadReceived(context: Context,data: Map<String, String>) {
                 Log.i(AppConstants.TAG, "onPushPayloadReceived : $data")
             }
 
@@ -69,7 +70,7 @@ class MyApplication : Application() {
     }
 }
 
-class RefreshTokenCallbackImpl : RefreshTokenCallback {
+class RefreshUserTokenCallbackImpl : RefreshUserTokenCallback {
 
     private val networkClient = NetworkClient()
 

@@ -147,7 +147,7 @@ class SuprSendClientUserAgentHeaderTest : BaseTest() {
     }
 
     @Test
-    fun trackEvent_forwardsBothHeadersToNetworkClient() {
+    fun track_forwardsBothHeadersToNetworkClient() {
         val headerSlot = slot<Map<String, String>>()
         every {
             networkClient.httpCall(
@@ -165,7 +165,7 @@ class SuprSendClientUserAgentHeaderTest : BaseTest() {
             host = TestConstants.SS_BASE_URL
         )
         SSInternal.networkClient = networkClient
-        SuprSend.setRefreshTokenCallback(null)
+        SuprSend.setRefreshUserToken(null)
 
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -173,7 +173,7 @@ class SuprSendClientUserAgentHeaderTest : BaseTest() {
         // First call drives the $identify event - reset the slot to focus on the next event.
         suprsend.identify("D1")
         headerSlot.clear()
-        suprsend.trackEvent("home_viewed")
+        suprsend.track("home_viewed")
 
         assertTrue(headerSlot.isCaptured)
         val captured = headerSlot.captured

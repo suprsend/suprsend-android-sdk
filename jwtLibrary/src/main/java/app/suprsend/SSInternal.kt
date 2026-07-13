@@ -34,11 +34,11 @@ internal object SSInternal {
     fun identity(
         distinctId: String,
         userToken: String? = null,
-        refreshTokenCallback: RefreshTokenCallback? = null,
+        refreshUserToken: RefreshUserTokenCallback? = null,
         force: Boolean = false
     ): ApiResponse {
-        if (refreshTokenCallback != null)
-            suprSendData.refreshTokenCallback = refreshTokenCallback
+        if (refreshUserToken != null)
+            suprSendData.refreshUserToken = refreshUserToken
 
         if (userToken != null)
             LocalStorage.setValue(SSConstants.USER_TOKEN, userToken)
@@ -211,9 +211,9 @@ internal object SSInternal {
                 message = "Internet connection is not available"
             )
         }
-        val refreshTokenCallback = suprSendData.refreshTokenCallback
+        val refreshUserToken = suprSendData.refreshUserToken
 
-        if (refreshTokenCallback != null) {
+        if (refreshUserToken != null) {
             var userToken = getToken() ?: ""
 
             if (isJWTTokenExpired(userToken)) {
@@ -223,7 +223,7 @@ internal object SSInternal {
                     }else{
                         Logger.v(SSConstants.TAG_SUPRSEND, "User token is expired $userToken")
                     }
-                    userToken = refreshTokenCallback.getToken(distinctId)
+                    userToken = refreshUserToken.getToken(distinctId)
                     if (!isJWTTokenExpired(userToken)) {
                         storeToken(userToken)
                         Logger.v(SSConstants.TAG_SUPRSEND, "Got $distinctId $userToken")
@@ -320,7 +320,7 @@ internal object SSInternal {
                 headersL["X-Suprsend-Client-User-Agent"] = it
             }
 
-        if (suprSendData.refreshTokenCallback != null) {
+        if (suprSendData.refreshUserToken != null) {
             headersL["x-ss-signature"] = getToken() ?: ""
         }
 

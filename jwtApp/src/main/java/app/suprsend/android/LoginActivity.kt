@@ -50,9 +50,9 @@ class LoginActivity : AppCompatActivity() {
                 apply()
             }
             if (isChecked) {
-                SuprSend.setRefreshTokenCallback(RefreshTokenCallbackImpl())
+                SuprSend.setRefreshUserToken(RefreshUserTokenCallbackImpl())
             } else {
-                SuprSend.setRefreshTokenCallback(null)
+                SuprSend.setRefreshUserToken(null)
             }
         }
 
