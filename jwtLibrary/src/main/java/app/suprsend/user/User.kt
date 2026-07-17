@@ -132,7 +132,7 @@ class User() {
         )
     }
 
-    fun unSetAsync(key: String, actionStatusCallback: ActionStatusCallback? = null) {
+    fun unsetAsync(key: String, actionStatusCallback: ActionStatusCallback? = null) {
         sdkExecutorService.execute {
             try {
                 val actionStatus = unset(key)
@@ -157,7 +157,7 @@ class User() {
         )
     }
 
-    fun unSetAsync(keys: List<String>, actionStatusCallback: ActionStatusCallback? = null) {
+    fun unsetAsync(keys: List<String>, actionStatusCallback: ActionStatusCallback? = null) {
         sdkExecutorService.execute {
             try {
                 val actionStatus = unset(keys)

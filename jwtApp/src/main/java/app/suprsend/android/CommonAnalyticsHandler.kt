@@ -105,7 +105,7 @@ object CommonAnalyticsHandler {
     }
 
     fun unset(key: String) {
-        suprSend.user.unSetAsync(key)
+        suprSend.user.unsetAsync(key)
         mixpanelAPI.people.unset(key)
     }
 
