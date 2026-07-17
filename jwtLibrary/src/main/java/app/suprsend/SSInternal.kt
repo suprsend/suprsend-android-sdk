@@ -41,7 +41,7 @@ internal object SSInternal {
             suprSendData.refreshUserToken = refreshUserToken
 
         if (userToken != null)
-            LocalStorage.setValue(SSConstants.USER_TOKEN, userToken)
+            suprSendData.userToken = userToken
 
         if (distinctId.isBlank()) {
             return ApiResponse(
@@ -234,7 +234,7 @@ internal object SSInternal {
                             Logger.v(SSConstants.TAG_SUPRSEND, "Response : $response")
                         }
                     } else {
-                        Logger.e(SSConstants.TAG_SUPRSEND, "Invalid token has received : $userToken")
+                        Logger.e(SSConstants.TAG_SUPRSEND, "Invalid token has received : $userToken $distinctId")
                     }
                     refreshTokenIfRequired(distinctId, retryCount + 1)
                 } else {
@@ -333,7 +333,7 @@ internal object SSInternal {
         SSPreferenceInternal.clearUserPreference()
         SSInboxInternal.reset()
         suprSendData.distinctId = null
-        LocalStorage.remove(SSConstants.USER_TOKEN)
+        suprSendData.userToken = null
         SDKPref.distinctId = null
         SDKPref.distinctIdTry = null
     }
@@ -341,14 +341,14 @@ internal object SSInternal {
 
     fun storeToken(userToken: String?) {
         if (userToken == null) {
-            LocalStorage.remove(SSConstants.USER_TOKEN)
+            suprSendData.userToken = null
         } else {
-            LocalStorage.setValue(SSConstants.USER_TOKEN, userToken)
+            suprSendData.userToken = userToken
         }
     }
 
     fun getToken(): String? {
-        return LocalStorage.getValue(SSConstants.USER_TOKEN)
+        return suprSendData.userToken
     }
 
     @WorkerThread
@@ -414,7 +414,7 @@ internal object SSInternal {
             val errorResponse = JSONObject(errorResponseStr)
             val type = errorResponse.optJSONObject("error")?.optString("type")
             if (type == "token_invalid") {
-                LocalStorage.remove(SSConstants.USER_TOKEN)
+                suprSendData.userToken = null
                 refreshTokenIfRequired(distinctId = suprSendData.distinctId ?: "")
             }
         } catch (e: Exception) {

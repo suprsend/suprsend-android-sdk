@@ -20,5 +20,7 @@ internal data class SuprSendData(
     var clientInfo: ClientInfo? = null,
 
     var userAgent: String? = null,
-    var clientUserAgentJson: String? = null
+    var clientUserAgentJson: String? = null,
+
+    var userToken : String? = null
 )
