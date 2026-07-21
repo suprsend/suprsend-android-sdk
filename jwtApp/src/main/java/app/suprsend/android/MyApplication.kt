@@ -76,9 +76,14 @@ class RefreshUserTokenCallbackImpl : RefreshUserTokenCallback {
 
     override fun getToken(distinctId: String): String {
         return try {
+            val tenantId = AppCreator.getTenantId()
+            var url = "${BuildConfig.SS_BASE_URL}/authentication-token/${URLEncoder.encode(distinctId, "utf-8")}"
+            if (tenantId != null) {
+                url = "$url/?tenant_id=${URLEncoder.encode(tenantId, "utf-8")}"
+            }
             val response = networkClient.httpCall(
                 requestMethod = "GET",
-                url = "${BuildConfig.SS_BASE_URL}/authentication-token/${URLEncoder.encode(distinctId, "utf-8")}"
+                url = url
             )
             val responseJo = JSONObject(response.body ?: "{}")
             val token = responseJo.optString("token")

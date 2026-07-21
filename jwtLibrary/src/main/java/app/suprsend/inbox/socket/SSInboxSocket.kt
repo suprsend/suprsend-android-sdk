@@ -35,7 +35,7 @@ object SSInboxSocket {
                     "schema" to "1"
                 )
 
-                val tenantId = SSInboxInternal.inboxData.tenantId
+                val tenantId = SSInternal.suprSendData.tenantId
                 if (!tenantId.isNullOrBlank()) {
                     authMap["tenant_id"] = tenantId
                 }

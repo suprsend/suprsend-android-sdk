@@ -7,7 +7,6 @@ internal data class InboxData(
     var socketUrl: String = SSConstants.DEFAULT_INBOX_SOCKET_API_URL,
 
     var subscriberId: String? = null,
-    var tenantId: String? = null,
 
 
     var bellCount: Int = 0,

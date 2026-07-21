@@ -33,15 +33,12 @@ internal object SSInternal {
 
     fun identity(
         distinctId: String,
-        userToken: String? = null,
         refreshUserToken: RefreshUserTokenCallback? = null,
         force: Boolean = false
     ): ApiResponse {
         if (refreshUserToken != null)
             suprSendData.refreshUserToken = refreshUserToken
 
-        if (userToken != null)
-            suprSendData.userToken = userToken
 
         if (distinctId.isBlank()) {
             return ApiResponse(
@@ -267,6 +264,7 @@ internal object SSInternal {
         eventPayload.put(SSConstants.DISTINCT_ID, distinctId)
         eventPayload.put(SSConstants.INSERT_ID, UUID.randomUUID().toString())
         eventPayload.put(SSConstants.TIME, System.currentTimeMillis())
+        eventPayload.put(SSConstants.TENANT_ID, suprSendData.tenantId?: JSONObject.NULL)
 
         val filteredProperties = if (ignoreFilter) properties else properties.filterSSReservedKeys()
         // We finalized to not send device properties in payload will send in header
@@ -287,6 +285,7 @@ internal object SSInternal {
         eventPayload.put(SSConstants.DISTINCT_ID, distinctId)
         eventPayload.put(SSConstants.INSERT_ID, UUID.randomUUID().toString())
         eventPayload.put(SSConstants.TIME, System.currentTimeMillis())
+        eventPayload.put(SSConstants.TENANT_ID, suprSendData.tenantId?: JSONObject.NULL)
         if (properties != null) {
             eventPayload.put(operator, if (ignoreFilter) properties else properties.filterSSReservedKeys())
         }
@@ -334,6 +333,7 @@ internal object SSInternal {
         SSInboxInternal.reset()
         suprSendData.distinctId = null
         suprSendData.userToken = null
+        suprSendData.tenantId = null
         SDKPref.distinctId = null
         SDKPref.distinctIdTry = null
     }

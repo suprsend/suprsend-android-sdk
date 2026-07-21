@@ -163,10 +163,6 @@ private constructor() {
             SSInboxInternal.setSubscriberId(subscriberId)
         }
 
-        fun setTenantId(tenantId: String?) {
-            SSInboxInternal.setTenantId(tenantId)
-        }
-
         @Volatile
         private var instance: SuprsendInbox? = null
         fun getInstance(): SuprsendInbox {

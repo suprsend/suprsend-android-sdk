@@ -17,10 +17,13 @@ object AppCreator {
     private const val BASE_IMAGE_SERVER_URL = "https://freeappcreator.in/heruku"
 
     lateinit var context: Context
-    var tenantId: String? = null
     var inboxThemeConfig: InboxThemeConfig = InboxThemeConfig()
 
     val markWon: Markwon by lazy { Markwon.create(context) }
+
+    fun getTenantId(): String? {
+        return getValue(AppConstants.PREF_TENANT_ID, BuildConfig.SS_TENANT_ID).takeIf { it.isNotBlank() }
+    }
 
     fun loadUrl(context: Context, url: String, imageView: ImageView) {
         Glide.with(context)

@@ -2,6 +2,7 @@ package app.suprsend
 
 import android.content.Context
 import androidx.annotation.WorkerThread
+import app.suprsend.SSInternal.suprSendData
 import app.suprsend.base.ActionStatusCallback
 import app.suprsend.base.SSConstants
 import app.suprsend.base.sdkExecutorService
@@ -25,18 +26,21 @@ class SuprSend private constructor() {
     val user = User()
 
     @WorkerThread
-    fun identify(distinctId: String, userToken: String? = null, refreshUserToken: RefreshUserTokenCallback? = null): ApiResponse {
+    fun identify(distinctId: String, userToken: String? = null, tenantId: String? = null, refreshUserToken: RefreshUserTokenCallback? = null): ApiResponse {
+        if (userToken != null)
+            suprSendData.userToken = userToken
+        if (tenantId != null)
+            suprSendData.tenantId = tenantId
         return SSInternal.identity( // identify
             distinctId = distinctId,
-            userToken = userToken,
             refreshUserToken = refreshUserToken
         )
     }
 
-    fun identityAsync(distinctId: String, userToken: String? = null, refreshUserToken: RefreshUserTokenCallback? = null, actionStatusCallback: ActionStatusCallback? = null) {
+    fun identityAsync(distinctId: String, userToken: String? = null, tenantId: String? = null, refreshUserToken: RefreshUserTokenCallback? = null, actionStatusCallback: ActionStatusCallback? = null) {
         sdkExecutorService.execute {
             try {
-                val actionStatus = identify(distinctId, userToken, refreshUserToken)
+                val actionStatus = identify(distinctId, userToken, tenantId, refreshUserToken)
                 actionStatusCallback?.let {
                     SSInternal.context.runOnUIThread { it.onComplete(actionStatus) }
                 }
@@ -220,7 +224,7 @@ class SuprSend private constructor() {
             SSInternal.suprSendData.refreshUserToken = refreshUserToken
         }
 
-        fun setTenantId(tenantId: String?) {
+        fun changeTenant(tenantId: String?) {
             if (tenantId.isNullOrBlank())
                 SSInternal.suprSendData.tenantId = null
             else

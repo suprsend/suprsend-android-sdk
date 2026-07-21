@@ -19,7 +19,6 @@ object CommonAnalyticsHandler {
     fun initializeInbox() {
 
         val subscriberId = getValue(AppConstants.PREF_INBOX_SUBSCRIBER_ID, BuildConfig.SS_INBOX_SUBSCRIBER_ID)
-        val tenantId = getValue(AppConstants.PREF_TENANT_ID, "").ifBlank { null }
 
         val inboxStoreJson = getValue(AppConstants.PREF_INBOX_STORE_JSON, AppCreator.getInboxStoreJson(AppCreator.context))
         val inboxStoreList = if (inboxStoreJson.isBlank()) null else InboxStore.from(JSONArray(inboxStoreJson))
@@ -30,12 +29,11 @@ object CommonAnalyticsHandler {
         SuprsendInbox.setBaseUrl("https://inbox-staging.inboxs.workers.dev")
         SuprsendInbox.setInboxSocketUrl("https://staging-inbox-api.suprsend.com")
         SuprsendInbox.setSubscriberId(subscriberId)
-        SuprsendInbox.setTenantId(tenantId)
         SuprsendInbox.setInboxStores(inboxStoreList)
     }
 
-    fun identify(identity: String) {
-        suprSend.identityAsync(identity)
+    fun identify(identity: String, tenantId: String? = null) {
+        suprSend.identityAsync(identity, userToken = null,tenantId = tenantId)
         suprSend.user.addEmailAsync(identity)
         mixpanelAPI.identify(identity)
     }

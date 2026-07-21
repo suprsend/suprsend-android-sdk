@@ -39,10 +39,6 @@ internal object SSInboxInternal {
         inboxData.subscriberId = subscriberId
     }
 
-    fun setTenantId(tenantId: String?) {
-        inboxData.tenantId = tenantId
-    }
-
     fun setInboxStores(inboxStoreList: List<InboxStore>?) {
         inboxData.storesMap = if (inboxStoreList.isNullOrEmpty()) mapOf(InboxStore.DEFAULT_STORE to InboxStore(storeId = InboxStore.DEFAULT_STORE)) else inboxStoreList.associateBy { it.storeId }
     }
@@ -760,7 +756,7 @@ internal object SSInboxInternal {
             )
         }
 
-        val tenantId = SSInboxInternal.inboxData.tenantId
+        val tenantId = SSInternal.suprSendData.tenantId
         val finalUrl = if (!tenantId.isNullOrBlank()) {
             "$url&tenant_id=${urlEncode(tenantId)}"
         } else {

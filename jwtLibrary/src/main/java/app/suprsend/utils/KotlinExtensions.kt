@@ -215,7 +215,7 @@ internal fun <T> JSONArray.convertToList(): MutableList<T> {
 
 
 internal fun String.addTenantIdIfPresent(): String {
-    val tenantId = SSInboxInternal.inboxData.tenantId
+    val tenantId = SSInternal.suprSendData.tenantId
     if (tenantId.isNullOrBlank()) return this
 
     val uri = Uri.parse(this)
