@@ -351,17 +351,22 @@ internal object SSInternal {
         return suprSendData.userToken
     }
 
+    fun getFcmPushProperties(token: String): JSONObject {
+        return JSONObject().apply {
+            put(SSConstants.PUSH_BUNDLE_ID, context.packageName)
+            put(SSConstants.PUSH_ANDROID_TOKEN, token)
+            put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
+            put(SSConstants.DEVICE_ID, DeviceInfo.getDeviceId())
+        }
+    }
+
     @WorkerThread
     private fun appendNotificationToken() {
         val fcmToken = SDKPref.fcmToken
         if (!fcmToken.isNullOrBlank()) {
-            val jsonObject = JSONObject()
-            jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, fcmToken)
-            jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
-            jsonObject.put(SSConstants.DEVICE_ID, DeviceInfo.getDeviceId())
             val response = trackOperator(
                 operator = SSConstants.APPEND,
-                properties = jsonObject,
+                properties = getFcmPushProperties(fcmToken),
                 ignoreFilter = true
             )
             if(response.isSuccess()){
@@ -374,12 +379,8 @@ internal object SSInternal {
     private fun removeNotificationToken(): ApiResponse? {
         val fcmToken = SDKPref.fcmToken
         if (!fcmToken.isNullOrBlank()) {
-            val jsonObject = JSONObject()
-            jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, fcmToken)
-            jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
-            jsonObject.put(SSConstants.DEVICE_ID, DeviceInfo.getDeviceId())
             return trackOperator(
-                properties = jsonObject,
+                properties = getFcmPushProperties(fcmToken),
                 operator = SSConstants.REMOVE,
                 ignoreFilter = true
             )

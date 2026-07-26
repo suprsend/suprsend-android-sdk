@@ -4,7 +4,6 @@ import androidx.annotation.WorkerThread
 import app.suprsend.SDKPref
 import app.suprsend.SSInternal
 import app.suprsend.base.ActionStatusCallback
-import app.suprsend.base.DeviceInfo
 import app.suprsend.base.SSConstants
 import app.suprsend.base.sdkExecutorService
 import app.suprsend.log.Logger
@@ -641,14 +640,9 @@ class User() {
         SDKPref.fcmToken = token
         SDKPref.fcmTokenSyncedToServer = false
 
-        val jsonObject = JSONObject()
-        jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, token)
-        jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
-        jsonObject.put(SSConstants.DEVICE_ID, DeviceInfo.getDeviceId())
-
         val actionStatus = SSInternal.trackOperator(
             operator = SSConstants.APPEND,
-            properties = jsonObject,
+            properties = SSInternal.getFcmPushProperties(token),
             ignoreFilter = true
         )
         if (actionStatus.isSuccess()) {
@@ -672,14 +666,9 @@ class User() {
 
     @WorkerThread
     fun removeFcmPush(token: String): ApiResponse {
-        val jsonObject = JSONObject()
-        jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, token)
-        jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
-        jsonObject.put(SSConstants.DEVICE_ID, DeviceInfo.getDeviceId())
-
         val actionStatus = SSInternal.trackOperator(
             operator = SSConstants.REMOVE,
-            properties = jsonObject,
+            properties = SSInternal.getFcmPushProperties(token),
             ignoreFilter = true
         )
         if (actionStatus.isSuccess() && SDKPref.fcmToken == token) {

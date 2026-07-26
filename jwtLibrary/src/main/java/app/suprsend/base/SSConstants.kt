@@ -45,6 +45,7 @@ internal object SSConstants {
 
 
     const val SP_USER_PREFERENCES = "user_preferences"
+    const val PUSH_BUNDLE_ID = "\$bundle_id"
     const val PUSH_ANDROID_TOKEN = "\$androidpush"
     const val PUSH_VENDOR_FCM = "fcm"
     const val PUSH_VENDOR = "\$pushvendor"
