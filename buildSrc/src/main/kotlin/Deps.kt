@@ -79,7 +79,8 @@ object Deps {
         }
     }
     object Firebase {
-        const val messaging = "22.0.0"
+        // 23.x includes Android 12+ PendingIntent mutability fixes needed when targetSdk >= 31
+        const val messaging = "23.0.6"
     }
     const val material = "1.4.0"
 }
