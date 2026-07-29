@@ -19,14 +19,14 @@ class SuprSendIdentifyTest : BaseTest() {
 
     @Test
     fun verifyIdentityDistinctIdBlank() {
-        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
+        val refreshUserToken = mockk<RefreshUserTokenCallback>(relaxed = true)
         SuprSend.initialize(
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -38,8 +38,8 @@ class SuprSendIdentifyTest : BaseTest() {
 
     @Test
     fun verifyIdentityCalledWhenAlreadyIdentified() {
-        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
-        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken()
+        val refreshUserToken = mockk<RefreshUserTokenCallback>(relaxed = true)
+        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken()
         every {
             networkClient.httpCall(
                 url = any(),
@@ -54,7 +54,7 @@ class SuprSendIdentifyTest : BaseTest() {
             publicApiKey = TestConstants.PUBLIC_API_KEY,
                 host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -70,8 +70,8 @@ class SuprSendIdentifyTest : BaseTest() {
 
     @Test
     fun verifyIdentityFailureAfter3Retries() {
-        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
-        every { refreshTokenCallback.getToken(any()) } returnsMany (
+        val refreshUserToken = mockk<RefreshUserTokenCallback>(relaxed = true)
+        every { refreshUserToken.getToken(any()) } returnsMany (
                 listOf(
                     TokenGenerator.generateToken(System.currentTimeMillis() - 3000), // Expired Token
                     TokenGenerator.generateToken(System.currentTimeMillis() - 3000), // Expired Token
@@ -92,7 +92,7 @@ class SuprSendIdentifyTest : BaseTest() {
             publicApiKey = TestConstants.PUBLIC_API_KEY,
                 host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -103,8 +103,8 @@ class SuprSendIdentifyTest : BaseTest() {
 
     @Test
     fun verifyIdentityRecoveredAt3rdAttempt() {
-        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
-        every { refreshTokenCallback.getToken(any()) } returnsMany (
+        val refreshUserToken = mockk<RefreshUserTokenCallback>(relaxed = true)
+        every { refreshUserToken.getToken(any()) } returnsMany (
                 listOf(
                     TokenGenerator.generateToken(System.currentTimeMillis() - 3000), // Expired Token
                     TokenGenerator.generateToken(System.currentTimeMillis() - 3000), // Expired Token
@@ -125,7 +125,7 @@ class SuprSendIdentifyTest : BaseTest() {
             publicApiKey = TestConstants.PUBLIC_API_KEY,
                 host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -135,7 +135,7 @@ class SuprSendIdentifyTest : BaseTest() {
 
     @Test
     fun verifyIdentityFailure() {
-        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
+        val refreshUserToken = mockk<RefreshUserTokenCallback>(relaxed = true)
         every {
             networkClient.httpCall(
                 url = any(),
@@ -150,7 +150,7 @@ class SuprSendIdentifyTest : BaseTest() {
             publicApiKey = TestConstants.PUBLIC_API_KEY,
                 host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -160,7 +160,7 @@ class SuprSendIdentifyTest : BaseTest() {
 
     @Test
     fun verifyIdentitySuccess() {
-        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
+        val refreshUserToken = mockk<RefreshUserTokenCallback>(relaxed = true)
         every {
             networkClient.httpCall(
                 url = any(),
@@ -174,14 +174,14 @@ class SuprSendIdentifyTest : BaseTest() {
             body = AssetHelper.readAssetFileToString("event_and_operator_response.json")
         )
 
-        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken()
+        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken()
         SuprSend.initialize(
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
                 host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)

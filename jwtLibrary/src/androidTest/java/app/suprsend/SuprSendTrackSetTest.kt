@@ -20,7 +20,7 @@ class SuprSendTrackSetTest : BaseTest() {
     private val networkClient = mockk<NetworkClient>()
 
     @Test
-    fun verifyTrackEventFailureDueToDistinctIdMissing() {
+    fun verifyTrackFailureDueToDistinctIdMissing() {
         every {
             networkClient.httpCall(
                 url = any(),
@@ -38,13 +38,13 @@ class SuprSendTrackSetTest : BaseTest() {
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
-        var actionStatus = suprsend.trackEvent("Home Viewed")
+        var actionStatus = suprsend.track("Home Viewed")
         Assert.assertEquals(false, actionStatus.isSuccess())
         Assert.assertEquals(ErrorType.VALIDATION_ERROR, actionStatus.errorType)
         Assert.assertEquals("Distinct id is missing - trackEvent Home Viewed", actionStatus.message)
 
         //With properties
-        actionStatus = suprsend.trackEvent("Home Viewed", JSONObject().apply {
+        actionStatus = suprsend.track("Home Viewed", JSONObject().apply {
             put("time", System.currentTimeMillis())
             put("app", "test_sdk")
         })
@@ -54,7 +54,7 @@ class SuprSendTrackSetTest : BaseTest() {
     }
 
     @Test
-    fun verifyTrackEventFailure() {
+    fun verifyTrackFailure() {
         every {
             networkClient.httpCall(
                 url = any(),
@@ -70,16 +70,16 @@ class SuprSendTrackSetTest : BaseTest() {
             host = "https://collector-staging.suprsend.workers.dev"
         )
         SSInternal.networkClient = networkClient
-        SuprSend.setRefreshTokenCallback(null)
+        SuprSend.setRefreshUserToken(null)
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         var actionStatus = suprsend.identify("1231")
         Assert.assertEquals(true, actionStatus.isSuccess()) // Identity success
 
-        actionStatus = suprsend.trackEvent("Home Viewed")
+        actionStatus = suprsend.track("Home Viewed")
         Assert.assertEquals(false, actionStatus.isSuccess()) // Track event failure
 
-        actionStatus = suprsend.trackEvent("Home Viewed", JSONObject().apply {
+        actionStatus = suprsend.track("Home Viewed", JSONObject().apply {
             put("time", System.currentTimeMillis())
             put("app", "test_sdk")
         })
@@ -87,9 +87,9 @@ class SuprSendTrackSetTest : BaseTest() {
     }
 
     @Test
-    fun verifyTrackEventFailureDueToTokenExpired() {
-        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
-        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken() andThen TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
+    fun verifyTrackFailureDueToTokenExpired() {
+        val refreshUserToken = mockk<RefreshUserTokenCallback>(relaxed = true)
+        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken() andThen TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
         every {
             networkClient.httpCall(
                 url = any(),
@@ -104,7 +104,7 @@ class SuprSendTrackSetTest : BaseTest() {
             
             host = "https://collector-staging.suprsend.workers.dev",
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -114,11 +114,11 @@ class SuprSendTrackSetTest : BaseTest() {
         //Lets store expire token
         SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() - 3000))
 
-        actionStatus = suprsend.trackEvent("Home Viewed")
+        actionStatus = suprsend.track("Home Viewed")
         Assert.assertEquals(false, actionStatus.isSuccess()) // Track event failure
         Assert.assertEquals("Your token is expired, retried 3 times still it failed", actionStatus.message)
 
-        actionStatus = suprsend.trackEvent("Home Viewed", JSONObject().apply {
+        actionStatus = suprsend.track("Home Viewed", JSONObject().apply {
             put("time", System.currentTimeMillis())
             put("app", "test_sdk")
         })
@@ -127,10 +127,10 @@ class SuprSendTrackSetTest : BaseTest() {
     }
 
     @Test
-    fun verifyTrackEventByPassNotificationEvent() {
-        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
+    fun verifyTrackEventByPassNotification() {
+        val refreshUserToken = mockk<RefreshUserTokenCallback>(relaxed = true)
         // Even for expired token trackEvent method for notification events should succeed as it is bypassed from backend
-        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken() andThen TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
+        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken() andThen TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
         every {
             networkClient.httpCall(
                 url = any(),
@@ -145,7 +145,7 @@ class SuprSendTrackSetTest : BaseTest() {
             
             host = "https://collector-staging.suprsend.workers.dev",
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -153,19 +153,19 @@ class SuprSendTrackSetTest : BaseTest() {
         Assert.assertEquals(true, actionStatus.isSuccess()) // Identity success
 
         SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() - 3000))
-        actionStatus = suprsend.trackEvent(eventName = SSConstants.S_EVENT_NOTIFICATION_DELIVERED,
+        actionStatus = suprsend.track(eventName = SSConstants.S_EVENT_NOTIFICATION_DELIVERED,
             properties = JSONObject().apply {
                 put("id", "M1")
             })
         Assert.assertEquals(true, actionStatus.isSuccess())
 
-        actionStatus = suprsend.trackEvent(eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
+        actionStatus = suprsend.track(eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
             properties = JSONObject().apply {
                 put("id", "M1")
             })
         Assert.assertEquals(true, actionStatus.isSuccess())
 
-        actionStatus = suprsend.trackEvent(eventName = SSConstants.S_EVENT_NOTIFICATION_DISMISS,
+        actionStatus = suprsend.track(eventName = SSConstants.S_EVENT_NOTIFICATION_DISMISS,
             properties = JSONObject().apply {
                 put("id", "M1")
             })
@@ -174,7 +174,7 @@ class SuprSendTrackSetTest : BaseTest() {
     }
 
     @Test
-    fun verifyTrackEventSuccess() {
+    fun verifyTrackSuccess() {
         every {
             networkClient.httpCall(
                 url = any(),
@@ -199,10 +199,10 @@ class SuprSendTrackSetTest : BaseTest() {
         var actionStatus = suprsend.identify("1231")
         Assert.assertEquals(true, actionStatus.isSuccess()) // Identity success
 
-        actionStatus = suprsend.trackEvent("Home Viewed")
+        actionStatus = suprsend.track("Home Viewed")
         Assert.assertEquals(true, actionStatus.isSuccess())
 
-        actionStatus = suprsend.trackEvent("Home Viewed", JSONObject().apply {
+        actionStatus = suprsend.track("Home Viewed", JSONObject().apply {
             put("time", System.currentTimeMillis())
             put("app", "test_sdk")
         })
@@ -243,8 +243,8 @@ class SuprSendTrackSetTest : BaseTest() {
 
     @Test
     fun verifySetOperatorFailureDueToTokenExpired() {
-        val refreshTokenCallback = mockk<RefreshTokenCallback>(relaxed = true)
-        every { refreshTokenCallback.getToken(any()) } returns TokenGenerator.generateToken() andThen TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
+        val refreshUserToken = mockk<RefreshUserTokenCallback>(relaxed = true)
+        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken() andThen TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
         every {
             networkClient.httpCall(
                 url = any(),
@@ -259,7 +259,7 @@ class SuprSendTrackSetTest : BaseTest() {
             
             host = "https://collector-staging.suprsend.workers.dev"
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
@@ -302,7 +302,7 @@ class SuprSendTrackSetTest : BaseTest() {
             host = "https://collector-staging.suprsend.workers.dev"
         )
         SSInternal.networkClient = networkClient
-        SuprSend.setRefreshTokenCallback(null)
+        SuprSend.setRefreshUserToken(null)
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         var actionStatus = suprsend.identify("1231")

@@ -19,23 +19,15 @@ class LoginActivity : AppCompatActivity() {
 
         binding.userTypeSp.adapter = getSpinnerAdapter(this, arrayListOf("Retailer", "User"))
 
-        binding.tenantIdEt.setText(AppCreator.getValue(AppConstants.PREF_TENANT_ID, BuildConfig.SS_TENANT_ID))
-        binding.tenantIdEt.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                AppCreator.storeValue(AppConstants.PREF_TENANT_ID, s?.toString() ?: "")
-            }
-        })
+        binding.tenantIdEt.setText(AppCreator.getTenantId()?:"")
         binding.loginTv.setOnClickListener {
             val email = binding.emailEt.text.toString()
             AppCreator.setEmail(this, email)
-            CommonAnalyticsHandler.identify(email)
+            AppCreator.storeValue(AppConstants.PREF_TENANT_ID, binding.tenantIdEt.text.toString())
+            CommonAnalyticsHandler.identify(email, AppCreator.getTenantId())
             CommonAnalyticsHandler.increment("login_count", 1)
             CommonAnalyticsHandler.setOnce("first_login_at", getReadableDate())
             CommonAnalyticsHandler.setSuperProperties("user_type", binding.userTypeSp.selectedItem.toString())
-            AppCreator.tenantId = binding.tenantIdEt.text.toString()
-            SuprSend.setTenantId(AppCreator.tenantId)
             val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
             finishAffinity()
@@ -50,9 +42,9 @@ class LoginActivity : AppCompatActivity() {
                 apply()
             }
             if (isChecked) {
-                SuprSend.setRefreshTokenCallback(RefreshTokenCallbackImpl())
+                SuprSend.setRefreshUserToken(RefreshUserTokenCallbackImpl())
             } else {
-                SuprSend.setRefreshTokenCallback(null)
+                SuprSend.setRefreshUserToken(null)
             }
         }
 

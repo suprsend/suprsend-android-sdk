@@ -30,7 +30,7 @@ class SSAppFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         try {
-            Log.i(TAG, "FCM Token : $token")
+            Log.i(TAG, "FCM onNewToken : $token")
             val instance = SSApi.getInstance()
             instance.getUser().setAndroidFcmPush(token)
         } catch (e: Exception) {

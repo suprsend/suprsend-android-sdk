@@ -2,8 +2,8 @@ package app.suprsend
 
 import android.content.Context
 import androidx.annotation.WorkerThread
+import app.suprsend.SSInternal.suprSendData
 import app.suprsend.base.ActionStatusCallback
-import app.suprsend.base.LocalStorage
 import app.suprsend.base.SSConstants
 import app.suprsend.base.sdkExecutorService
 import app.suprsend.event.EventFlushHandler
@@ -25,34 +25,22 @@ class SuprSend private constructor() {
 
     val user = User()
 
-    init {
-        if (FirebaseApp.getApps(SSInternal.context).isNotEmpty()) {
-            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Logger.i(SSConstants.TAG_SUPRSEND, "Fetching FCM registration token failed")
-                    return@addOnCompleteListener
-                }
-                val token = task.result
-                if (!token.isNullOrBlank()) {
-                    user.setAndroidFcmPushAsync(token)
-                }
-            }
-        }
-    }
-
     @WorkerThread
-    fun identify(distinctId: String, userToken: String? = null, refreshTokenCallback: RefreshTokenCallback? = null): ApiResponse {
+    fun identify(distinctId: String, userToken: String? = null, tenantId: String? = null, refreshUserToken: RefreshUserTokenCallback? = null): ApiResponse {
+        if (userToken != null)
+            suprSendData.userToken = userToken
+        if (tenantId != null)
+            suprSendData.tenantId = tenantId
         return SSInternal.identity( // identify
             distinctId = distinctId,
-            userToken = userToken,
-            refreshTokenCallback = refreshTokenCallback
+            refreshUserToken = refreshUserToken
         )
     }
 
-    fun identityAsync(distinctId: String, userToken: String? = null, refreshTokenCallback: RefreshTokenCallback? = null, actionStatusCallback: ActionStatusCallback? = null) {
+    fun identityAsync(distinctId: String, userToken: String? = null, tenantId: String? = null, refreshUserToken: RefreshUserTokenCallback? = null, actionStatusCallback: ActionStatusCallback? = null) {
         sdkExecutorService.execute {
             try {
-                val actionStatus = identify(distinctId, userToken, refreshTokenCallback)
+                val actionStatus = identify(distinctId, userToken, tenantId, refreshUserToken)
                 actionStatusCallback?.let {
                     SSInternal.context.runOnUIThread { it.onComplete(actionStatus) }
                 }
@@ -75,7 +63,7 @@ class SuprSend private constructor() {
     }
 
     @WorkerThread
-    fun trackEvent(eventName: String): ApiResponse {
+    fun track(eventName: String): ApiResponse {
         return SSInternal.trackEvent(
             eventName = eventName
         )
@@ -84,7 +72,7 @@ class SuprSend private constructor() {
     fun trackEventAsync(eventName: String, actionStatusCallback: ActionStatusCallback? = null) {
         sdkExecutorService.execute {
             try {
-                val actionStatus = trackEvent(eventName)
+                val actionStatus = track(eventName)
                 actionStatusCallback?.let {
                     SSInternal.context.runOnUIThread {
                         it.onComplete(actionStatus)
@@ -97,7 +85,7 @@ class SuprSend private constructor() {
     }
 
     @WorkerThread
-    fun trackEvent(eventName: String, properties: JSONObject): ApiResponse {
+    fun track(eventName: String, properties: JSONObject): ApiResponse {
         return SSInternal.trackEvent(
             eventName = eventName,
             properties = properties
@@ -107,7 +95,7 @@ class SuprSend private constructor() {
     fun trackEventAsync(eventName: String, properties: JSONObject, actionStatusCallback: ActionStatusCallback? = null) {
         sdkExecutorService.execute {
             try {
-                val actionStatus = trackEvent(eventName, properties)
+                val actionStatus = track(eventName, properties)
                 actionStatusCallback?.let {
                     SSInternal.context.runOnUIThread {
                         it.onComplete(actionStatus)
@@ -134,7 +122,8 @@ class SuprSend private constructor() {
         }
     }
 
-    fun notificationClicked(notificationActionVo: NotificationActionVo) {
+    fun notificationClicked(notificationActionVo: NotificationActionVo, data: Map<String, String> = emptyMap()) {
+        SSInternal.suprSendData.notificationCallbackListener?.onNotificationClicked(notificationActionVo, data)
         trackEventAsync(
             eventName = SSConstants.S_EVENT_NOTIFICATION_CLICKED,
             properties = JSONObject().apply {
@@ -155,11 +144,45 @@ class SuprSend private constructor() {
         @Volatile
         private var suprsend: SuprSend? = null
         fun getInstance(): SuprSend {
-            if (!SSInternal.isSuprSendDataInitialized()) {
-                throw IllegalStateException("Suprsend SDK is not initialized. Please use Suprsend.initialize() method to initialize.")
-            }
             return suprsend ?: synchronized(this) {
                 suprsend ?: SuprSend().also { suprsend = it }
+            }
+        }
+
+        fun initCache(){
+            SSInternal.suprSendData.publicApiKey = SDKPref.publicKey
+            SSInternal.suprSendData.distinctId = SDKPref.distinctId
+            initHostFromCache()
+        }
+
+        private fun initHostFromCache() {
+            SSInternal.suprSendData.host = (SDKPref.host?.ifBlank { null }) ?: SSConstants.DEFAULT_BASE_API_URL
+        }
+
+        fun initialize(context: Context, host: String? = null) {
+            SSInternal.context = context.applicationContext
+            initCache()
+            if (host != null) {
+                SDKPref.host = host
+                SSInternal.suprSendData.host = host
+            }
+            registerFCMToken()
+        }
+
+        private fun registerFCMToken() {
+            sdkExecutorService.execute {
+                if (FirebaseApp.getApps(SSInternal.context).isNotEmpty()) {
+                    FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                        if (!task.isSuccessful) {
+                            Logger.i(SSConstants.TAG_SUPRSEND, "Fetching FCM registration token failed")
+                            return@addOnCompleteListener
+                        }
+                        val token = task.result
+                        if (!token.isNullOrBlank()) {
+                            getInstance().user.addFcmPushAsync(token)
+                        }
+                    }
+                }
             }
         }
 
@@ -171,10 +194,13 @@ class SuprSend private constructor() {
             host: String? = null
         ) {
             try {
-                SSInternal.context = context.applicationContext
+                initialize(context, host)
+                if (host == null) {
+                    SDKPref.host = null
+                    initHostFromCache()
+                }
                 SSInternal.suprSendData.publicApiKey = publicApiKey
-                SSInternal.suprSendData.distinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID)
-                SSInternal.suprSendData.host = host?:SSConstants.DEFAULT_BASE_API_URL
+                SDKPref.publicKey = publicApiKey
                 SSInternal.suprSendData.clientInfo = clientInfo ?: ClientInfo(appInfo = appInfo)
                 calculateUserAgentInfo()
                 // Drain any notification events queued offline; runs every 10s in the background.
@@ -194,11 +220,11 @@ class SuprSend private constructor() {
             SSInternal.suprSendData.inboxBaseUrl = inboxBaseUrl
         }
 
-        fun setRefreshTokenCallback(refreshTokenCallback: RefreshTokenCallback?) {
-            SSInternal.suprSendData.refreshTokenCallback = refreshTokenCallback
+        fun setRefreshUserToken(refreshUserToken: RefreshUserTokenCallback?) {
+            SSInternal.suprSendData.refreshUserToken = refreshUserToken
         }
 
-        fun setTenantId(tenantId: String?) {
+        fun changeTenant(tenantId: String?) {
             if (tenantId.isNullOrBlank())
                 SSInternal.suprSendData.tenantId = null
             else

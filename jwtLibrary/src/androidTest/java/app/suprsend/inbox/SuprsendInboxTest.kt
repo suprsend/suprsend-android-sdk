@@ -4,7 +4,7 @@ import app.suprsend.SuprSend
 import app.suprsend.base.AssetHelper
 import app.suprsend.base.BaseTest
 import app.suprsend.base.TestConstants
-import app.suprsend.base.RefreshTokenCallbackImpl
+import app.suprsend.base.RefreshUserTokenCallbackImpl
 import app.suprsend.base.assertIsSuccess
 import org.json.JSONArray
 import org.junit.Assert
@@ -17,14 +17,14 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testBellCount() {
-        val refreshTokenCallback = RefreshTokenCallbackImpl()
+        val refreshUserToken = RefreshUserTokenCallbackImpl()
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
             host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
         SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
 
@@ -40,14 +40,14 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testResetBellCount() {
-        val refreshTokenCallback = RefreshTokenCallbackImpl()
+        val refreshUserToken = RefreshUserTokenCallbackImpl()
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
             host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
         SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
         val suprsend = SuprSend.getInstance()
@@ -62,14 +62,14 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testNotifications() {
-        val refreshTokenCallback = RefreshTokenCallbackImpl()
+        val refreshUserToken = RefreshUserTokenCallbackImpl()
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
             host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
         SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
         SuprsendInbox.setInboxStores(listOf())
@@ -91,14 +91,14 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testNotificationsWithStore() {
-        val refreshTokenCallback = RefreshTokenCallbackImpl()
+        val refreshUserToken = RefreshUserTokenCallbackImpl()
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
             host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         val suprsend = SuprSend.getInstance()
         suprsend.reset(true)
         val action = suprsend.identify(distinctId)
@@ -121,14 +121,14 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testNotificationDetails() {
-        val refreshTokenCallback = RefreshTokenCallbackImpl()
+        val refreshUserToken = RefreshUserTokenCallbackImpl()
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
             host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
         SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
         SuprsendInbox.setInboxStores(listOf())
@@ -144,14 +144,14 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testMarkAllRead() {
-        val refreshTokenCallback = RefreshTokenCallbackImpl()
+        val refreshUserToken = RefreshUserTokenCallbackImpl()
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
             host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
         SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
         SuprsendInbox.setInboxStores(listOf())
@@ -167,14 +167,14 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testMarkAsInteracted() {
-        val refreshTokenCallback = RefreshTokenCallbackImpl()
+        val refreshUserToken = RefreshUserTokenCallbackImpl()
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
             host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
         SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
         SuprsendInbox.setInboxStores(listOf())
@@ -190,14 +190,14 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testMarkAsUnread() {
-        val refreshTokenCallback = RefreshTokenCallbackImpl()
+        val refreshUserToken = RefreshUserTokenCallbackImpl()
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
             host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
         SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
         SuprsendInbox.setInboxStores(listOf())
@@ -213,14 +213,14 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testMarkAsRead() {
-        val refreshTokenCallback = RefreshTokenCallbackImpl()
+        val refreshUserToken = RefreshUserTokenCallbackImpl()
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
             host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
         SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
         SuprsendInbox.setInboxStores(listOf())
@@ -236,14 +236,14 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testMarkAsArchived() {
-        val refreshTokenCallback = RefreshTokenCallbackImpl()
+        val refreshUserToken = RefreshUserTokenCallbackImpl()
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
             host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
         SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
         SuprsendInbox.setInboxStores(listOf())
@@ -259,14 +259,14 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testMarkAsSeen() {
-        val refreshTokenCallback = RefreshTokenCallbackImpl()
+        val refreshUserToken = RefreshUserTokenCallbackImpl()
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
             host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
         SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
         val suprsend = SuprSend.getInstance()
@@ -281,14 +281,14 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testMarkNotificationBulkSeen() {
-        val refreshTokenCallback = RefreshTokenCallbackImpl()
+        val refreshUserToken = RefreshUserTokenCallbackImpl()
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
             host = TestConstants.SS_BASE_URL,
         )
-        SuprSend.setRefreshTokenCallback(refreshTokenCallback)
+        SuprSend.setRefreshUserToken(refreshUserToken)
         SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
         SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
         val suprsend = SuprSend.getInstance()

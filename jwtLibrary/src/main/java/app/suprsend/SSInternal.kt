@@ -33,15 +33,12 @@ internal object SSInternal {
 
     fun identity(
         distinctId: String,
-        userToken: String? = null,
-        refreshTokenCallback: RefreshTokenCallback? = null,
+        refreshUserToken: RefreshUserTokenCallback? = null,
         force: Boolean = false
     ): ApiResponse {
-        if (refreshTokenCallback != null)
-            suprSendData.refreshTokenCallback = refreshTokenCallback
+        if (refreshUserToken != null)
+            suprSendData.refreshUserToken = refreshUserToken
 
-        if (userToken != null)
-            LocalStorage.setValue(SSConstants.USER_TOKEN, userToken)
 
         if (distinctId.isBlank()) {
             return ApiResponse(
@@ -60,11 +57,12 @@ internal object SSInternal {
             )
         }
 
-        val localDistinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID)
+        val localDistinctId = SDKPref.distinctId
         if (!force && distinctId == localDistinctId) {
+            suprSendData.distinctId = distinctId
             return ApiResponse(status = ResponseStatus.SUCCESS)
         }
-        LocalStorage.setValue(SSConstants.CONFIG_DISTINCT_ID_TRY, distinctId)
+        SDKPref.distinctIdTry = distinctId
         val apiResponse = trackEvent(
             eventName = SSConstants.IDENTIFY,
             distinctId = distinctId,
@@ -75,8 +73,8 @@ internal object SSInternal {
             fromIdentify = true
         )
         if (apiResponse.status == ResponseStatus.SUCCESS) {
-            LocalStorage.setValue(SSConstants.CONFIG_DISTINCT_ID, distinctId)
-            LocalStorage.setValue(SSConstants.CONFIG_DISTINCT_ID_TRY, "")
+            SDKPref.distinctId = distinctId
+            SDKPref.distinctIdTry = null
             suprSendData.distinctId = distinctId
             appendNotificationToken()
         }
@@ -210,9 +208,9 @@ internal object SSInternal {
                 message = "Internet connection is not available"
             )
         }
-        val refreshTokenCallback = suprSendData.refreshTokenCallback
+        val refreshUserToken = suprSendData.refreshUserToken
 
-        if (refreshTokenCallback != null) {
+        if (refreshUserToken != null) {
             var userToken = getToken() ?: ""
 
             if (isJWTTokenExpired(userToken)) {
@@ -222,18 +220,18 @@ internal object SSInternal {
                     }else{
                         Logger.v(SSConstants.TAG_SUPRSEND, "User token is expired $userToken")
                     }
-                    userToken = refreshTokenCallback.getToken(distinctId)
+                    userToken = refreshUserToken.getToken(distinctId)
                     if (!isJWTTokenExpired(userToken)) {
-                        storeToken(userToken)
+                        suprSendData.userToken = userToken
                         Logger.v(SSConstants.TAG_SUPRSEND, "Got $distinctId $userToken")
-                        val tryIdentity = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID_TRY)
-                        val identifyFailedEarlier = !tryIdentity.isNullOrBlank()
+                        val tryDistinctIdentity = SDKPref.distinctIdTry
+                        val identifyFailedEarlier = !tryDistinctIdentity.isNullOrBlank()
                         if (!fromIdentify && identifyFailedEarlier) {
                             val response = identity(distinctId, force = true) // refresh
                             Logger.v(SSConstants.TAG_SUPRSEND, "Response : $response")
                         }
                     } else {
-                        Logger.e(SSConstants.TAG_SUPRSEND, "Invalid token has received : $userToken")
+                        Logger.e(SSConstants.TAG_SUPRSEND, "Invalid token has received : $userToken $distinctId")
                     }
                     refreshTokenIfRequired(distinctId, retryCount + 1)
                 } else {
@@ -266,6 +264,7 @@ internal object SSInternal {
         eventPayload.put(SSConstants.DISTINCT_ID, distinctId)
         eventPayload.put(SSConstants.INSERT_ID, UUID.randomUUID().toString())
         eventPayload.put(SSConstants.TIME, System.currentTimeMillis())
+        eventPayload.put(SSConstants.TENANT_ID, suprSendData.tenantId?: JSONObject.NULL)
 
         val filteredProperties = if (ignoreFilter) properties else properties.filterSSReservedKeys()
         // We finalized to not send device properties in payload will send in header
@@ -286,6 +285,7 @@ internal object SSInternal {
         eventPayload.put(SSConstants.DISTINCT_ID, distinctId)
         eventPayload.put(SSConstants.INSERT_ID, UUID.randomUUID().toString())
         eventPayload.put(SSConstants.TIME, System.currentTimeMillis())
+        eventPayload.put(SSConstants.TENANT_ID, suprSendData.tenantId?: JSONObject.NULL)
         if (properties != null) {
             eventPayload.put(operator, if (ignoreFilter) properties else properties.filterSSReservedKeys())
         }
@@ -319,7 +319,7 @@ internal object SSInternal {
                 headersL["X-Suprsend-Client-User-Agent"] = it
             }
 
-        if (suprSendData.refreshTokenCallback != null) {
+        if (suprSendData.refreshUserToken != null) {
             headersL["x-ss-signature"] = getToken() ?: ""
         }
 
@@ -332,50 +332,47 @@ internal object SSInternal {
         SSPreferenceInternal.clearUserPreference()
         SSInboxInternal.reset()
         suprSendData.distinctId = null
-        LocalStorage.remove(SSConstants.USER_TOKEN)
-        LocalStorage.remove(SSConstants.CONFIG_DISTINCT_ID)
-        LocalStorage.remove(SSConstants.CONFIG_DISTINCT_ID_TRY)
+        suprSendData.userToken = null
+        suprSendData.tenantId = null
+        SDKPref.distinctId = null
+        SDKPref.distinctIdTry = null
     }
 
-
-    fun storeToken(userToken: String?) {
-        if (userToken == null) {
-            LocalStorage.remove(SSConstants.USER_TOKEN)
-        } else {
-            LocalStorage.setValue(SSConstants.USER_TOKEN, userToken)
-        }
-    }
 
     fun getToken(): String? {
-        return LocalStorage.getValue(SSConstants.USER_TOKEN)
+        return suprSendData.userToken
+    }
+
+    fun getFcmPushProperties(token: String): JSONObject {
+        return JSONObject().apply {
+            put(SSConstants.PUSH_BUNDLE_ID, context.packageName)
+            put(SSConstants.PUSH_ANDROID_TOKEN, token)
+            put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
+            put(SSConstants.DEVICE_ID, DeviceInfo.getDeviceId())
+        }
     }
 
     @WorkerThread
     private fun appendNotificationToken() {
-        val fcmToken = LocalStorage.getValue(SSConstants.CONFIG_FCM_PUSH_TOKEN)
+        val fcmToken = SDKPref.fcmToken
         if (!fcmToken.isNullOrBlank()) {
-            val jsonObject = JSONObject()
-            jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, fcmToken)
-            jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
-            jsonObject.put(SSConstants.DEVICE_ID, DeviceInfo.getDeviceId())
-            trackOperator(
+            val response = trackOperator(
                 operator = SSConstants.APPEND,
-                properties = jsonObject,
+                properties = getFcmPushProperties(fcmToken),
                 ignoreFilter = true
             )
+            if(response.isSuccess()){
+                SDKPref.fcmTokenSyncedToServer = true
+            }
         }
     }
 
     @WorkerThread
     private fun removeNotificationToken(): ApiResponse? {
-        val fcmToken = LocalStorage.getValue(SSConstants.CONFIG_FCM_PUSH_TOKEN)
+        val fcmToken = SDKPref.fcmToken
         if (!fcmToken.isNullOrBlank()) {
-            val jsonObject = JSONObject()
-            jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, fcmToken)
-            jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
-            jsonObject.put(SSConstants.DEVICE_ID, DeviceInfo.getDeviceId())
             return trackOperator(
-                properties = jsonObject,
+                properties = getFcmPushProperties(fcmToken),
                 operator = SSConstants.REMOVE,
                 ignoreFilter = true
             )
@@ -384,7 +381,7 @@ internal object SSInternal {
     }
 
     private fun tryToIdentify(log: String): ApiResponse? {
-        val tryDistinctId = LocalStorage.getValue(SSConstants.CONFIG_DISTINCT_ID_TRY) ?: ""
+        val tryDistinctId = SDKPref.distinctIdTry?:""
         var action: ApiResponse? = null
         if (tryDistinctId.isNotBlank()) {
             action = identity(tryDistinctId) // try to identify
@@ -410,7 +407,7 @@ internal object SSInternal {
             val errorResponse = JSONObject(errorResponseStr)
             val type = errorResponse.optJSONObject("error")?.optString("type")
             if (type == "token_invalid") {
-                LocalStorage.remove(SSConstants.USER_TOKEN)
+                suprSendData.userToken = null
                 refreshTokenIfRequired(distinctId = suprSendData.distinctId ?: "")
             }
         } catch (e: Exception) {

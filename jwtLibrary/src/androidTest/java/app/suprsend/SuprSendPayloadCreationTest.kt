@@ -11,7 +11,7 @@ import org.junit.Test
 class SuprSendPayloadCreationTest : BaseTest() {
 
     @Test
-    fun verifyTrackEventPayload() {
+    fun verifyTrackPayload() {
         SuprSend.initialize(
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,

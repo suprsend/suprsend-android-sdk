@@ -42,7 +42,7 @@ class UserPreferenceActivity : AppCompatActivity() {
         binding = UserPreferenceActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         SuprSend.getInstance().user.getPreferences().setPreferenceConfig(
-            tenantId = AppCreator.tenantId,
+            tenantId = AppCreator.getTenantId(),
             showOptOutChannels = intent.extras?.get("showOptOutChannels").toString().toBoolean()
         )
         binding.categoriesRV.layoutManager = LinearLayoutManager(this@UserPreferenceActivity)

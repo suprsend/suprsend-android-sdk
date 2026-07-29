@@ -6,6 +6,7 @@ import android.view.View
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
+import app.suprsend.SuprSend
 import app.suprsend.android.databinding.ActivitySettingsBinding
 import app.suprsend.android.preference.UserPreferenceActivity
 import app.suprsend.inbox.SuprsendInbox
@@ -19,6 +20,13 @@ class SettingsActivity : AppCompatActivity() {
         title = "Settings"
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.tenantIdEt.setText(AppCreator.getTenantId()?:"")
+        binding.tenantIdTv.clickWithThrottle {
+            val tenantId = binding.tenantIdEt.text.toString()
+            AppCreator.storeValue(AppConstants.PREF_TENANT_ID, tenantId)
+            SuprSend.changeTenant(tenantId)
+        }
 
         binding.emailEt.setText(AppCreator.getValue("email", "nikhilesh@suprsend.com"))
         binding.emailEt.addTextChangedListener(object : TextWatcher {

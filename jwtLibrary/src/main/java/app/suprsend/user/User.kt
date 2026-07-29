@@ -1,10 +1,9 @@
 package app.suprsend.user
 
 import androidx.annotation.WorkerThread
+import app.suprsend.SDKPref
 import app.suprsend.SSInternal
 import app.suprsend.base.ActionStatusCallback
-import app.suprsend.base.DeviceInfo
-import app.suprsend.base.LocalStorage
 import app.suprsend.base.SSConstants
 import app.suprsend.base.sdkExecutorService
 import app.suprsend.log.Logger
@@ -123,7 +122,7 @@ class User() {
     }
 
     @WorkerThread
-    fun unSet(key: String): ApiResponse {
+    fun unset(key: String): ApiResponse {
         return SSInternal.trackOperator(
             operator = SSConstants.UNSET,
             propertiesJA = JSONArray().apply {
@@ -132,10 +131,10 @@ class User() {
         )
     }
 
-    fun unSetAsync(key: String, actionStatusCallback: ActionStatusCallback? = null) {
+    fun unsetAsync(key: String, actionStatusCallback: ActionStatusCallback? = null) {
         sdkExecutorService.execute {
             try {
-                val actionStatus = unSet(key)
+                val actionStatus = unset(key)
                 SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
@@ -146,7 +145,7 @@ class User() {
     }
 
     @WorkerThread
-    fun unSet(keys: List<String>): ApiResponse {
+    fun unset(keys: List<String>): ApiResponse {
         return SSInternal.trackOperator(
             operator = SSConstants.UNSET,
             propertiesJA = JSONArray().apply {
@@ -157,10 +156,10 @@ class User() {
         )
     }
 
-    fun unSetAsync(keys: List<String>, actionStatusCallback: ActionStatusCallback? = null) {
+    fun unsetAsync(keys: List<String>, actionStatusCallback: ActionStatusCallback? = null) {
         sdkExecutorService.execute {
             try {
-                val actionStatus = unSet(keys)
+                val actionStatus = unset(keys)
                 SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
@@ -633,42 +632,61 @@ class User() {
     }
 
     @WorkerThread
-    fun setAndroidFcmPush(token: String): ApiResponse {
-        val oldToken = LocalStorage.getValue(SSConstants.CONFIG_FCM_PUSH_TOKEN)
-        LocalStorage.setValue(SSConstants.CONFIG_FCM_PUSH_TOKEN, token)
-        if (oldToken != token) {
-            LocalStorage.setValue(SSConstants.CONFIG_FCM_TOKEN_SYNC_STATUS, "false")
-        } else {
-            val syncStatus = (LocalStorage.getValue(SSConstants.CONFIG_FCM_TOKEN_SYNC_STATUS) ?: "false").toBoolean()
-            if (syncStatus) {
-                return ApiResponse(status = ResponseStatus.SUCCESS, statusCode = 200, message = "FCM token is already sync")
-            }
+    fun addFcmPush(token: String): ApiResponse {
+        val oldToken = SDKPref.fcmToken
+        if (oldToken == token) {
+            return ApiResponse(status = ResponseStatus.SUCCESS, statusCode = 200, message = "FCM token is already sync")
         }
-        val jsonObject = JSONObject()
-        jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, token)
-        jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
-        jsonObject.put(SSConstants.DEVICE_ID, DeviceInfo.getDeviceId())
+        SDKPref.fcmToken = token
+        SDKPref.fcmTokenSyncedToServer = false
 
         val actionStatus = SSInternal.trackOperator(
             operator = SSConstants.APPEND,
-            properties = jsonObject,
+            properties = SSInternal.getFcmPushProperties(token),
             ignoreFilter = true
         )
         if (actionStatus.isSuccess()) {
-            LocalStorage.setValue(SSConstants.CONFIG_FCM_TOKEN_SYNC_STATUS, "true")
+            SDKPref.fcmTokenSyncedToServer = true
         }
         return actionStatus
     }
 
-    fun setAndroidFcmPushAsync(token: String, actionStatusCallback: ActionStatusCallback? = null) {
+    fun addFcmPushAsync(token: String, actionStatusCallback: ActionStatusCallback? = null) {
         sdkExecutorService.execute {
             try {
-                val actionStatus = setAndroidFcmPush(token)
+                val actionStatus = addFcmPush(token)
                 SSInternal.context.runOnUIThread {
                     actionStatusCallback?.onComplete(actionStatus)
                 }
             } catch (e: Exception) {
                 actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute setAndroidFcmPushAsync", exception = e))
+            }
+        }
+    }
+
+    @WorkerThread
+    fun removeFcmPush(token: String): ApiResponse {
+        val actionStatus = SSInternal.trackOperator(
+            operator = SSConstants.REMOVE,
+            properties = SSInternal.getFcmPushProperties(token),
+            ignoreFilter = true
+        )
+        if (actionStatus.isSuccess() && SDKPref.fcmToken == token) {
+            SDKPref.fcmToken = null
+            SDKPref.fcmTokenSyncedToServer = false
+        }
+        return actionStatus
+    }
+
+    fun removeFcmPushAsync(token: String, actionStatusCallback: ActionStatusCallback? = null) {
+        sdkExecutorService.execute {
+            try {
+                val actionStatus = removeFcmPush(token)
+                SSInternal.context.runOnUIThread {
+                    actionStatusCallback?.onComplete(actionStatus)
+                }
+            } catch (e: Exception) {
+                actionStatusCallback?.onComplete(ApiResponse(status = ResponseStatus.ERROR, message = "Failed to execute removeFcmPush", exception = e))
             }
         }
     }

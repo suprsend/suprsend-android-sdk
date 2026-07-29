@@ -45,6 +45,7 @@ internal object SSConstants {
 
 
     const val SP_USER_PREFERENCES = "user_preferences"
+    const val PUSH_BUNDLE_ID = "\$bundle_id"
     const val PUSH_ANDROID_TOKEN = "\$androidpush"
     const val PUSH_VENDOR_FCM = "fcm"
     const val PUSH_VENDOR = "\$pushvendor"
@@ -81,14 +82,8 @@ internal object SSConstants {
 
 
     // Config Helper Keys
-    const val CONFIG_API_KEY = "api_key"
-    const val CONFIG_API_SECRET = "app_secret"
-    const val CONFIG_API_BASE_URL = "api_base_url"
-    const val CONFIG_INBOX_API_BASE_URL = "inbox_api_base_url"
-    const val CONFIG_INBOX_SOCKET_BASE_URL = "inbox_socket_base_url"
-    const val CONFIG_USER_ID = "user_id"
-    const val CONFIG_IS_APP_INSTALLED = "is_app_launched" // Mistakenly value was places wrong in ver 1 keep this as it is to avoid wrong stats
-    const val CONFIG_APP_LAUNCH_TIME = "app_launch_time"
+    const val CONFIG_HOST = "host"
+    const val CONFIG_PUBLIC_KEY = "public_key"
     const val CONFIG_DISTINCT_ID = "distinct_id"
 
     // As soon as user call identify his distinct id is stored in distinct_id_try distinct id since this identify can fail due to network error
@@ -96,6 +91,7 @@ internal object SSConstants {
     const val CONFIG_DISTINCT_ID_TRY = "distinct_id_try"
     const val CONFIG_FCM_PUSH_TOKEN = "fcm_push_token"
     const val CONFIG_FCM_TOKEN_SYNC_STATUS = "fcm_push_token_sync_status"
+
     const val CONFIG_DEVICE_ID = "device_id"
     const val CONFIG_NOTIFICATION_GROUP_SHOWN = "notification_group_shown_%s"
 

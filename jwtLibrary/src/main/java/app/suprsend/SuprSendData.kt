@@ -12,7 +12,7 @@ internal data class SuprSendData(
     var inboxSocketBaseUrl: String = SSConstants.DEFAULT_INBOX_SOCKET_API_URL,
 
     var publicApiKey: String? = null,
-    var refreshTokenCallback: RefreshTokenCallback? = null,
+    var refreshUserToken: RefreshUserTokenCallback? = null,
 
     //Push notification
     var notificationCallbackListener: NotificationCallbackListener? = null,
@@ -20,5 +20,7 @@ internal data class SuprSendData(
     var clientInfo: ClientInfo? = null,
 
     var userAgent: String? = null,
-    var clientUserAgentJson: String? = null
+    var clientUserAgentJson: String? = null,
+
+    var userToken : String? = null
 )

@@ -58,7 +58,7 @@ Authenticate user so that all the actions performed after authenticating will be
 SuprSend.getInstance().identityAsync(
     distinctId = "YOUR_USER_ID",
     userToken = userTokenData,
-    refreshTokenCallback = object : RefreshTokenCallback {
+    refreshUserToken = object : RefreshUserTokenCallback {
           override fun getToken(distinctId: String): String {
               return yourBackend.getSubscriberJwt(distinctId)
           }
@@ -76,7 +76,7 @@ SuprSend.getInstance().identityAsync(
 val response = SuprSend.getInstance().identify(
     distinctId = "YOUR_USER_ID",
     userToken = userTokenData,
-    refreshTokenCallback = refreshTokenCallback
+    refreshUserToken = refreshUserToken
 )
 ```
 

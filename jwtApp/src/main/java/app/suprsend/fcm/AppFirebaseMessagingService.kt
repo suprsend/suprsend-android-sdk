@@ -23,9 +23,8 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
                     if (!key.equals("supr_send_n_pl"))
                         jsonObject.put(key, remoteMessage.data[key])
                 }
-                // Sending this earlier since flush will be done in showFCMNotification
-                SuprSend.getInstance().trackEventAsync(EVENT_NOTIFICATION_CUSTOM_CONFIG, jsonObject)
                 SSNotificationHelper.showFCMNotification(applicationContext, remoteMessage)
+                SuprSend.getInstance().trackEventAsync(EVENT_NOTIFICATION_CUSTOM_CONFIG, jsonObject)
             } else {
                 // This payload is not sent by SuprSend.
                 // Handle it based on your app requirements.
@@ -39,9 +38,9 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         try {
-            Log.i(AppConstants.TAG, "FCM Token : $token")
+            Log.i(AppConstants.TAG, "FCM onNewToken : $token")
             val instance = SuprSend.getInstance()
-            instance.user.setAndroidFcmPushAsync(token)
+            instance.user.addFcmPushAsync(token)
         } catch (e: Exception) {
             Log.e(AppConstants.TAG, "onNewToken", e)
         }

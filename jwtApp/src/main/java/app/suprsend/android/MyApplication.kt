@@ -1,13 +1,16 @@
 package app.suprsend.android
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import app.suprsend.AppInfo
 import app.suprsend.NotificationCallbackListener
+import app.suprsend.RefreshUserTokenCallback
 import app.suprsend.SuprSend
-import app.suprsend.RefreshTokenCallback
 import app.suprsend.base.NetworkClient
+import app.suprsend.log.LogLevel
 import app.suprsend.log.LoggerCallback
+import app.suprsend.notification.NotificationActionVo
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.json.JSONObject
 import java.net.URLEncoder
@@ -15,7 +18,6 @@ import java.net.URLEncoder
 class MyApplication : Application() {
 
     override fun onCreate() {
-
 
         SuprSend.initialize(
             context = this,
@@ -26,13 +28,14 @@ class MyApplication : Application() {
                 version = BuildConfig.VERSION_NAME
             )
         )
-        CommonAnalyticsHandler.initialize(this)
+
+        SuprSend.getInstance().setLogLevel(LogLevel.VERBOSE)
 
         val jwtTokenBoolean = defaultSharedPreferences.getBoolean("jwtToken", true)
         if (jwtTokenBoolean) {
-            SuprSend.setRefreshTokenCallback(RefreshTokenCallbackImpl())
+            SuprSend.setRefreshUserToken(RefreshUserTokenCallbackImpl())
         } else {
-            SuprSend.setRefreshTokenCallback(null)
+            SuprSend.setRefreshUserToken(null)
         }
 
         super.onCreate()
@@ -53,23 +56,34 @@ class MyApplication : Application() {
         })
 
         SuprSend.setNotificationCallback(object : NotificationCallbackListener {
-            override fun onPushPayloadReceived(data: Map<String, String>) {
+            override fun onPushPayloadReceived(context: Context,data: Map<String, String>) {
                 Log.i(AppConstants.TAG, "onPushPayloadReceived : $data")
             }
 
+            override fun onNotificationClicked(notificationActionVo: NotificationActionVo, data: Map<String, String>) {
+                Log.i(
+                    AppConstants.TAG,
+                    "onNotificationClicked : id=${notificationActionVo.notificationId}, link=${notificationActionVo.link}, actionType=${notificationActionVo.notificationActionType}, data=$data"
+                )
+            }
         })
     }
 }
 
-class RefreshTokenCallbackImpl : RefreshTokenCallback {
+class RefreshUserTokenCallbackImpl : RefreshUserTokenCallback {
 
     private val networkClient = NetworkClient()
 
     override fun getToken(distinctId: String): String {
         return try {
+            val tenantId = AppCreator.getTenantId()
+            var url = "${BuildConfig.SS_BASE_URL}/authentication-token/${URLEncoder.encode(distinctId, "utf-8")}"
+            if (tenantId != null) {
+                url = "$url/?tenant_id=${URLEncoder.encode(tenantId, "utf-8")}"
+            }
             val response = networkClient.httpCall(
                 requestMethod = "GET",
-                url = "${BuildConfig.SS_BASE_URL}/authentication-token/${URLEncoder.encode(distinctId, "utf-8")}"
+                url = url
             )
             val responseJo = JSONObject(response.body ?: "{}")
             val token = responseJo.optString("token")

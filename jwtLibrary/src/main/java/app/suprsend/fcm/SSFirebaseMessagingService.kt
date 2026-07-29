@@ -13,7 +13,7 @@ class SSFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         try {
             SSNotificationHelper.showFCMNotification(applicationContext, remoteMessage)
-            SSInternal.suprSendData.notificationCallbackListener?.onPushPayloadReceived(remoteMessage.data)
+            SSInternal.suprSendData.notificationCallbackListener?.onPushPayloadReceived(this, remoteMessage.data)
         } catch (e: Exception) {
             Logger.e(SSConstants.TAG_SUPRSEND, "onMessageReceived", e)
         }
@@ -21,9 +21,9 @@ class SSFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         try {
-            Logger.i(SSConstants.TAG_SUPRSEND, "FCM Token : $token")
+            Logger.i(SSConstants.TAG_SUPRSEND, "FCM onNewToken : $token")
             val instance = SuprSend.getInstance()
-            instance.user.setAndroidFcmPushAsync(token)
+            instance.user.addFcmPushAsync(token)
         } catch (e: Exception) {
             Logger.e(SSConstants.TAG_SUPRSEND, "onNewToken", e)
         }
