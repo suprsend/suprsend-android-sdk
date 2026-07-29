@@ -49,6 +49,7 @@ internal object SSConstants {
     const val INSERT_ID = "\$insert_id"
     const val IDENTIFY = "\$identify"
     const val TIME = "\$time"
+    const val PUSH_BUNDLE_ID = "\$bundle_id"
     const val PUSH_ANDROID_TOKEN = "\$androidpush"
     const val PUSH_IOS_TOKEN = "\$iospush"
     const val PUSH_VENDOR = "\$pushvendor"
