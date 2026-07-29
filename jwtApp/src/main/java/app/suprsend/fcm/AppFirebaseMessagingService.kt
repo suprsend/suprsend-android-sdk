@@ -23,9 +23,8 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
                     if (!key.equals("supr_send_n_pl"))
                         jsonObject.put(key, remoteMessage.data[key])
                 }
-                // Sending this earlier since flush will be done in showFCMNotification
-                SuprSend.getInstance().trackEventAsync(EVENT_NOTIFICATION_CUSTOM_CONFIG, jsonObject)
                 SSNotificationHelper.showFCMNotification(applicationContext, remoteMessage)
+                SuprSend.getInstance().trackEventAsync(EVENT_NOTIFICATION_CUSTOM_CONFIG, jsonObject)
             } else {
                 // This payload is not sent by SuprSend.
                 // Handle it based on your app requirements.

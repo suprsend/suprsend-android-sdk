@@ -67,8 +67,8 @@ Use this approach when your app must own **FCM token registration** and **notifi
 Firebase allows only **one** `FirebaseMessagingService` per app. Register **your** service in the manifest and **do not** declare `SSFirebaseMessagingService`.
 
 1.  Declare your `FirebaseMessagingService` in `AndroidManifest.xml`.
-2.  In `onNewToken`, forward token rotations to Suprsend (initial registration is handled when you call `SuprSend.getInstance()` after `initialize()` and `identify()` — no `FirebaseMessaging.getInstance().token` setup required).
-3.  In `onMessageReceived`, branch on payload type: Suprsend vs everything else.
+2.  In `onNewToken`, forward token rotations to Suprsend (initial registration is handled by `SuprSend.initialize()` after `identify()` — no `FirebaseMessaging.getInstance().token` setup required).
+3.  In `onMessageReceived`, branch on payload type: Suprsend vs everything else. Call `SSNotificationHelper.showFCMNotification(...)` for Suprsend payloads — it initializes SDK context for you.
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET" />
@@ -94,14 +94,15 @@ import com.google.firebase.messaging.RemoteMessage
 class AppFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
-        // Token rotation only — initial token is registered by the SDK on getInstance().
-        SuprSend.getInstance().user.setAndroidFcmPushAsync(token)
+        // Token rotation only — initial token is registered by the SDK on initialize().
+        SuprSend.getInstance().user.addFcmPushAsync(token)
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         if (remoteMessage.isSuprSendRemoteMessage()) {
-            // Suprsend campaign: SDK helper handles rendering, channels, grouping,
-            // deep links, and delivery/click/dismiss tracking.
+            // Suprsend campaign: SDK helper initializes context, then handles rendering,
+            // channels, grouping, deep links, and delivery/click/dismiss tracking.
+            // No need to call SuprSend.initialize() here unless you use other SDK APIs first.
             SSNotificationHelper.showFCMNotification(applicationContext, remoteMessage)
 
             // Optional: read extra data keys from your Suprsend template
@@ -117,12 +118,12 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
 }
 ```
 
-| Step                          | API                                                                | Description                                                             |
-| ----------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| Detect Suprsend payload       | `remoteMessage.isSuprSendRemoteMessage()`                          | Checks for `supr_send_n_pl` in `RemoteMessage.data`                     |
-| Render Suprsend UI            | `SSNotificationHelper.showFCMNotification(context, remoteMessage)` | No-op if the message is not a Suprsend payload                          |
-| Register FCM token (rotation) | `user.setAndroidFcmPushAsync(token)` in `onNewToken`               | Initial token: automatic on `SuprSend.getInstance()` after `identify()` |
-| Track notification tap        | `SuprSend.getInstance().notificationClicked(...)`                  | After the user opens a Suprsend notification                            |
+| Step                          | API                                                                | Description                                                                              |
+| ----------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Detect Suprsend payload       | `remoteMessage.isSuprSendRemoteMessage()`                          | Checks for `supr_send_n_pl` in `RemoteMessage.data`                                      |
+| Render Suprsend UI            | `SSNotificationHelper.showFCMNotification(context, remoteMessage)` | Initializes SDK context if needed; no-op if the message is not a Suprsend payload        |
+| Register FCM token (rotation) | `user.addFcmPushAsync(token)` in `onNewToken`                      | Initial token: automatic on `SuprSend.initialize()` after `identify()`                   |
+| Track notification tap        | `SuprSend.getInstance().notificationClicked(...)`                  | After the user opens a Suprsend notification                                             |
 
 ---
 

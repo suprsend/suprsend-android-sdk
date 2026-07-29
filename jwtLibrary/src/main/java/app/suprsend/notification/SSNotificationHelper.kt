@@ -52,6 +52,7 @@ object SSNotificationHelper {
 
     fun showFCMNotification(context: Context, remoteMessage: RemoteMessage) {
         try {
+            SuprSend.initialize(context = context)
             Logger.i("notification", "showFCMNotification")
             appExecutorService.execute {
                 Logger.i("notification", "Message Id : ${remoteMessage.messageId}")
