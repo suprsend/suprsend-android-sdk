@@ -11,7 +11,7 @@
 | Firebase Cloud Messaging | Required for push |
 
 **Package:** `app.suprsend`  
-**Maven coordinates:** `com.suprsend:native:<version>` (latest version: `2.0.1`)
+**Maven coordinates:** `com.suprsend:native:<version>` (latest version: `2.0.3`)
 
 ## Installation
 

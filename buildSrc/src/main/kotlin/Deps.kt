@@ -8,6 +8,12 @@ object Deps {
     private const val MAJOR_VERSION = 2
     private const val MINOR_VERSION = 0
     private const val PATCH_VERSION = 3
+
+    // Testing
+//    private const val MAJOR_VERSION = 0
+//    private const val MINOR_VERSION = 1
+//    private const val PATCH_VERSION = 18
+
     val BUILD_TYPE = BuildType.NATIVE
     private const val ISPROD = false
     const val RUN_LIB = false
