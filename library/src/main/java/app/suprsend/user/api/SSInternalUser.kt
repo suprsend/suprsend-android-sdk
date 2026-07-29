@@ -185,6 +185,7 @@ internal object SSInternalUser {
         if (newToken != oldToken) {
             SSApiInternal.setFcmToken(newToken)
             val jsonObject = JSONObject()
+            jsonObject.put(SSConstants.PUSH_BUNDLE_ID, SdkAndroidCreator.context.packageName)
             jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, newToken)
             jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_FCM)
             jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
@@ -198,6 +199,7 @@ internal object SSInternalUser {
 
     fun unSetAndroidFcmPush(token: String) {
         val jsonObject = JSONObject()
+        jsonObject.put(SSConstants.PUSH_BUNDLE_ID, SdkAndroidCreator.context.packageName)
         jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, token)
         jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_FCM)
         jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_FCM)
@@ -214,6 +216,7 @@ internal object SSInternalUser {
             SSApiInternal.setXiaomiToken(newToken)
         }
         val jsonObject = JSONObject()
+        jsonObject.put(SSConstants.PUSH_BUNDLE_ID, SdkAndroidCreator.context.packageName)
         jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, newToken)
         jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_XIAOMI)
         jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_XIAOMI)
@@ -226,6 +229,7 @@ internal object SSInternalUser {
 
     fun unSetAndroidXiaomiPush(token: String) {
         val jsonObject = JSONObject()
+        jsonObject.put(SSConstants.PUSH_BUNDLE_ID, SdkAndroidCreator.context.packageName)
         jsonObject.put(SSConstants.PUSH_ANDROID_TOKEN, token)
         jsonObject.put(SSConstants.PUSH_VENDOR, SSConstants.PUSH_VENDOR_XIAOMI)
         jsonObject.put(SSConstants.ID_PROVIDER, SSConstants.PUSH_VENDOR_XIAOMI)

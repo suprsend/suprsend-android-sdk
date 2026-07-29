@@ -28,6 +28,9 @@ This SDK is compatible with:
 2.0.0
 - Feature: JWT support on 2.0.0
 
+1.2.8
+- Added bundle_id in push events  
+
 1.2.6
 - Anr fix in init 
 
