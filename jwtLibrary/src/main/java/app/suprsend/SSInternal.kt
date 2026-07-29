@@ -222,7 +222,7 @@ internal object SSInternal {
                     }
                     userToken = refreshUserToken.getToken(distinctId)
                     if (!isJWTTokenExpired(userToken)) {
-                        storeToken(userToken)
+                        suprSendData.userToken = userToken
                         Logger.v(SSConstants.TAG_SUPRSEND, "Got $distinctId $userToken")
                         val tryDistinctIdentity = SDKPref.distinctIdTry
                         val identifyFailedEarlier = !tryDistinctIdentity.isNullOrBlank()
@@ -338,14 +338,6 @@ internal object SSInternal {
         SDKPref.distinctIdTry = null
     }
 
-
-    fun storeToken(userToken: String?) {
-        if (userToken == null) {
-            suprSendData.userToken = null
-        } else {
-            suprSendData.userToken = userToken
-        }
-    }
 
     fun getToken(): String? {
         return suprSendData.userToken
