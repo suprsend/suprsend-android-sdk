@@ -58,6 +58,7 @@ Authenticate user so that all the actions performed after authenticating will be
 SuprSend.getInstance().identityAsync(
     distinctId = "YOUR_USER_ID",
     userToken = userTokenData,
+    tenantId = "YOUR_TENANT_ID", // only needed in multi-tenant workspaces
     refreshUserToken = object : RefreshUserTokenCallback {
           override fun getToken(distinctId: String): String {
               return yourBackend.getSubscriberJwt(distinctId)
@@ -76,6 +77,7 @@ SuprSend.getInstance().identityAsync(
 val response = SuprSend.getInstance().identify(
     distinctId = "YOUR_USER_ID",
     userToken = userTokenData,
+    tenantId = "YOUR_TENANT_ID",
     refreshUserToken = refreshUserToken
 )
 ```
@@ -84,6 +86,7 @@ val response = SuprSend.getInstance().identify(
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | distinctId\*         | Unique identifier to identify a user across platform.                                                                                                                                                                                     |
 | userToken            | Mandatory when enhanced security mode is on. This is ES256 JWT token generated in your server-side. Refer [docs](https://docs.suprsend.com/docs/client-authentication#enhanced-security-mode-with-signed-user-token) to create userToken. |
+| tenantId             | Needed only when your workspace has multiple tenants/brands. Scopes the identified users activity to that tenant. Its value must match `scope.tenant_id` in the `userToken` payload, else it raises a scoping error.                      |
 | refreshUserToken     | This function is called by SDK internally to get new userToken before existing token is expired. The returned string is used as the new userToken.                                                                                        |
 | actionStatusCallback | **Async only.** `ActionStatusCallback` invoked on the **main thread** with the `ApiResponse` from `identify`.                                                                                                                             |
 
@@ -114,6 +117,14 @@ SuprSend.getInstance().reset(unSubscribeNotification = true)
 | ----------------------- | ---------------------------------------------------------------------- |
 | unSubscribeNotification | When `true`, removes the device FCM token from the subscriber profile. |
 
+## Change active tenant
+
+Use the below method to switch the active tenant of identified user.
+
+```kotlin
+SuprSend.changeTenant("YOUR_TENANT_ID")
+```
+
 ## Response Structure
 
 ```kotlin
@@ -128,7 +139,6 @@ data class ApiResponse(
     fun isSuccess(): Boolean
 }
 ```
-
 
 ### 4 ProGuard / R8 configuration
 
