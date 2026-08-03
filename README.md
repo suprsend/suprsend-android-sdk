@@ -25,6 +25,9 @@ This SDK is compatible with:
 #Release Notes
 
 ```
+1.2.9
+- Old sdk should not hit /event/v2 reverting to /event/
+
 2.0.0
 - Feature: JWT support on 2.0.0
 

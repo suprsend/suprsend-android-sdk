@@ -139,23 +139,3 @@ data class ApiResponse(
     fun isSuccess(): Boolean
 }
 ```
-
-### 4 ProGuard / R8 configuration
-
-    If your release build uses code shrinking (`minifyEnabled true`):
-
-    - **SDK version above 2.0.1** — ProGuard/R8 rules are bundled in the AAR via `consumerProguardFiles` and merged by Gradle automatically. No manual setup required.
-    - **SDK version 2.0.1 or below** — add the following to your app's `proguard-rules.pro`:
-
-    <CodeGroup>
-      ```proguard proguard-rules.pro theme={"system"}
-      # SuprSend SDK
-      -dontwarn app.suprsend.**
-      -keep class app.suprsend.** { *; }
-
-      # JWT dependencies
-      -keep class com.auth0.android.jwt.** { *; }
-      -keep class sun.misc.** { *; }
-      -keep class com.google.gson.** { *; }
-      ```
-    </CodeGroup>
