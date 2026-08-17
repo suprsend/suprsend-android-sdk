@@ -1,0 +1,78 @@
+import java.io.File
+import java.util.Locale
+
+object Deps {
+
+    //Sdk Details
+    const val SDK_PACKAGE_NAME = "app.suprsend"
+    private const val MAJOR_VERSION = 1
+    private const val MINOR_VERSION = 2
+    private const val PATCH_VERSION = 9
+
+    // Testing
+//    private const val MAJOR_VERSION = 0
+//    private const val MINOR_VERSION = 1
+//    private const val PATCH_VERSION = 18
+
+    val BUILD_TYPE = BuildType.NATIVE
+    private const val ISPROD = false
+    const val RUN_LIB = false
+
+    const val SDK_VERSION_CODE = MAJOR_VERSION * 1000 + (MINOR_VERSION * 100) + PATCH_VERSION
+    var SDK_VERSION_NAME = "$MAJOR_VERSION.${MINOR_VERSION}.${PATCH_VERSION}"
+
+    //App Details
+    var APP_VERSION_CODE = (10000 * MAJOR_VERSION) + (1000 * MINOR_VERSION) + (100 * PATCH_VERSION)
+
+    var APP_VERSION_NAME = if (ISPROD) "$SDK_VERSION_NAME-Prod" else "$SDK_VERSION_NAME-Stag"
+
+    //Prod
+    val SS_TENANT_ID = "XXXX"
+    var SS_BASE_URL = "XXXX"
+    var SS_TOKEN = "XXXX"
+    var SS_SECRET = "XXXX"
+    const val XIAOMI_APP_ID = "XXXX"
+    const val XIAOMI_APP_KEY = "XXXX"
+    var SS_INBOX_BASE_URL = "XXXX"
+    var SS_INBOX_SOCKET_URL = "XXXX"
+    var SS_INBOX_SUBSCRIBER_ID = "XXXX"
+    const val MX_TOKEN = "XXXX"
+
+    object Android {
+        const val minSdk = 19
+        const val targetSdk = 33
+        const val compileSdk = 33
+        const val buildToolsVersion = "33.0.0"
+    }
+
+    object Publication {
+        const val GROUP = "com.suprsend"
+        var VERSION = SDK_VERSION_NAME
+
+        const val PUBLISH_GROUP_ID = "com.suprsend"
+        var PUBLISH_ARTIFACT_ID = BUILD_TYPE.name.toLowerCase(Locale.getDefault())
+        var PUBLISH_ARTIFACT_VERSION = SDK_VERSION_NAME
+        const val POM_NAME = "suprsend"
+        fun pomDescription(projectDir: File): String =
+            "Suprsend Android SDK release from commit id : ${Git.headCommitHash(projectDir)}"
+        const val POM_URL = "https://github.com/suprsend/suprsend-android-sdk"
+        const val POM_LICENCE_NAME = "The Apache Software License, Version 2.0"
+        const val POM_LICENCE_URL = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        const val POM_DEVELOPER_NAME = "SuprSend Team"
+        const val POM_DEVELOPER_EMAIL = "developers@suprsend.com"
+        const val POM_SCM_CONNECTION = "scm:git@github.com:suprsend/suprsend-android-sdk.git"
+        const val POM_SCM_DEV_CONNECTION = "scm:git@github.com:suprsend/suprsend-android-sdk.git"
+        const val POM_SCM_URL = "https://github.com/suprsend/suprsend-android-sdk"
+    }
+
+    object JetBrains {
+        object Kotlin {
+            const val VERSION = "1.3.72"
+        }
+    }
+    object Firebase {
+        // 23.x includes Android 12+ PendingIntent mutability fixes needed when targetSdk >= 31
+        const val messaging = "23.0.6"
+    }
+    const val material = "1.4.0"
+}

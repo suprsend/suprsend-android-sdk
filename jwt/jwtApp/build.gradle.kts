@@ -1,5 +1,8 @@
 plugins {
     id("com.android.application")
+    //id("org.jetbrains.kotlin.android")
+    //id("kotlin-android")
+    //kotlin("android")
     kotlin("android")
     kotlin("kapt")
     id("com.google.gms.google-services")
@@ -9,7 +12,6 @@ apply {
     from("$rootDir/ktlint.gradle")
 }
 android {
-
     compileSdkVersion(Deps.Android.compileSdk)
     buildToolsVersion(Deps.Android.buildToolsVersion)
 
@@ -22,6 +24,9 @@ android {
         multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
     signingConfigs {
         getByName("debug") {
@@ -54,6 +59,7 @@ android {
             signingConfig = signingConfigs.getByName("release")
             isDebuggable = false
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -88,8 +94,8 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics:18.2.1")
 
     if (Deps.RUN_LIB) {
-        implementation(project(":library"))
-        println("Using shared library")
+        implementation(project(":jwtLibrary"))
+        println("Using shared library :jwtLibrary")
     } else {
         val dependency = "${Deps.Publication.GROUP}:${Deps.Publication.PUBLISH_ARTIFACT_ID}:${Deps.Publication.VERSION}"
         implementation(dependency)
@@ -116,12 +122,17 @@ dependencies {
 }
 
 fun com.android.build.gradle.internal.dsl.BuildType.addBuildConfigFields() {
-    buildConfigField("String", "XIAOMI_APP_ID", "\"${Deps.XIAOMI_APP_ID}\"")
-    buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
     buildConfigField("String", "SS_BASE_URL", "\"${Deps.SS_BASE_URL}\"")
+    buildConfigField("String", "SS_PUBLIC_API_KEY", "\"${Deps.SS_PUBLIC_API_KEY}\"")
+
     buildConfigField("String", "SS_INBOX_BASE_URL", "\"${Deps.SS_INBOX_BASE_URL}\"")
-    buildConfigField("String", "SS_INBOX_SOCKET_URL", "\"${Deps.SS_INBOX_SOCKET_URL}\"")
+//    buildConfigField("String", "INBOX_SECRET", "\"${Deps.INBOX_SECRET}\"")
     buildConfigField("String", "SS_INBOX_SUBSCRIBER_ID", "\"${Deps.SS_INBOX_SUBSCRIBER_ID}\"")
-    buildConfigField("String", "SS_TENANT_ID", "\"${Deps.SS_TENANT_ID}\"")
+
+    buildConfigField("String", "SS_INBOX_SOCKET_URL", "\"${Deps.SS_INBOX_SOCKET_URL}\"")
+
     buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")
+    buildConfigField("String", "SS_TENANT_ID", "\"${Deps.SS_TENANT_ID}\"")
+
 }
+tasks.register("testClasses")
