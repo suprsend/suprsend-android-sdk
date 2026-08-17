@@ -122,19 +122,6 @@ afterEvaluate {
                 }
             }
         }
-        // The repository to publish to, Maven Central Portal (using new staging API)
-        repositories {
-            maven {
-                name = "mavencentral"
-                url = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
-                credentials {
-                    username = project.findProperty("mavenCentralUsername") as String?
-                        ?: throw GradleException("mavenCentralUsername not found in gradle.properties")
-                    password = project.findProperty("mavenCentralPassword") as String?
-                        ?: throw GradleException("mavenCentralPassword not found in gradle.properties")
-                }
-            }
-        }
     }
     
     signing {

@@ -119,6 +119,8 @@ fun com.android.build.gradle.internal.dsl.BuildType.addBuildConfigFields() {
     buildConfigField("String", "XIAOMI_APP_ID", "\"${Deps.XIAOMI_APP_ID}\"")
     buildConfigField("String", "XIAOMI_APP_KEY", "\"${Deps.XIAOMI_APP_KEY}\"")
     buildConfigField("String", "SS_BASE_URL", "\"${Deps.SS_BASE_URL}\"")
+    buildConfigField("String", "SS_TOKEN", "\"${Deps.SS_TOKEN}\"")
+    buildConfigField("String", "SS_SECRET", "\"${Deps.SS_SECRET}\"")
     buildConfigField("String", "SS_INBOX_BASE_URL", "\"${Deps.SS_INBOX_BASE_URL}\"")
     buildConfigField("String", "SS_INBOX_SOCKET_URL", "\"${Deps.SS_INBOX_SOCKET_URL}\"")
     buildConfigField("String", "SS_INBOX_SUBSCRIBER_ID", "\"${Deps.SS_INBOX_SUBSCRIBER_ID}\"")

@@ -32,11 +32,11 @@ object Deps {
     const val XIAOMI_APP_ID = "XXXX"
     const val XIAOMI_APP_KEY = "XXXX"
 
-    const val OPPO_APP_KEY = "XXXX"
-    const val OPPO_APP_SECRET = "XXXX"
+    var SS_TOKEN = "XXXX"
+    var SS_SECRET = "XXXX"
+
 
     var SS_BASE_URL = "XXXX"
-    var SS_PUBLIC_API_KEY = "XXXX"
     var SS_INBOX_BASE_URL = "XXXX"
     var SS_INBOX_SOCKET_URL = "XXXX"
     var SS_INBOX_SUBSCRIBER_ID = "XXXX"
