@@ -26,17 +26,10 @@ object Deps {
 
     var APP_VERSION_NAME = if (ISPROD) "$SDK_VERSION_NAME-Prod" else "$SDK_VERSION_NAME-Stag"
 
-    //Prod
-    val SS_TENANT_ID = "XXXX"
-
-    const val XIAOMI_APP_ID = "XXXX"
-    const val XIAOMI_APP_KEY = "XXXX"
-
-    const val OPPO_APP_KEY = "XXXX"
-    const val OPPO_APP_SECRET = "XXXX"
 
     var SS_BASE_URL = "XXXX"
     var SS_PUBLIC_API_KEY = "XXXX"
+    val SS_TENANT_ID = "XXXX"
     var SS_INBOX_BASE_URL = "XXXX"
     var SS_INBOX_SOCKET_URL = "XXXX"
     var SS_INBOX_SUBSCRIBER_ID = "XXXX"
@@ -44,7 +37,6 @@ object Deps {
 
     //Todo : Add jitpack publishing
     const val MX_TOKEN = "XXXX"
-    const val JITPACK_TOKEN = "XXXX"
 
     object Android {
         const val minSdk = 19
