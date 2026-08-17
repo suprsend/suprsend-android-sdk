@@ -33,9 +33,6 @@ object Deps {
     var SS_INBOX_BASE_URL = "XXXX"
     var SS_INBOX_SOCKET_URL = "XXXX"
     var SS_INBOX_SUBSCRIBER_ID = "XXXX"
-
-
-    //Todo : Add jitpack publishing
     const val MX_TOKEN = "XXXX"
 
     object Android {
