@@ -1,5 +1,10 @@
 # suprsend-android-sdk
 
+This repo contains two independent Gradle projects. Open **`old/`** or **`jwt/`** in Android Studio, not this parent folder.
+
+- `old/` — Android SDK 1.x (`library` + `androidApp`)
+- `jwt/` — Android SDK 2.x JWT (`jwtLibrary` + `jwtApp`)
+
 ## Compatibility
 
 This SDK is compatible with:

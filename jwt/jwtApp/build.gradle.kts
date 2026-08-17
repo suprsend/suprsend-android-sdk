@@ -12,13 +12,13 @@ apply {
     from("$rootDir/ktlint.gradle")
 }
 android {
-    compileSdk = Deps.Android.compileSdk
-    buildToolsVersion= Deps.Android.buildToolsVersion
+    compileSdkVersion(Deps.Android.compileSdk)
+    buildToolsVersion(Deps.Android.buildToolsVersion)
 
     defaultConfig {
         applicationId = "${Deps.SDK_PACKAGE_NAME}.android"
-        minSdk =Deps.Android.minSdk
-        targetSdk = Deps.Android.targetSdk
+        minSdkVersion(Deps.Android.minSdk)
+        targetSdkVersion(Deps.Android.targetSdk)
         versionCode = Deps.APP_VERSION_CODE
         versionName = Deps.APP_VERSION_NAME
         multiDexEnabled = true
@@ -44,7 +44,6 @@ android {
     }
     buildFeatures {
         dataBinding = true
-        buildConfig = true
     }
 
     buildTypes {
@@ -122,7 +121,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 }
 
-fun com.android.build.api.dsl.BuildType.addBuildConfigFields() {
+fun com.android.build.gradle.internal.dsl.BuildType.addBuildConfigFields() {
     buildConfigField("String", "SS_BASE_URL", "\"${Deps.SS_BASE_URL}\"")
     buildConfigField("String", "SS_PUBLIC_API_KEY", "\"${Deps.SS_PUBLIC_API_KEY}\"")
 

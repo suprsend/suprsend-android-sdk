@@ -1,5 +1,0 @@
-rootProject.name = "SSAar"
-//include ':library'
-//include ':androidApp'
-include ':jwtLibrary'
-include ':jwtApp'
