@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import app.suprsend.Emitter
 import app.suprsend.SuprSend
 import app.suprsend.android.AppConstants
 import app.suprsend.android.AppCreator
@@ -11,10 +12,8 @@ import app.suprsend.android.databinding.UserPreferenceActivityBinding
 import app.suprsend.android.isLast
 import app.suprsend.android.logInfo
 import app.suprsend.android.myToast
-import app.suprsend.base.Response
-import app.suprsend.exception.NoInternetException
-import app.suprsend.user.preference.ChannelPreferenceOptions
-import app.suprsend.user.preference.PreferenceCallback
+import app.suprsend.user.preference.ChannelLevelPreferenceOptions
+import app.suprsend.user.preference.PreferenceAPIResponse
 import app.suprsend.user.preference.PreferenceData
 import app.suprsend.user.preference.PreferenceOptions
 import app.suprsend.user.preference.Preferences
@@ -23,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 
 class UserPreferenceActivity : AppCompatActivity() {
 
@@ -31,7 +29,6 @@ class UserPreferenceActivity : AppCompatActivity() {
 
     lateinit var adapter: UserPreferenceRecyclerViewAdapter
 
-    lateinit var preferences: Preferences
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private val expandedIds = hashMapOf<String, Boolean>()
@@ -41,104 +38,98 @@ class UserPreferenceActivity : AppCompatActivity() {
         title = "Preferences"
         binding = UserPreferenceActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        SuprSend.getInstance().user.getPreferences().setPreferenceConfig(
+        val preferenceArgs = Preferences.Args(
             tenantId = AppCreator.getTenantId(),
             showOptOutChannels = intent.extras?.get("showOptOutChannels").toString().toBoolean()
         )
         binding.categoriesRV.layoutManager = LinearLayoutManager(this@UserPreferenceActivity)
         adapter = UserPreferenceRecyclerViewAdapter(
-            // Category Toggle from right side
             categoryItemClick = { category, checked ->
-                coroutineScope.launch(Dispatchers.IO) {
-                    val response = SuprSend.getInstance().user.getPreferences().updateCategoryPreference(
+                applyPreferenceUpdate("Failed to update category preference") {
+                    SuprSend.getInstance().preferences.updateCategoryPreference(
                         category = category,
-                        preference = PreferenceOptions.from(checked)
+                        preference = if (checked) PreferenceOptions.optIn else PreferenceOptions.optOut,
+                        args = preferenceArgs
                     )
-                    if (response.getException() is NoInternetException) {
-                        withContext(Dispatchers.Main) {
-                            myToast("Please check internet connection")
-                        }
-                    }
                 }
             },
-            // Category Channel Item
             channelItemClick = { category, channel, checked ->
-                coroutineScope.launch {
-                    val response = SuprSend.getInstance().user.getPreferences().updateChannelPreferenceInCategory(
-                        category = category,
+                applyPreferenceUpdate("Failed to update channel preference") {
+                    SuprSend.getInstance().preferences.updateChannelPreferenceInCategory(
                         channel = channel,
-                        preference = PreferenceOptions.from(checked)
+                        preference = if (checked) PreferenceOptions.optIn else PreferenceOptions.optOut,
+                        category = category,
+                        args = preferenceArgs
                     )
-                    if (response.getException() is NoInternetException) {
-                        withContext(Dispatchers.Main) {
-                            myToast("Please check internet connection")
-                        }
-                    }
                 }
             },
             channelPreferenceArrowClick = { category, expanded ->
                 expandedIds[category] = expanded
             },
-//           //Overall
-            channelPreferenceChangeClick = { channel: String, channelPreferenceOptions: ChannelPreferenceOptions ->
-                logInfo("Updated channelPreferenceOptions channel:$channel channelPreferenceOptions: $channelPreferenceOptions ")
-                coroutineScope.launch {
-                    val response = SuprSend.getInstance().user.getPreferences().updateOverallChannelPreference(
+            channelPreferenceChangeClick = { channel: String, preference: ChannelLevelPreferenceOptions ->
+                logInfo("Updated channelPreferenceOptions channel:$channel channelPreferenceOptions: $preference ")
+                applyPreferenceUpdate("Failed to update overall channel preference") {
+                    SuprSend.getInstance().preferences.updateOverallChannelPreference(
                         channel = channel,
-                        channelPreferenceOptions = channelPreferenceOptions
+                        preference = preference,
+                        args = preferenceArgs
                     )
-                    if (response.getException() is NoInternetException) {
-                        withContext(Dispatchers.Main) {
-                            myToast("Please check internet connection")
-                        }
-                    }
                 }
-            })
+            }
+        )
         binding.categoriesRV.adapter = adapter
 
-        preferences = SuprSend.getInstance().user.getPreferences()
-
         coroutineScope.launch {
-            val data = preferences.fetchUserPreference(fetchRemote = true).getData() ?: return@launch
+            val data = SuprSend.getInstance().preferences.getPreferences(args = preferenceArgs).body ?: return@launch
             showData(data)
+        }
+
+        SuprSend.getInstance().emitter.on(Emitter.Event.preferencesUpdated) { response ->
+            val data = response?.body ?: return@on
+            coroutineScope.launch { showData(data) }
+        }
+        SuprSend.getInstance().emitter.on(Emitter.Event.preferencesError) { response ->
+            runOnUiThread {
+                myToast(response?.error?.message ?: "Preference update failed")
+            }
         }
 
         binding.testButton.setOnClickListener {
             coroutineScope.launch {
-                var data = preferences.fetchCategories().getData() ?: return@launch
-                val category = data.getJSONArray("results").getJSONObject(0).getString("category") ?: ""
-                Log.i(AppConstants.TAG, data.toString())
-                data = preferences.fetchCategory(category).getData() ?: return@launch
-                Log.i(AppConstants.TAG, data.toString())
-                data = preferences.fetchOverallChannelPreferences().getData() ?: return@launch
-                Log.i(AppConstants.TAG, data.toString())
+                var data = SuprSend.getInstance().preferences.getCategories(args = Preferences.CategoryArgs(
+                    tenantId = preferenceArgs.tenantId,
+                    showOptOutChannels = preferenceArgs.showOptOutChannels
+                )).body ?: return@launch
+                Log.i(AppConstants.TAG, data)
+                val category = org.json.JSONObject(data).optJSONArray("results")?.optJSONObject(0)?.optString("category") ?: ""
+                data = SuprSend.getInstance().preferences.getCategory(category, args = preferenceArgs).body ?: return@launch
+                Log.i(AppConstants.TAG, data)
+                data = SuprSend.getInstance().preferences.getOverallChannelPreferences(args = preferenceArgs).body ?: return@launch
+                Log.i(AppConstants.TAG, data)
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        preferences.registerCallback(object : PreferenceCallback {
-            override fun onUpdate(preferenceData: PreferenceData) {
-                coroutineScope.launch {
-                    showData(preferenceData)
-                }
-            }
-
-            override fun onError(response: Response<JSONObject>) {
-                Log.e(AppConstants.TAG, "Response Json : ${response.getData()}")
-            }
-        })
-    }
-
-    override fun onPause() {
-        super.onPause()
-        preferences.unRegisterCallback()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         coroutineScope.cancel()
+    }
+
+    private fun applyPreferenceUpdate(
+        fallbackError: String,
+        update: () -> PreferenceAPIResponse
+    ) {
+        coroutineScope.launch {
+            val response = update()
+            val body = response.body
+            if (body != null) {
+                showData(body)
+            } else if (response.error != null) {
+                withContext(Dispatchers.Main) {
+                    myToast(response.error?.message ?: fallbackError)
+                }
+            }
+        }
     }
 
     private suspend fun showData(preferenceData: PreferenceData) {
@@ -150,20 +141,22 @@ class UserPreferenceActivity : AppCompatActivity() {
     private fun PreferenceData?.toUIItems(): List<RecyclerViewItem> {
         if (this == null) return listOf()
         val itemsList = arrayListOf<RecyclerViewItem>()
-        sections.forEachIndexed { sIndex, section ->
-            if (section.name.isNotBlank())
-                itemsList.add(RecyclerViewItem.SectionVo(idd = section.name, title = section.name, description = section.description))
-            section.subCategories.forEachIndexed { scIndex, subCategory ->
-                itemsList.add(RecyclerViewItem.SubCategoryVo(subCategory, section.subCategories.isLast(scIndex)))
+        sections?.forEachIndexed { _, section ->
+            val sectionName = section.name
+            if (!sectionName.isNullOrBlank()) {
+                itemsList.add(RecyclerViewItem.SectionVo(title = sectionName, description = section.description ?: ""))
+            }
+            val subcategories = section.subcategories ?: return@forEachIndexed
+            subcategories.forEachIndexed { scIndex, subcategory ->
+                itemsList.add(RecyclerViewItem.CategoryVo(subcategory, subcategories.isLast(scIndex)))
             }
         }
         itemsList.add(
             RecyclerViewItem.SectionVo(
-                "Over all section divider",
-                "What notifications to allow for channel?"
+                title = "What notifications to allow for channel?"
             )
         )
-        channelPreferences.forEach { channelPreference ->
+        channelPreferences?.forEach { channelPreference ->
             val isExpanded = expandedIds[channelPreference.channel] ?: false
             itemsList.add(RecyclerViewItem.ChannelPreferenceVo(channelPreference, isExpanded))
         }

@@ -11,18 +11,18 @@ import app.suprsend.android.databinding.SectionItemBinding
 import app.suprsend.android.databinding.SubCategoryItemBinding
 import app.suprsend.android.layoutInflater
 import app.suprsend.android.setVisibleOrGone
-import app.suprsend.user.preference.Channel
+import app.suprsend.user.preference.Category
+import app.suprsend.user.preference.CategoryChannel
+import app.suprsend.user.preference.ChannelLevelPreferenceOptions
 import app.suprsend.user.preference.ChannelPreference
-import app.suprsend.user.preference.ChannelPreferenceOptions
 import app.suprsend.user.preference.PreferenceOptions
-import app.suprsend.user.preference.SubCategory
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
 typealias ChannelItemClick = (category: String, channel: String, checked: Boolean) -> Unit
 typealias CategoryItemClick = (category: String, checked: Boolean) -> Unit
 typealias ChannelPreferenceArrowClick = (category: String, expanded: Boolean) -> Unit
-typealias ChannelPreferenceChangeClick = (channel: String, channelPreferenceOptions: ChannelPreferenceOptions) -> Unit
+typealias ChannelPreferenceChangeClick = (channel: String, preference: ChannelLevelPreferenceOptions) -> Unit
 
 class UserPreferenceRecyclerViewAdapter(
     private val categoryItemClick: CategoryItemClick,
@@ -45,7 +45,7 @@ class UserPreferenceRecyclerViewAdapter(
                 val binding = SectionItemBinding.inflate(parent.layoutInflater(), parent, false)
                 SectionHolder(binding)
             }
-            RecyclerViewItem.SubCategoryVo.VIEW_TYPE -> {
+            RecyclerViewItem.CategoryVo.VIEW_TYPE -> {
                 val binding = SubCategoryItemBinding.inflate(parent.layoutInflater(), parent, false)
                 SubCategoryHolder(binding)
             }
@@ -62,7 +62,7 @@ class UserPreferenceRecyclerViewAdapter(
             is RecyclerViewItem.SectionVo -> {
                 (holder as SectionHolder).bind(item)
             }
-            is RecyclerViewItem.SubCategoryVo -> {
+            is RecyclerViewItem.CategoryVo -> {
                 (holder as SubCategoryHolder).bind(item, categoryItemClick = categoryItemClick, channelItemClick = channelItemClick)
             }
             is RecyclerViewItem.ChannelPreferenceVo -> {
@@ -92,28 +92,28 @@ private data class SubCategoryHolder(
     val binding: SubCategoryItemBinding
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(
-        item: RecyclerViewItem.SubCategoryVo,
+        item: RecyclerViewItem.CategoryVo,
         categoryItemClick: CategoryItemClick,
         channelItemClick: ChannelItemClick
     ) {
         val subCategory = item.subCategory
         binding.obj = subCategory
-        binding.subCategoryDescTv.visibility = setVisibleOrGone(subCategory.description.isNotBlank())
+        binding.subCategoryDescTv.visibility = setVisibleOrGone(!subCategory.description.isNullOrBlank())
         binding.subCategoryCheckbox.isEnabled = subCategory.isEditable
-        binding.subCategoryCheckbox.isOn = subCategory.preferenceOptions == PreferenceOptions.OPT_IN
+        binding.subCategoryCheckbox.isOn = subCategory.preference == PreferenceOptions.optIn
         binding.subCategoryCheckbox.setOnToggledListener { _, isOn ->
             categoryItemClick.invoke(subCategory.category, isOn)
         }
 
         binding.channelChipGroup.removeAllViews()
-        subCategory.channels.forEach { channel ->
+        subCategory.channels?.forEach { channel ->
             addChannel(channel, binding.channelChipGroup, subCategory, channelItemClick)
         }
         binding.subCategoryDivider.visibility = setVisibleOrGone(!item.isLast)
     }
 
-    private fun addChannel(channel: Channel, channelChipGroup: ChipGroup, subCategory: SubCategory, channelItemClick: ChannelItemClick) {
-        val isChecked = channel.preferenceOptions == PreferenceOptions.OPT_IN
+    private fun addChannel(channel: CategoryChannel, channelChipGroup: ChipGroup, subCategory: Category, channelItemClick: ChannelItemClick) {
+        val isChecked = channel.preference == PreferenceOptions.optIn
         val channelBinding = ChannelItemBinding.inflate(channelChipGroup.layoutInflater())
         val chip = channelBinding.root as Chip
         chip.text = channel.channel
@@ -159,9 +159,9 @@ private data class ChannelPreferenceHolder(
         binding.allPrefRG.setOnCheckedChangeListener { _, id ->
             val checkedRb = binding.allPrefRG.findViewById<RadioButton>(id)
             val pref = if (checkedRb == binding.allRb) {
-                ChannelPreferenceOptions.ALL
+                ChannelLevelPreferenceOptions.all
             } else {
-                ChannelPreferenceOptions.REQUIRED
+                ChannelLevelPreferenceOptions.required
             }
             channelPreferenceChangeClick.invoke(channelPreference.channel, pref)
         }

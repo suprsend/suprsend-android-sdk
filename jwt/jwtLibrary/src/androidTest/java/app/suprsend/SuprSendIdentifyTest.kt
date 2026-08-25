@@ -24,7 +24,7 @@ class SuprSendIdentifyTest : BaseTest() {
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            host = TestConstants.SS_BASE_URL,
+            host = TestConstants.SS_BASE_URL
         )
         SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
@@ -52,7 +52,7 @@ class SuprSendIdentifyTest : BaseTest() {
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-                host = TestConstants.SS_BASE_URL,
+                host = TestConstants.SS_BASE_URL
         )
         SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
@@ -75,7 +75,7 @@ class SuprSendIdentifyTest : BaseTest() {
                 listOf(
                     TokenGenerator.generateToken(System.currentTimeMillis() - 3000), // Expired Token
                     TokenGenerator.generateToken(System.currentTimeMillis() - 3000), // Expired Token
-                    TokenGenerator.generateToken(System.currentTimeMillis() - 3000), // Expired Token
+                    TokenGenerator.generateToken(System.currentTimeMillis() - 3000) // Expired Token
                 )
                 )
         every {
@@ -90,7 +90,7 @@ class SuprSendIdentifyTest : BaseTest() {
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-                host = TestConstants.SS_BASE_URL,
+                host = TestConstants.SS_BASE_URL
         )
         SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
@@ -123,7 +123,7 @@ class SuprSendIdentifyTest : BaseTest() {
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-                host = TestConstants.SS_BASE_URL,
+                host = TestConstants.SS_BASE_URL
         )
         SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
@@ -148,7 +148,7 @@ class SuprSendIdentifyTest : BaseTest() {
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-                host = TestConstants.SS_BASE_URL,
+                host = TestConstants.SS_BASE_URL
         )
         SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient
@@ -179,7 +179,7 @@ class SuprSendIdentifyTest : BaseTest() {
             context = context,
             
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-                host = TestConstants.SS_BASE_URL,
+                host = TestConstants.SS_BASE_URL
         )
         SuprSend.setRefreshUserToken(refreshUserToken)
         SSInternal.networkClient = networkClient

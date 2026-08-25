@@ -14,8 +14,6 @@ import io.noties.markwon.Markwon
 
 @SuppressLint("StaticFieldLeak")
 object AppCreator {
-    private const val BASE_IMAGE_SERVER_URL = "https://freeappcreator.in/heruku"
-
     lateinit var context: Context
     var inboxThemeConfig: InboxThemeConfig = InboxThemeConfig()
 
@@ -49,24 +47,24 @@ object AppCreator {
 
     fun getProductImage(): String {
         return when ((0..9).random()) {
-            0 -> "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
-            1 -> "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg"
-            2 -> "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg"
-            3 -> "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg"
-            4 -> "https://fakestoreapi.com/img/71z3kpMAYsL._AC_UY879_.jpg"
-            5 -> "https://fakestoreapi.com/img/61sbMiUnoGL._AC_UL640_QL65_ML3_.jpg"
-            6 -> "https://fakestoreapi.com/img/81XH0e8fefL._AC_UY879_.jpg"
-            7 -> "https://fakestoreapi.com/img/51UDEzMJVpL._AC_UL640_QL65_ML3_.jpg"
-            8 -> "https://fakestoreapi.com/img/71HblAHs5xL._AC_UY879_-2.jpg"
-            9 -> "https://fakestoreapi.com/img/51Y5NI-I5jL._AC_UX679_.jpg"
-            else -> "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
+            0 -> "https://cdn.dummyjson.com/product-images/smartphones/iphone-13-pro/1.webp"
+            1 -> "https://cdn.dummyjson.com/product-images/laptops/apple-macbook-pro-14-inch-space-grey/1.webp"
+            2 -> "https://cdn.dummyjson.com/product-images/mens-shirts/man-plaid-shirt/1.webp"
+            3 -> "https://cdn.dummyjson.com/product-images/mens-shoes/nike-air-jordan-1-red-and-black/1.webp"
+            4 -> "https://cdn.dummyjson.com/product-images/sunglasses/classic-sun-glasses/1.webp"
+            5 -> "https://cdn.dummyjson.com/product-images/womens-dresses/corset-leather-with-skirt/1.webp"
+            6 -> "https://cdn.dummyjson.com/product-images/womens-bags/prada-women-bag/1.webp"
+            7 -> "https://cdn.dummyjson.com/product-images/beauty/red-lipstick/1.webp"
+            8 -> "https://cdn.dummyjson.com/product-images/mens-watches/brown-leather-belt-watch/1.webp"
+            9 -> "https://cdn.dummyjson.com/product-images/womens-jewellery/green-oval-earring/1.webp"
+            else -> "https://cdn.dummyjson.com/product-images/smartphones/iphone-13-pro/1.webp"
         }
     }
 
     fun getBannerImage(index: Int): String {
         return when ((1..2).random()) {
-            1 -> "$BASE_IMAGE_SERVER_URL/images/SizeD1200X400.jpg"
-            else -> "$BASE_IMAGE_SERVER_URL/images/womens_wear_resized1.jpg"
+            1 -> "https://picsum.photos/id/1015/1200/400"
+            else -> "https://picsum.photos/id/1018/1200/400"
         }
     }
 

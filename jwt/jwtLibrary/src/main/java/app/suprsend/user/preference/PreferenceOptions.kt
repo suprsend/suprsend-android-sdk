@@ -1,17 +1,22 @@
 package app.suprsend.user.preference
 
-import java.util.Locale
-
-enum class PreferenceOptions {
-    OPT_IN, OPT_OUT;
-
-    fun getNetworkName(): String {
-        return name.toLowerCase(Locale.getDefault())
-    }
+enum class PreferenceOptions(val rawValue: String) {
+    optIn("opt_in"),
+    optOut("opt_out");
 
     companion object {
-        fun from(isSelected: Boolean): PreferenceOptions {
-            return if (isSelected) OPT_IN else OPT_OUT
+        fun from(value: String?): PreferenceOptions {
+            return values().find { it.rawValue.equals(value, ignoreCase = true) } ?: optOut
         }
     }
+}
+
+enum class ChannelLevelPreferenceOptions(val rawValue: String) {
+    all("all"),
+    required("required")
+}
+
+sealed class PreferenceTags {
+    class string(val value: String) : PreferenceTags()
+    class dictionary(val dict: Map<String, Any>) : PreferenceTags()
 }

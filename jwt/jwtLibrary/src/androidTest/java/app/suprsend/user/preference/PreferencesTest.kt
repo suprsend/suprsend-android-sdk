@@ -21,14 +21,14 @@ class PreferencesTest : BaseTest() {
 
     @Before
     fun setup() {
+        Preferences.debounceDelayMs = 60_000L
         UserPreferenceRemote.networkClient = networkClient
         SSInternal.networkClient = networkClient
 
         SuprSend.initialize(
             context = context,
-            
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            host = "https://collector-staging.suprsend.workers.dev"
+            host = TestConstants.SS_BASE_URL
         )
 
         val suprSend = SuprSend.getInstance()
@@ -36,7 +36,7 @@ class PreferencesTest : BaseTest() {
 
         every {
             networkClient.httpCall(
-                url = "https://collector-staging.suprsend.workers.dev/v2/event",
+                url = "${TestConstants.SS_BASE_URL}/v2/event",
                 authorization = any(),
                 requestJson = any(),
                 headers = any()
@@ -50,7 +50,7 @@ class PreferencesTest : BaseTest() {
 
         every {
             networkClient.httpCall(
-                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/full_preference?&show_opt_out_channels=true",
+                url = "${TestConstants.SS_BASE_URL}/v1/user/U1/preference/?show_opt_out_channels=true",
                 authorization = any(),
                 requestMethod = any(),
                 requestJson = any(),
@@ -61,226 +61,128 @@ class PreferencesTest : BaseTest() {
             200,
             body = AssetHelper.readAssetFileToString("preference/full_preference_1.json")
         )
-        SuprSend.getInstance().user.getPreferences().setPreferenceConfig(
-            tenantId = null,
-            showOptOutChannels = true
-        )
 
         action.assertIsSuccess()
     }
 
     @Test
     fun verifyFetchUserPreference() {
-
-        val preferences = SuprSend.getInstance().user.getPreferences()
-        val data = preferences.fetchUserPreference().getData()
+        val preferences = SuprSend.getInstance().preferences
+        val data = preferences.getPreferences().body
 
         Assert.assertEquals(5, data?.sections?.size)
         Assert.assertEquals(5, data?.channelPreferences?.size)
 
-        Assert.assertEquals("refund-promotion", data?.sections?.get(0)?.subCategories?.get(0)?.category)
-        Assert.assertEquals(PreferenceOptions.OPT_OUT, data?.sections?.get(0)?.subCategories?.get(0)?.preferenceOptions)
-        Assert.assertEquals(true, data?.sections?.get(0)?.subCategories?.get(0)?.channels?.all { it.preferenceOptions == PreferenceOptions.OPT_OUT })
-
+        Assert.assertEquals("refund-promotion", data?.sections?.get(0)?.subcategories?.get(0)?.category)
+        Assert.assertEquals(PreferenceOptions.optOut, data?.sections?.get(0)?.subcategories?.get(0)?.preference)
+        Assert.assertEquals(true, data?.sections?.get(0)?.subcategories?.get(0)?.channels?.all { it.preference == PreferenceOptions.optOut })
     }
 
     /**
      * Covers below cases
      *  Category
-     *      - OPT_IN and Verify
-     *      - OPT_OUT and Verify
+     *      - optIn and Verify
+     *      - optOut and Verify
      *  Category Channel
-     *      - OPT_IN and Verify
-     *      - OPT_OUT and Verify
+     *      - optIn and Verify
+     *      - optOut and Verify
      */
     @Test
     fun verifyUpdateCategoryAndChannelPreference() {
-        val preferences = SuprSend.getInstance().user.getPreferences()
-        var data = preferences.fetchUserPreference().getData()
+        val preferences = SuprSend.getInstance().preferences
+        var data = preferences.getPreferences().body
 
-        var subCategory = data?.sections?.get(0)?.subCategories?.get(0)
+        var subCategory = data?.sections?.get(0)?.subcategories?.get(0)
         Assert.assertEquals("refund-promotion", subCategory?.category)
-        Assert.assertEquals(PreferenceOptions.OPT_OUT, subCategory?.preferenceOptions)
+        Assert.assertEquals(PreferenceOptions.optOut, subCategory?.preference)
 
-
-        //Update Category - OPT_IN and Verify
-        every {
-            networkClient.httpCall(
-                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
-                authorization = any(),
-                requestMethod = any(),
-                requestJson = "{\"preference\":\"opt_in\"}",
-                headers = any()
-            )
-        } returns ApiResponse(
-            status = ResponseStatus.SUCCESS,
-            statusCode = 200,
-            body = AssetHelper.readAssetFileToString("preference/category_update_opt_in.json")
-        )
         var response = preferences.updateCategoryPreference(
             category = "refund-promotion",
-            preference = PreferenceOptions.OPT_IN
+            preference = PreferenceOptions.optIn
         )
 
         Assert.assertEquals(true, response.isSuccess())
-        data = preferences.fetchUserPreference(fetchRemote = false).getData()
-        subCategory = data?.sections?.get(0)?.subCategories?.get(0)
+        data = preferences.data
+        subCategory = data?.sections?.get(0)?.subcategories?.get(0)
         Assert.assertEquals("refund-promotion", subCategory?.category)
-        Assert.assertEquals(PreferenceOptions.OPT_IN, subCategory?.preferenceOptions)
+        Assert.assertEquals(PreferenceOptions.optIn, subCategory?.preference)
 
-
-        //Update Channel - whatsapp preference opt_out and Verify
-        every {
-            networkClient.httpCall(
-                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
-                authorization = any(),
-                requestMethod = any(),
-                requestJson = "{\"preference\":\"opt_in\",\"opt_out_channels\":[\"androidpush\",\"email\",\"webpush\",\"whatsapp\"]}",
-                headers = any()
-            )
-        } returns ApiResponse(
-            status = ResponseStatus.SUCCESS,
-            statusCode = 200,
-            body = AssetHelper.readAssetFileToString("preference/category_channel_whatsapp_update_opt_out.json")
-        )
         response = preferences.updateChannelPreferenceInCategory(
-            category = "refund-promotion",
-            preference = PreferenceOptions.OPT_OUT,
-            channel = "whatsapp"
+            channel = "whatsapp",
+            preference = PreferenceOptions.optOut,
+            category = "refund-promotion"
         )
 
         Assert.assertEquals(true, response.isSuccess())
-        data = preferences.fetchUserPreference(fetchRemote = false).getData()
-        subCategory = data?.sections?.get(0)?.subCategories?.get(0)
+        data = preferences.data
+        subCategory = data?.sections?.get(0)?.subcategories?.get(0)
         Assert.assertEquals("refund-promotion", subCategory?.category)
-        Assert.assertEquals(PreferenceOptions.OPT_IN, subCategory?.preferenceOptions)
+        Assert.assertEquals(PreferenceOptions.optIn, subCategory?.preference)
         var channel = subCategory?.channels?.last()
         Assert.assertEquals("whatsapp", channel?.channel)
-        Assert.assertEquals(PreferenceOptions.OPT_OUT, channel?.preferenceOptions)
+        Assert.assertEquals(PreferenceOptions.optOut, channel?.preference)
 
-        //Update Channel - whatsapp preference opt_in and Verify
-        every {
-            networkClient.httpCall(
-                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
-                authorization = any(),
-                requestMethod = any(),
-                requestJson = "{\"preference\":\"opt_in\",\"opt_out_channels\":[\"androidpush\",\"email\",\"webpush\"]}",
-                headers = any()
-            )
-        } returns ApiResponse(
-            status = ResponseStatus.SUCCESS,
-            statusCode = 200,
-            body = AssetHelper.readAssetFileToString("preference/category_channel_whatsapp_update_opt_in.json")
-        )
         response = preferences.updateChannelPreferenceInCategory(
-            category = "refund-promotion",
-            preference = PreferenceOptions.OPT_IN,
-            channel = "whatsapp"
+            channel = "whatsapp",
+            preference = PreferenceOptions.optIn,
+            category = "refund-promotion"
         )
 
         Assert.assertEquals(true, response.isSuccess())
-        data = preferences.fetchUserPreference(fetchRemote = false).getData()
-        subCategory = data?.sections?.get(0)?.subCategories?.get(0)
+        data = preferences.data
+        subCategory = data?.sections?.get(0)?.subcategories?.get(0)
         Assert.assertEquals("refund-promotion", subCategory?.category)
-        Assert.assertEquals(PreferenceOptions.OPT_IN, subCategory?.preferenceOptions)
+        Assert.assertEquals(PreferenceOptions.optIn, subCategory?.preference)
         channel = subCategory?.channels?.last()
         Assert.assertEquals("whatsapp", channel?.channel)
-        Assert.assertEquals(PreferenceOptions.OPT_IN, channel?.preferenceOptions)
+        Assert.assertEquals(PreferenceOptions.optIn, channel?.preference)
 
-
-        //Update - OPT_OUT and Verify
-        every {
-            networkClient.httpCall(
-                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
-                authorization = any(),
-                requestMethod = any(),
-                requestJson = "{\"preference\":\"opt_out\",\"opt_out_channels\":[\"androidpush\",\"email\",\"webpush\"]}",
-                headers = any()
-            )
-        } returns ApiResponse(
-            status = ResponseStatus.SUCCESS,
-            statusCode = 200,
-            body = AssetHelper.readAssetFileToString("preference/category_update_opt_out.json")
-        )
         response = preferences.updateCategoryPreference(
             category = "refund-promotion",
-            preference = PreferenceOptions.OPT_OUT
+            preference = PreferenceOptions.optOut
         )
 
         Assert.assertEquals(true, response.isSuccess())
-        data = preferences.fetchUserPreference(fetchRemote = false).getData()
-        subCategory = data?.sections?.get(0)?.subCategories?.get(0)
+        data = preferences.data
+        subCategory = data?.sections?.get(0)?.subcategories?.get(0)
         Assert.assertEquals("refund-promotion", subCategory?.category)
-        Assert.assertEquals(PreferenceOptions.OPT_OUT, subCategory?.preferenceOptions)
-
+        Assert.assertEquals(PreferenceOptions.optOut, subCategory?.preference)
     }
 
     /**
      * Covers below cases
-     * ALL and verify
-     * REQUIRED and verify
+     * all and verify
+     * required and verify
      */
     @Test
     fun verifyChannelPreferenceRestricted() {
-
-        val preferences = SuprSend.getInstance().user.getPreferences()
-        var data = preferences.fetchUserPreference().getData()
+        val preferences = SuprSend.getInstance().preferences
+        var data = preferences.getPreferences().body
 
         var channel = data?.channelPreferences?.get(0)
         Assert.assertEquals("androidpush", channel?.channel)
         Assert.assertEquals(false, channel?.isRestricted)
 
-
-        //Update - ALL and Verify
-        every {
-            networkClient.httpCall(
-                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/channel_preference",
-                authorization = any(),
-                requestMethod = any(),
-                requestJson = "{\"channel_preferences\":[{\"channel\":\"androidpush\",\"is_restricted\":true}]}",
-                headers = any()
-            )
-        } returns ApiResponse(
-            status = ResponseStatus.SUCCESS,
-            statusCode = 200,
-            body = AssetHelper.readAssetFileToString("preference/channel_preference_is_restricted_false.json")
-        )
         var response = preferences.updateOverallChannelPreference(
             "androidpush",
-            ChannelPreferenceOptions.ALL
+            ChannelLevelPreferenceOptions.all
         )
 
         Assert.assertEquals(true, response.isSuccess())
-        data = preferences.fetchUserPreference(fetchRemote = false).getData()
+        data = preferences.data
         channel = data?.channelPreferences?.get(0)
         Assert.assertEquals("androidpush", channel?.channel)
         Assert.assertEquals(false, channel?.isRestricted)
 
-
-        //Update - REQUIRED and Verify
-        every {
-            networkClient.httpCall(
-                url = any(),
-                authorization = any(),
-                requestMethod = any(),
-                requestJson = any(),
-                headers = any()
-            )
-        } returns ApiResponse(
-            status = ResponseStatus.SUCCESS,
-            statusCode = 200,
-            body = AssetHelper.readAssetFileToString("preference/channel_preference_is_restricted_true.json")
-        )
         response = preferences.updateOverallChannelPreference(
             "androidpush",
-            ChannelPreferenceOptions.REQUIRED
+            ChannelLevelPreferenceOptions.required
         )
 
         Assert.assertEquals(true, response.isSuccess())
-        data = preferences.fetchUserPreference(fetchRemote = false).getData()
+        data = preferences.data
         channel = data?.channelPreferences?.get(0)
         Assert.assertEquals("androidpush", channel?.channel)
         Assert.assertEquals(true, channel?.isRestricted)
     }
-
 }

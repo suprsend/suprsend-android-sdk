@@ -16,7 +16,7 @@ class SuprSendPayloadCreationTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
-           host =  "https://collector-staging.suprsend.workers.dev"
+            host = TestConstants.SS_BASE_URL
         )
         val payloadJO = SSInternal.buildTrackEventPayload(
             distinctId = "D1",
@@ -30,8 +30,9 @@ class SuprSendPayloadCreationTest : BaseTest() {
         Assert.assertEquals(true, payloadJO.has(SSConstants.DISTINCT_ID))
         Assert.assertEquals(true, payloadJO.has(SSConstants.INSERT_ID))
         Assert.assertEquals(true, payloadJO.has(SSConstants.TIME))
+        Assert.assertEquals(true, payloadJO.has(SSConstants.TENANT_ID))
         Assert.assertEquals(true, payloadJO.has(SSConstants.PROPERTIES))
-        Assert.assertEquals(5, payloadJO.length())
+        Assert.assertEquals(6, payloadJO.length())
     }
 
     @Test
@@ -47,8 +48,9 @@ class SuprSendPayloadCreationTest : BaseTest() {
         Assert.assertEquals(true, payloadJO.has(SSConstants.DISTINCT_ID))
         Assert.assertEquals(true, payloadJO.has(SSConstants.INSERT_ID))
         Assert.assertEquals(true, payloadJO.has(SSConstants.TIME))
+        Assert.assertEquals(true, payloadJO.has(SSConstants.TENANT_ID))
         Assert.assertEquals(true, payloadJO.has(SSConstants.ADD))
-        Assert.assertEquals(4, payloadJO.length())
+        Assert.assertEquals(5, payloadJO.length())
     }
 
     /**
@@ -67,7 +69,8 @@ class SuprSendPayloadCreationTest : BaseTest() {
         Assert.assertEquals(true, payloadJO.has(SSConstants.DISTINCT_ID))
         Assert.assertEquals(true, payloadJO.has(SSConstants.INSERT_ID))
         Assert.assertEquals(true, payloadJO.has(SSConstants.TIME))
+        Assert.assertEquals(true, payloadJO.has(SSConstants.TENANT_ID))
         Assert.assertEquals(true, payloadJO.has(SSConstants.REMOVE))
-        Assert.assertEquals(4, payloadJO.length())
+        Assert.assertEquals(5, payloadJO.length())
     }
 }

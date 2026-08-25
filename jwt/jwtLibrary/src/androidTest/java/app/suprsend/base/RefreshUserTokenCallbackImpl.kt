@@ -9,10 +9,9 @@ class RefreshUserTokenCallbackImpl : RefreshUserTokenCallback {
 
     override fun getToken(distinctId: String): String {
         return try {
-            val baseUrl = "https://collector-staging.suprsend.workers.dev"
             val response = networkClient.httpCall(
                 requestMethod = "GET",
-                url = "$baseUrl/authentication-token/$distinctId"
+                url = "${TestConstants.SS_BASE_URL}/authentication-token/$distinctId"
             )
             val responseJo = JSONObject(response.body ?: "{}")
             val token = responseJo.optString("token")

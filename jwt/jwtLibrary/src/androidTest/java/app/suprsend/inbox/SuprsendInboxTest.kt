@@ -1,10 +1,7 @@
 package app.suprsend.inbox
 
-import app.suprsend.SuprSend
 import app.suprsend.base.AssetHelper
 import app.suprsend.base.BaseTest
-import app.suprsend.base.TestConstants
-import app.suprsend.base.RefreshUserTokenCallbackImpl
 import app.suprsend.base.assertIsSuccess
 import org.json.JSONArray
 import org.junit.Assert
@@ -17,68 +14,22 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testBellCount() {
-        val refreshUserToken = RefreshUserTokenCallbackImpl()
-        SuprSend.initialize(
-            context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY,
-            
-            host = TestConstants.SS_BASE_URL,
-        )
-        SuprSend.setRefreshUserToken(refreshUserToken)
-        SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
-        SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
-
-        val suprsend = SuprSend.getInstance()
-        suprsend.reset(true)
-        val action = suprsend.identify(distinctId)
-        action.assertIsSuccess()
-
-        val inbox = SuprsendInbox.getInstance()
+        val inbox = InboxTestHelper.identifiedInbox(context, distinctId)
         val response = inbox.fetchBellCount()
         Assert.assertEquals(true, response.isSuccess())
     }
 
     @Test
     fun testResetBellCount() {
-        val refreshUserToken = RefreshUserTokenCallbackImpl()
-        SuprSend.initialize(
-            context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY,
-            
-            host = TestConstants.SS_BASE_URL,
-        )
-        SuprSend.setRefreshUserToken(refreshUserToken)
-        SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
-        SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
-        val suprsend = SuprSend.getInstance()
-        suprsend.reset(true)
-        val action = suprsend.identify(distinctId)
-        action.assertIsSuccess()
-
-        val inbox = SuprsendInbox.getInstance()
-        val response = inbox.resetBellCount()
-        response.assertIsSuccess()
+        val inbox = InboxTestHelper.identifiedInbox(context, distinctId)
+        inbox.resetBellCount().assertIsSuccess()
     }
 
     @Test
     fun testNotifications() {
-        val refreshUserToken = RefreshUserTokenCallbackImpl()
-        SuprSend.initialize(
-            context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY,
-            
-            host = TestConstants.SS_BASE_URL,
-        )
-        SuprSend.setRefreshUserToken(refreshUserToken)
-        SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
-        SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
-        SuprsendInbox.setInboxStores(listOf())
-        val suprsend = SuprSend.getInstance()
-        suprsend.reset(true)
-        val action = suprsend.identify(distinctId)
-        action.assertIsSuccess()
-
-        val inbox = SuprsendInbox.getInstance()
+        val inbox = InboxTestHelper.identifiedInbox(context, distinctId) {
+            SuprsendInbox.setInboxStores(listOf())
+        }
         val store = inbox.getStore()
         Assert.assertNotNull(store)
         store!!
@@ -91,25 +42,11 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testNotificationsWithStore() {
-        val refreshUserToken = RefreshUserTokenCallbackImpl()
-        SuprSend.initialize(
-            context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY,
-            
-            host = TestConstants.SS_BASE_URL,
-        )
-        SuprSend.setRefreshUserToken(refreshUserToken)
-        val suprsend = SuprSend.getInstance()
-        suprsend.reset(true)
-        val action = suprsend.identify(distinctId)
-        action.assertIsSuccess()
-
-        val inbox = SuprsendInbox.getInstance()
         val inboxStoreJson = AssetHelper.readAssetFileToString("inbox/stores.json")
         val inboxStoreList = InboxStore.from(JSONArray(inboxStoreJson))
-        SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
-        SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
-        SSInboxInternal.setInboxStores(inboxStoreList)
+        val inbox = InboxTestHelper.identifiedInbox(context, distinctId) {
+            SSInboxInternal.setInboxStores(inboxStoreList)
+        }
         val store = inbox.getStore(storeId = "All")
         Assert.assertNotNull(store)
         store!!
@@ -121,184 +58,67 @@ class SuprsendInboxTest : BaseTest() {
 
     @Test
     fun testNotificationDetails() {
-        val refreshUserToken = RefreshUserTokenCallbackImpl()
-        SuprSend.initialize(
-            context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY,
-            
-            host = TestConstants.SS_BASE_URL,
-        )
-        SuprSend.setRefreshUserToken(refreshUserToken)
-        SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
-        SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
-        SuprsendInbox.setInboxStores(listOf())
-        val suprsend = SuprSend.getInstance()
-        suprsend.reset(true)
-        val action = suprsend.identify(distinctId)
-        action.assertIsSuccess()
-
-        val inbox = SuprsendInbox.getInstance()
+        val inbox = InboxTestHelper.identifiedInbox(context, distinctId) {
+            SuprsendInbox.setInboxStores(listOf())
+        }
         val response = inbox.getNotificationDetails(notificationId)
         Assert.assertEquals(true, response.isSuccess())
     }
 
     @Test
     fun testMarkAllRead() {
-        val refreshUserToken = RefreshUserTokenCallbackImpl()
-        SuprSend.initialize(
-            context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY,
-            
-            host = TestConstants.SS_BASE_URL,
-        )
-        SuprSend.setRefreshUserToken(refreshUserToken)
-        SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
-        SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
-        SuprsendInbox.setInboxStores(listOf())
-        val suprsend = SuprSend.getInstance()
-        suprsend.reset(true)
-        val action = suprsend.identify(distinctId)
-        action.assertIsSuccess()
-
-        val inbox = SuprsendInbox.getInstance()
+        val inbox = InboxTestHelper.identifiedInbox(context, distinctId) {
+            SuprsendInbox.setInboxStores(listOf())
+        }
         val response = inbox.markAllRead()
         Assert.assertEquals(true, response.isSuccess())
     }
 
     @Test
     fun testMarkAsInteracted() {
-        val refreshUserToken = RefreshUserTokenCallbackImpl()
-        SuprSend.initialize(
-            context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY,
-            
-            host = TestConstants.SS_BASE_URL,
-        )
-        SuprSend.setRefreshUserToken(refreshUserToken)
-        SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
-        SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
-        SuprsendInbox.setInboxStores(listOf())
-        val suprsend = SuprSend.getInstance()
-        suprsend.reset(true)
-        val action = suprsend.identify(distinctId)
-        action.assertIsSuccess()
-
-        val inbox = SuprsendInbox.getInstance()
+        val inbox = InboxTestHelper.identifiedInbox(context, distinctId) {
+            SuprsendInbox.setInboxStores(listOf())
+        }
         val response = inbox.markAsInteracted(notificationId)
         Assert.assertEquals(true, response.isSuccess())
     }
 
     @Test
     fun testMarkAsUnread() {
-        val refreshUserToken = RefreshUserTokenCallbackImpl()
-        SuprSend.initialize(
-            context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY,
-            
-            host = TestConstants.SS_BASE_URL,
-        )
-        SuprSend.setRefreshUserToken(refreshUserToken)
-        SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
-        SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
-        SuprsendInbox.setInboxStores(listOf())
-        val suprsend = SuprSend.getInstance()
-        suprsend.reset(true)
-        val action = suprsend.identify(distinctId)
-        action.assertIsSuccess()
-
-        val inbox = SuprsendInbox.getInstance()
+        val inbox = InboxTestHelper.identifiedInbox(context, distinctId) {
+            SuprsendInbox.setInboxStores(listOf())
+        }
         val response = inbox.markAsUnread(notificationId)
         Assert.assertEquals(true, response.isSuccess())
     }
 
     @Test
     fun testMarkAsRead() {
-        val refreshUserToken = RefreshUserTokenCallbackImpl()
-        SuprSend.initialize(
-            context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY,
-            
-            host = TestConstants.SS_BASE_URL,
-        )
-        SuprSend.setRefreshUserToken(refreshUserToken)
-        SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
-        SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
-        SuprsendInbox.setInboxStores(listOf())
-        val suprsend = SuprSend.getInstance()
-        suprsend.reset(true)
-        val action = suprsend.identify(distinctId)
-        action.assertIsSuccess()
-
-        val inbox = SuprsendInbox.getInstance()
+        val inbox = InboxTestHelper.identifiedInbox(context, distinctId) {
+            SuprsendInbox.setInboxStores(listOf())
+        }
         val response = inbox.markAsRead(notificationId)
         Assert.assertEquals(true, response.isSuccess())
     }
 
     @Test
     fun testMarkAsArchived() {
-        val refreshUserToken = RefreshUserTokenCallbackImpl()
-        SuprSend.initialize(
-            context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY,
-            
-            host = TestConstants.SS_BASE_URL,
-        )
-        SuprSend.setRefreshUserToken(refreshUserToken)
-        SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
-        SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
-        SuprsendInbox.setInboxStores(listOf())
-        val suprsend = SuprSend.getInstance()
-        suprsend.reset(true)
-        val action = suprsend.identify(distinctId)
-        action.assertIsSuccess()
-
-        val inbox = SuprsendInbox.getInstance()
+        val inbox = InboxTestHelper.identifiedInbox(context, distinctId) {
+            SuprsendInbox.setInboxStores(listOf())
+        }
         val response = inbox.markAsArchived(notificationId)
         Assert.assertEquals(true, response.isSuccess())
     }
 
     @Test
     fun testMarkAsSeen() {
-        val refreshUserToken = RefreshUserTokenCallbackImpl()
-        SuprSend.initialize(
-            context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY,
-            
-            host = TestConstants.SS_BASE_URL,
-        )
-        SuprSend.setRefreshUserToken(refreshUserToken)
-        SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
-        SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
-        val suprsend = SuprSend.getInstance()
-        suprsend.reset(true)
-        val action = suprsend.identify(distinctId)
-        action.assertIsSuccess()
-
-        val inbox = SuprsendInbox.getInstance()
-        val response = inbox.markAsSeen("01JK65EKD6VPQAAA26W31X3WGV")
-        response.assertIsSuccess()
+        val inbox = InboxTestHelper.identifiedInbox(context, distinctId)
+        inbox.markAsSeen("01JK65EKD6VPQAAA26W31X3WGV").assertIsSuccess()
     }
 
     @Test
     fun testMarkNotificationBulkSeen() {
-        val refreshUserToken = RefreshUserTokenCallbackImpl()
-        SuprSend.initialize(
-            context = context,
-            publicApiKey = TestConstants.PUBLIC_API_KEY,
-            
-            host = TestConstants.SS_BASE_URL,
-        )
-        SuprSend.setRefreshUserToken(refreshUserToken)
-        SuprsendInbox.setBaseUrl(baseUrl = TestConstants.SS_INBOX_BASE_URL)
-        SuprsendInbox.setSubscriberId(TestConstants.SUBSCRIBER_ID)
-        val suprsend = SuprSend.getInstance()
-        suprsend.reset(true)
-        val action = suprsend.identify(distinctId)
-        action.assertIsSuccess()
-
-        val inbox = SuprsendInbox.getInstance()
-        val response = inbox.markAsSeen(listOf("01JK65EKD6VPQAAA26W31X3WGV", notificationId))
-        response.assertIsSuccess()
+        val inbox = InboxTestHelper.identifiedInbox(context, distinctId)
+        inbox.markAsSeen(listOf("01JK65EKD6VPQAAA26W31X3WGV", notificationId)).assertIsSuccess()
     }
-
 }

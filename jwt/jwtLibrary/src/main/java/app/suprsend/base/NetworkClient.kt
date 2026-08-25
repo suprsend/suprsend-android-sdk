@@ -60,8 +60,9 @@ class NetworkClient {
             }
 
             connection.useCaches = false
-            if (requestMethod.equals("POST", true))
+            if (requestJson != null) {
                 connection.doOutput = true
+            }
             connection.doInput = true
 
             //Send request
