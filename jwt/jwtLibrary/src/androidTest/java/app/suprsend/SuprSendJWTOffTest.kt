@@ -22,7 +22,7 @@ class SuprSendJWTOffTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
-            host = "https://collector-staging.suprsend.workers.dev"
+            host = TestConstants.SS_BASE_URL
         )
         SSInternal.networkClient = networkClient
         val suprsend = SuprSend.getInstance()
@@ -49,7 +49,7 @@ class SuprSendJWTOffTest : BaseTest() {
             context = context,
             publicApiKey = TestConstants.PUBLIC_API_KEY,
             
-            host = "https://collector-staging.suprsend.workers.dev"
+            host = TestConstants.SS_BASE_URL
         )
         SSInternal.networkClient = networkClient
         SuprSend.setRefreshUserToken(null)

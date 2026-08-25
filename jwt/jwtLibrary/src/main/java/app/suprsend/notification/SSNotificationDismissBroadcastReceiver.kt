@@ -43,8 +43,8 @@ class SSNotificationDismissBroadcastReceiver : BroadcastReceiver() {
     }
 
     private fun handleNotificationDismissClicked(activityExtras: Bundle) {
-        Logger.i(SSConstants.TAG_SUPRSEND, "Notification dismissed")
         val notificationDismissVo = getNotificationDismissVo(activityExtras)
+        Logger.i(SSConstants.TAG_SUPRSEND, "Notification dismissed:${notificationDismissVo?.notificationId}")
         notificationDismissVo ?: return
         // Notification Dismiss
         // Using instance since we have to schedule it on sdk thread

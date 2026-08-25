@@ -37,6 +37,7 @@ android {
         buildConfigField("String", "SS_SDK_VERSION_NAME", "\"${Deps.SDK_VERSION_NAME}\"")
         buildConfigField("String", "SS_SDK_TYPE", "\"${Deps.BUILD_TYPE.name}\"")
 
+        multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -60,6 +61,15 @@ android {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        // mockk-android 1.9.3 requests dexmaker 2.21.0 (JCenter-only)
+        force("com.linkedin.dexmaker:dexmaker:2.28.6")
+        // objenesis 3.x uses MethodHandle, which D8 cannot dex for minSdk 21
+        force("org.objenesis:objenesis:2.6")
+    }
+}
+
 dependencies {
     compileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar","*.aar"))))
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${Deps.JetBrains.Kotlin.VERSION}")
@@ -76,11 +86,13 @@ dependencies {
     testImplementation("org.json:json:20230227")
     testImplementation("org.robolectric:robolectric:4.10.3")
 
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    val mockkVersion = "1.13.16"
-    androidTestImplementation("io.mockk:mockk:$mockkVersion")
-    androidTestImplementation("io.mockk:mockk-android:$mockkVersion")
+    // Keep androidTest artifacts on Kotlin 1.3 metadata so they compile with AGP 4.1 / Kotlin 1.3.72.
+    // mockk-android 1.9.3 requests dexmaker 2.21.0 (JCenter-only); force a Maven Central release.
+    androidTestImplementation("androidx.multidex:multidex:2.0.1")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    androidTestImplementation("io.mockk:mockk-android:1.9.3")
+    androidTestImplementation("com.linkedin.dexmaker:dexmaker:2.28.6")
     androidTestImplementation("com.auth0:java-jwt:4.4.0")
 
 }

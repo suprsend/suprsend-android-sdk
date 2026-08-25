@@ -10,7 +10,6 @@ import app.suprsend.log.Logger
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ResponseStatus
 import app.suprsend.user.preference.Preferences
-import app.suprsend.user.preference.PreferencesImpl
 import app.suprsend.utils.isMobileNumberValid
 import app.suprsend.utils.isValidEmail
 import app.suprsend.utils.runOnUIThread
@@ -19,11 +18,7 @@ import org.json.JSONObject
 
 class User() {
 
-    private val preference = PreferencesImpl()
-
-    fun getPreferences(): Preferences {
-        return preference
-    }
+    val preferences = Preferences()
 
     @WorkerThread
     fun setPreferredLanguage(language: String): ApiResponse {

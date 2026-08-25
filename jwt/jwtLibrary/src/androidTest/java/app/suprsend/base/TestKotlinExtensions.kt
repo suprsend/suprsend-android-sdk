@@ -1,6 +1,7 @@
 package app.suprsend.base
 
 import app.suprsend.model.ApiResponse
+import app.suprsend.user.preference.PreferenceAPIResponse
 import org.json.JSONObject
 import org.junit.Assert
 
@@ -32,4 +33,15 @@ fun <T> Response<T>.assertIsSuccess() {
         Assert.assertEquals("", ((this as? Response.Error)?.message + (this as? Response.Error)?.ex?.message))
     }
     Assert.assertEquals(true, isSuccess())
+}
+
+fun PreferenceAPIResponse.assertIsSuccess() {
+    if (!isSuccess()) {
+        Assert.assertEquals("", error?.message)
+    }
+    Assert.assertEquals(true, isSuccess())
+}
+
+fun PreferenceAPIResponse.assertIsFailure() {
+    Assert.assertEquals(false, isSuccess())
 }

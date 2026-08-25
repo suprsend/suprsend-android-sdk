@@ -23,7 +23,9 @@ import org.json.JSONObject
 
 class SuprSend private constructor() {
 
+    val emitter = Emitter()
     val user = User()
+    val preferences get() = user.preferences
 
     @WorkerThread
     fun identify(distinctId: String, userToken: String? = null, tenantId: String? = null, refreshUserToken: RefreshUserTokenCallback? = null): ApiResponse {
@@ -110,6 +112,8 @@ class SuprSend private constructor() {
     @WorkerThread
     fun reset(unSubscribeNotification: Boolean) {
         SSInternal.reset(unSubscribeNotification)
+        user.preferences.clear()
+        emitter.clear()
     }
 
     fun resetAsync(unSubscribeNotification: Boolean, actionStatusCallback: ActionStatusCallback? = null) {
