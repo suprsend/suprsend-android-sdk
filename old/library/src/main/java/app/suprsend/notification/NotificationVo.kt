@@ -35,8 +35,8 @@ data class RawNotification(
 
     val group: String? = null,
     val groupSubText: String? = null,
-    val groupShowWhenTimeStamp: Boolean? = null,
-    val groupWhenTimeStamp: Long? = null,
+    val groupShowWhen: Boolean? = null,
+    val groupWhen: Long? = null,
     val sortKey: String? = null,
 
     val onGoing: Boolean? = null,
@@ -44,8 +44,10 @@ data class RawNotification(
 
     val timeoutAfter: Long? = null,
 
-    val showWhenTimeStamp: Boolean? = null,
-    val whenTimeStamp: Long? = null,
+    val showWhen: Boolean? = null,
+    val `when`: Long? = null,
+    val usesChronometer: Boolean? = null,
+    val chronometerCountDown: Boolean? = null,
 
     val localOnly: Boolean? = null,
 
@@ -73,16 +75,18 @@ data class RawNotification(
                 largeIconUrl = iconUrl,
                 color = color,
                 subText = subText,
-                showWhenTimeStamp = showWhenTimeStamp,
-                whenTimeStamp = whenTimeStamp,
+                showWhen = showWhen,
+                `when` = `when`,
+                usesChronometer = usesChronometer,
+                chronometerCountDown = chronometerCountDown,
                 onGoing = onGoing,
                 autoCancel = autoCancel,
                 smallIconDrawableName = smallIconDrawableName,
                 category = category,
                 group = group,
                 groupSubText = groupSubText,
-                groupShowWhenTimeStamp = groupShowWhenTimeStamp,
-                groupWhenTimeStamp = groupWhenTimeStamp,
+                groupShowWhen = groupShowWhen,
+                groupWhen = groupWhen,
                 sortKey = sortKey,
                 localOnly = localOnly,
                 timeoutAfter = timeoutAfter,
@@ -199,8 +203,8 @@ data class NotificationBasicVo(
 
     val group: String? = null,
     val groupSubText: String? = null,
-    val groupShowWhenTimeStamp: Boolean? = null,
-    val groupWhenTimeStamp: Long? = null,
+    val groupShowWhen: Boolean? = null,
+    val groupWhen: Long? = null,
 
     val sortKey: String? = null,
 
@@ -209,8 +213,10 @@ data class NotificationBasicVo(
 
     val timeoutAfter: Long? = null,
 
-    val showWhenTimeStamp: Boolean? = null,
-    val whenTimeStamp: Long? = null,
+    val showWhen: Boolean? = null,
+    val `when`: Long? = null,
+    val usesChronometer: Boolean? = null,
+    val chronometerCountDown: Boolean? = null,
 
     val localOnly: Boolean? = null
 
