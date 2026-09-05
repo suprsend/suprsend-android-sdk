@@ -16,3 +16,11 @@
 
 # Feed / inbox public API (Flutter / JNI / reflection)
 -keep class app.suprsend.feed.** { *; }
+
+# socket.io-client uses reflection for transports; R8 strips it in release without these.
+-keep class io.socket.** { *; }
+-keep class okhttp3.** { *; }
+-keep class okio.** { *; }
+-dontwarn io.socket.**
+-dontwarn okhttp3.**
+-dontwarn okio.**
