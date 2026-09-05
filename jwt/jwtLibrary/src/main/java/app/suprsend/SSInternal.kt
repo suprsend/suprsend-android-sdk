@@ -9,7 +9,6 @@ import app.suprsend.base.NetworkClient
 import app.suprsend.base.NetworkInfo
 import app.suprsend.base.SSConstants
 import app.suprsend.event.PayloadOfflineStore
-import app.suprsend.inbox.SSInboxInternal
 import app.suprsend.log.Logger
 import app.suprsend.log.LoggerCallback
 import app.suprsend.model.ApiResponse
@@ -328,7 +327,7 @@ internal object SSInternal {
     fun reset(unSubscribeNotification: Boolean) {
         if (unSubscribeNotification)
             removeNotificationToken()
-        SSInboxInternal.reset()
+        SuprSend.getInstance().feeds.removeAll()
         suprSendData.distinctId = null
         suprSendData.userToken = null
         suprSendData.tenantId = null

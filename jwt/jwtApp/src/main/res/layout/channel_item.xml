@@ -1,14 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.chip.Chip
-        style="@style/Widget.MaterialComponents.Chip.Filter"
+    <!-- Matches iOS ChannelCheckbox pill: circle 20 + label 13 medium -->
+    <LinearLayout
+        android:id="@+id/channelPill"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:chipIconSize="20dp"
-        app:chipStartPadding="10dp"
-        app:checkedIcon="@drawable/ic_chip_selected"
-        tools:checked="true" />
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/pref_channel_pill_bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="4dp">
+
+        <View
+            android:id="@+id/channelCircle"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/pref_channel_circle_unselected" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/channelNameTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/inter_semibold"
+            android:textColor="@color/pref_sub_text"
+            android:textSize="13sp"
+            tools:text="email" />
+    </LinearLayout>
 </layout>

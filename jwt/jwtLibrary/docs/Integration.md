@@ -139,3 +139,7 @@ data class ApiResponse(
     fun isSuccess(): Boolean
 }
 ```
+
+## In-app feed / Inbox
+
+Headless inbox is `SuprSend.getInstance().feeds.initialize(options)` → `Feed`. Full API (matching iOS): [INBOX.md](INBOX.md).

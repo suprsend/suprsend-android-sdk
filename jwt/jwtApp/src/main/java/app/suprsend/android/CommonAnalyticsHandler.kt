@@ -1,13 +1,7 @@
 package app.suprsend.android
 
-import android.content.Context
 import app.suprsend.SuprSend
-import app.suprsend.android.AppCreator.getValue
-import app.suprsend.inbox.InboxStore
-import app.suprsend.inbox.SuprsendInbox
-import app.suprsend.log.LogLevel
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import org.json.JSONArray
 import org.json.JSONObject
 
 object CommonAnalyticsHandler {
@@ -16,24 +10,8 @@ object CommonAnalyticsHandler {
 
     private val mixpanelAPI: MixpanelAPI by lazy { MixpanelAPI.getInstance(AppCreator.context, BuildConfig.MX_TOKEN) }
 
-    fun initializeInbox() {
-
-        val subscriberId = getValue(AppConstants.PREF_INBOX_SUBSCRIBER_ID, BuildConfig.SS_INBOX_SUBSCRIBER_ID)
-
-        val inboxStoreJson = getValue(AppConstants.PREF_INBOX_STORE_JSON, AppCreator.getInboxStoreJson(AppCreator.context))
-        val inboxStoreList = if (inboxStoreJson.isBlank()) null else InboxStore.from(JSONArray(inboxStoreJson))
-
-        val inboxThemeConfig = InboxThemeConfig(JSONObject(AppCreator.context.readStringFromAsset("inbox_screen_theme.json")))
-        AppCreator.inboxThemeConfig = inboxThemeConfig
-
-        SuprsendInbox.setBaseUrl("https://inbox-staging.inboxs.workers.dev")
-        SuprsendInbox.setInboxSocketUrl("https://staging-inbox-api.suprsend.com")
-        SuprsendInbox.setSubscriberId(subscriberId)
-        SuprsendInbox.setInboxStores(inboxStoreList)
-    }
-
     fun identify(identity: String, tenantId: String? = null) {
-        suprSend.identityAsync(identity, userToken = null,tenantId = tenantId)
+        suprSend.identityAsync(identity, userToken = null, tenantId = tenantId)
         suprSend.user.addEmailAsync(identity)
         mixpanelAPI.identify(identity)
     }

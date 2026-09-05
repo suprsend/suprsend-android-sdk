@@ -12,3 +12,7 @@
 -keepclassmembers enum app.suprsend.notification.NotificationChannelVisibility { *; }
 -keepclassmembers enum app.suprsend.notification.NotificationActionType { *; }
 -keepclassmembers enum app.suprsend.user.preference.PreferenceOptions { *; }
+-keepclassmembers enum app.suprsend.feed.APIResponseStatus { *; }
+
+# Feed / inbox public API (Flutter / JNI / reflection)
+-keep class app.suprsend.feed.** { *; }

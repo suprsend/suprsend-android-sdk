@@ -1,12 +1,14 @@
 package app.suprsend.android.preference
 
+import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import app.suprsend.android.R
 import app.suprsend.android.databinding.ChannelItemBinding
 import app.suprsend.android.databinding.ChannelPreferenceItemBinding
+import app.suprsend.android.databinding.PreferenceTitleItemBinding
 import app.suprsend.android.databinding.SectionItemBinding
 import app.suprsend.android.databinding.SubCategoryItemBinding
 import app.suprsend.android.layoutInflater
@@ -16,8 +18,6 @@ import app.suprsend.user.preference.CategoryChannel
 import app.suprsend.user.preference.ChannelLevelPreferenceOptions
 import app.suprsend.user.preference.ChannelPreference
 import app.suprsend.user.preference.PreferenceOptions
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 
 typealias ChannelItemClick = (category: String, channel: String, checked: Boolean) -> Unit
 typealias CategoryItemClick = (category: String, checked: Boolean) -> Unit
@@ -41,6 +41,10 @@ class UserPreferenceRecyclerViewAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
+            RecyclerViewItem.TitleVo.VIEW_TYPE -> {
+                val binding = PreferenceTitleItemBinding.inflate(parent.layoutInflater(), parent, false)
+                TitleHolder(binding)
+            }
             RecyclerViewItem.SectionVo.VIEW_TYPE -> {
                 val binding = SectionItemBinding.inflate(parent.layoutInflater(), parent, false)
                 SectionHolder(binding)
@@ -59,6 +63,7 @@ class UserPreferenceRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = itemList[position]) {
+            is RecyclerViewItem.TitleVo -> Unit
             is RecyclerViewItem.SectionVo -> {
                 (holder as SectionHolder).bind(item)
             }
@@ -66,7 +71,11 @@ class UserPreferenceRecyclerViewAdapter(
                 (holder as SubCategoryHolder).bind(item, categoryItemClick = categoryItemClick, channelItemClick = channelItemClick)
             }
             is RecyclerViewItem.ChannelPreferenceVo -> {
-                (holder as ChannelPreferenceHolder).bind(item, channelPreferenceArrowClick = channelPreferenceArrowClick, channelPreferenceChangeClick = channelPreferenceChangeClick)
+                (holder as ChannelPreferenceHolder).bind(
+                    item,
+                    channelPreferenceArrowClick = channelPreferenceArrowClick,
+                    channelPreferenceChangeClick = channelPreferenceChangeClick
+                )
             }
         }
     }
@@ -79,16 +88,23 @@ class UserPreferenceRecyclerViewAdapter(
     }
 }
 
-private data class SectionHolder(
+private class TitleHolder(
+    binding: PreferenceTitleItemBinding
+) : RecyclerView.ViewHolder(binding.root)
+
+private class SectionHolder(
     val binding: SectionItemBinding
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(item: RecyclerViewItem.SectionVo) {
         binding.obj = item
         binding.sectionDescTv.visibility = setVisibleOrGone(item.description.isNotBlank())
+        val bottom = if (item.tightBottom) 0 else binding.root.resources.getDimensionPixelSize(R.dimen.pref_section_bottom)
+        (binding.root.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin = bottom
+        binding.root.requestLayout()
     }
 }
 
-private data class SubCategoryHolder(
+private class SubCategoryHolder(
     val binding: SubCategoryItemBinding
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(
@@ -99,38 +115,67 @@ private data class SubCategoryHolder(
         val subCategory = item.subCategory
         binding.obj = subCategory
         binding.subCategoryDescTv.visibility = setVisibleOrGone(!subCategory.description.isNullOrBlank())
+
+        binding.subCategoryCheckbox.setOnCheckedChangeListener(null)
         binding.subCategoryCheckbox.isEnabled = subCategory.isEditable
-        binding.subCategoryCheckbox.isOn = subCategory.preference == PreferenceOptions.optIn
-        binding.subCategoryCheckbox.setOnToggledListener { _, isOn ->
-            categoryItemClick.invoke(subCategory.category, isOn)
+        binding.subCategoryCheckbox.isChecked = subCategory.preference == PreferenceOptions.optIn
+        binding.subCategoryCheckbox.alpha = if (subCategory.isEditable) 1f else 0.5f
+        binding.subCategoryCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            categoryItemClick.invoke(subCategory.category, isChecked)
         }
 
+        val channels = subCategory.channels
+        binding.channelScroll.visibility = setVisibleOrGone(!channels.isNullOrEmpty())
         binding.channelChipGroup.removeAllViews()
-        subCategory.channels?.forEach { channel ->
+        channels?.forEach { channel ->
             addChannel(channel, binding.channelChipGroup, subCategory, channelItemClick)
         }
-        binding.subCategoryDivider.visibility = setVisibleOrGone(!item.isLast)
+
+        // iOS draws a divider under every subcategory row
+        binding.subCategoryDivider.visibility = View.VISIBLE
+        val bottomExtra = if (item.isLastInSection) {
+            binding.root.resources.getDimensionPixelSize(R.dimen.pref_section_group_bottom)
+        } else {
+            0
+        }
+        (binding.root.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin = bottomExtra
+        binding.root.requestLayout()
     }
 
-    private fun addChannel(channel: CategoryChannel, channelChipGroup: ChipGroup, subCategory: Category, channelItemClick: ChannelItemClick) {
+    private fun addChannel(
+        channel: CategoryChannel,
+        channelGroup: LinearLayout,
+        subCategory: Category,
+        channelItemClick: ChannelItemClick
+    ) {
         val isChecked = channel.preference == PreferenceOptions.optIn
-        val channelBinding = ChannelItemBinding.inflate(channelChipGroup.layoutInflater())
-        val chip = channelBinding.root as Chip
-        chip.text = channel.channel
-        chip.isEnabled = channel.isEditable
-        chip.isChecked = isChecked
-        channelChipGroup.addView(chip)
-        chip.setOnCheckedChangeListener { _, isOn ->
+        val channelBinding = ChannelItemBinding.inflate(channelGroup.layoutInflater(), channelGroup, false)
+        channelBinding.channelNameTv.text = channel.channel
+        channelBinding.channelCircle.setBackgroundResource(circleDrawable(isChecked, channel.isEditable))
+        channelBinding.root.alpha = if (channel.isEditable) 1f else 0.6f
+        channelBinding.root.isEnabled = channel.isEditable
+        channelBinding.root.setOnClickListener {
+            if (!channel.isEditable) return@setOnClickListener
             channelItemClick(
                 subCategory.category,
                 channel.channel,
-                isOn
+                !isChecked
             )
+        }
+        channelGroup.addView(channelBinding.root)
+    }
+
+    private fun circleDrawable(selected: Boolean, editable: Boolean): Int {
+        return when {
+            selected && editable -> R.drawable.pref_channel_circle_selected
+            selected && !editable -> R.drawable.pref_channel_circle_selected_disabled
+            !selected && editable -> R.drawable.pref_channel_circle_unselected
+            else -> R.drawable.pref_channel_circle_unselected_disabled
         }
     }
 }
 
-private data class ChannelPreferenceHolder(
+private class ChannelPreferenceHolder(
     val binding: ChannelPreferenceItemBinding
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(
@@ -140,41 +185,48 @@ private data class ChannelPreferenceHolder(
     ) {
         val channelPreference = item.channelPreference
         binding.obj = channelPreference
-        binding.sectionArrowIV.setOnClickListener {
-            expandCollapse(channelPreferenceArrowClick, channelPreference)
-        }
-        binding.prefNameTv.setOnClickListener {
-            expandCollapse(channelPreferenceArrowClick, channelPreference)
-        }
-        binding.prefDescTv.setOnClickListener {
-            expandCollapse(channelPreferenceArrowClick, channelPreference)
-        }
-        binding.allPrefRG.visibility = setVisibleOrGone(item.isExpanded)
-        binding.allPrefRG.setOnCheckedChangeListener(null)
-        if (channelPreference.isRestricted) {
-            binding.allPrefRG.check(R.id.requiredRb)
-        } else {
-            binding.allPrefRG.check(R.id.allRb)
-        }
-        binding.allPrefRG.setOnCheckedChangeListener { _, id ->
-            val checkedRb = binding.allPrefRG.findViewById<RadioButton>(id)
-            val pref = if (checkedRb == binding.allRb) {
-                ChannelLevelPreferenceOptions.all
+        binding.prefDescTv.setText(
+            if (channelPreference.isRestricted) {
+                R.string.allow_required_notifications_only
             } else {
-                ChannelLevelPreferenceOptions.required
+                R.string.allow_all_notifications
             }
-            channelPreferenceChangeClick.invoke(channelPreference.channel, pref)
+        )
+        binding.expandedTitleTv.text = binding.root.context.getString(
+            R.string.channel_preferences_title,
+            channelPreference.channel
+        )
+
+        binding.expandedContainer.visibility = setVisibleOrGone(item.isExpanded)
+        updateRadioSelection(channelPreference.isRestricted)
+
+        binding.prefHeader.setOnClickListener {
+            val next = !item.isExpanded
+            item.isExpanded = next
+            channelPreferenceArrowClick(channelPreference.channel, next)
+            binding.expandedContainer.visibility = setVisibleOrGone(next)
+        }
+
+        binding.allRow.setOnClickListener {
+            if (channelPreference.isRestricted) {
+                channelPreferenceChangeClick.invoke(
+                    channelPreference.channel,
+                    ChannelLevelPreferenceOptions.all
+                )
+            }
+        }
+        binding.requiredRow.setOnClickListener {
+            if (!channelPreference.isRestricted) {
+                channelPreferenceChangeClick.invoke(
+                    channelPreference.channel,
+                    ChannelLevelPreferenceOptions.required
+                )
+            }
         }
     }
 
-    private fun expandCollapse(channelPreferenceArrowClick: ChannelPreferenceArrowClick, channelPreference: ChannelPreference) {
-        val isExpanded = binding.sectionArrowIV.rotation == 0f
-        channelPreferenceArrowClick(channelPreference.channel, isExpanded)
-        if (isExpanded) {
-            binding.sectionArrowIV.animate().rotation(180f).setDuration(300)
-        } else {
-            binding.sectionArrowIV.animate().rotation(0f).setDuration(300)
-        }
-        binding.allPrefRG.visibility = setVisibleOrGone(isExpanded)
+    private fun updateRadioSelection(isRestricted: Boolean) {
+        binding.allRadioInner.visibility = setVisibleOrGone(!isRestricted)
+        binding.requiredRadioInner.visibility = setVisibleOrGone(isRestricted)
     }
 }

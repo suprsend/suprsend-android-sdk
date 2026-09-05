@@ -24,7 +24,6 @@ internal object SSConstants {
     const val USER_TOKEN = "user_token"
     const val EVENT = "event"
     const val DISTINCT_ID = "distinct_id"
-    const val SUBSCRIBER_ID = "subscriber_id"
     const val TENANT_ID = "tenant_id"
     const val INSERT_ID = "\$insert_id"
     const val TIME = "\$time"

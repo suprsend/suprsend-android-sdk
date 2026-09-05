@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "count": 2,
+    "limit": 10,
+    "offset": 0
+  },
+  "results": [
+    {
+      "name": "Refund promotion",
+      "category": "refund-promotion",
+      "description": "updates",
+      "original_preference": "opt_out",
+      "preference": "opt_out",
+      "is_editable": true,
+      "channels": [
+        {
+          "channel": "whatsapp",
+          "preference": "opt_out",
+          "is_editable": true
+        }
+      ]
+    },
+    {
+      "name": "Sub Category",
+      "category": "sub-category",
+      "description": "Sub category description",
+      "original_preference": null,
+      "preference": "opt_in",
+      "is_editable": false,
+      "channels": [
+        {
+          "channel": "email",
+          "preference": "opt_in",
+          "is_editable": false
+        }
+      ]
+    }
+  ]
+}

@@ -4,8 +4,28 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
 
-    <color name="pref_title_text">#515151</color>
-    <color name="pref_sub_text">#6C727F</color>
+    <!-- Preference UI — matches iOS PreferenceScreen -->
+    <color name="pref_title_text">#3D3D3D</color>
+    <color name="pref_sub_text">#6B7380</color>
+    <color name="pref_section_bg">#FAFAFA</color>
+    <color name="pref_channel_selected">#2463EB</color>
+    <color name="pref_channel_selected_disabled">#BDCFF7</color>
+    <color name="pref_channel_unselected_disabled">#D1CFCF</color>
+    <color name="pref_channel_circle_stroke">#A09E9E</color>
+    <color name="pref_channel_pill_stroke">#B5B5B5</color>
+    <color name="pref_card_stroke">#D9D9D9</color>
+    <color name="pref_divider">#C6C6C8</color>
+    <color name="pref_switch_on">#34C759</color>
+    <color name="pref_screen_bg">#FFFFFF</color>
     <color name="teal_700">#00796B</color>
     <color name="white">#FFFFFF</color>
+    <color name="inbox_accent">#2570EB</color>
+    <color name="inbox_card_unread_bg">#F6F9FF</color>
+    <color name="inbox_card_unread_border">#CFDCFF</color>
+    <color name="inbox_card_read_border">#E5E5EA</color>
+    <color name="inbox_body_text">#454545</color>
+    <color name="inbox_subtext">#666666</color>
+    <color name="inbox_secondary_text">#8E8E93</color>
+    <color name="inbox_system_gray4">#D1D1D6</color>
+    <color name="inbox_screen_bg">#F2F2F7</color>
 </resources>

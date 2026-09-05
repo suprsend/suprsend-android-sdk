@@ -15,7 +15,6 @@ import io.noties.markwon.Markwon
 @SuppressLint("StaticFieldLeak")
 object AppCreator {
     lateinit var context: Context
-    var inboxThemeConfig: InboxThemeConfig = InboxThemeConfig()
 
     val markWon: Markwon by lazy { Markwon.create(context) }
 
@@ -84,10 +83,6 @@ object AppCreator {
         list
     }
 
-    fun getInboxStoreJson(context: Context): String {
-        return context.readStringFromAsset("inbox_stores.json")
-    }
-
     fun getValue(key: String, default: String = ""): String {
         return context.defaultSharedPreferences.getString(key, default) ?: ""
     }
@@ -99,9 +94,6 @@ object AppCreator {
     }
 
     fun startInboxActivity(activity: Activity) {
-
-        CommonAnalyticsHandler.initializeInbox()
-
         val intent = Intent(activity, SSInboxActivity::class.java)
         activity.startActivity(intent)
     }

@@ -91,6 +91,7 @@ dependencies {
     androidTestImplementation("androidx.multidex:multidex:2.0.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
     androidTestImplementation("io.mockk:mockk-android:1.9.3")
     androidTestImplementation("com.linkedin.dexmaker:dexmaker:2.28.6")
     androidTestImplementation("com.auth0:java-jwt:4.4.0")

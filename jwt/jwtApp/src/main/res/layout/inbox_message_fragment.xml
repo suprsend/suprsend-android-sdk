@@ -1,62 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/inboxLL"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/inbox_screen_bg"
         android:orientation="vertical">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_layout"
+        <!-- Matches iOS storeTabs: H16 V8, capsule chips -->
+        <HorizontalScrollView
+            android:id="@+id/storeTabsScroll"
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:background="@color/white"
-            app:tabIndicatorColor="@color/teal_700"
-            app:tabInlineLabel="true"
-            app:tabSelectedTextColor="@color/teal_700"
-            app:tabTextAppearance="@style/TextAppearance.AppCompat.Small"
-            app:tabTextColor="@color/teal_700"
-            tools:background="#e4e4e4"
-            tools:layout_height="60dp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/inboxRv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/tab_layout"
+            android:layout_height="wrap_content"
+            android:background="@color/inbox_screen_bg"
             android:clipToPadding="false"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="8dp"
+            android:scrollbars="none">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
+            <LinearLayout
+                android:id="@+id/storeChipsLL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
 
-        <TextView
-            android:id="@+id/emptyMessageTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            android:layout_marginHorizontal="10dp"
-            android:text="@string/no_data_available" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/inboxRv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:padding="16dp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+            <LinearLayout
+                android:id="@+id/emptyMessageTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:id="@+id/emptyTitleTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/no_notifications_yet"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/emptySubtitleTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:text="@string/new_messages_will_appear_here"
+                    android:textColor="@color/inbox_secondary_text"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </FrameLayout>
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/socketStatusIv"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
+            android:layout_gravity="end|bottom"
             android:layout_margin="20dp"
-            app:srcCompat="@drawable/ic_disconnected" />
+            android:visibility="gone" />
 
-    </RelativeLayout>
+    </LinearLayout>
 </layout>

@@ -215,4 +215,65 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
         )
         action.assertIsSuccess()
     }
+
+    @Test
+    fun verifyTokenExpiredWhileOverallChannelPreferenceUpdate() {
+        every {
+            networkClient.httpCall(
+                url = "${TestConstants.SS_BASE_URL}/v1/user/U1/preference/?show_opt_out_channels=true",
+                authorization = any(),
+                requestMethod = any(),
+                requestJson = any(),
+                headers = any()
+            )
+        } returns ApiResponse(
+            ResponseStatus.SUCCESS,
+            200,
+            body = AssetHelper.readAssetFileToString("preference/full_preference_1.json")
+        )
+
+        every {
+            networkClient.httpCall(
+                url = "${TestConstants.SS_BASE_URL}/v1/user/U1/preference/channel_preference/",
+                authorization = any(),
+                requestMethod = any(),
+                requestJson = any(),
+                headers = any()
+            )
+        } returns ApiResponse(
+            status = ResponseStatus.SUCCESS,
+            statusCode = 200,
+            body = AssetHelper.readAssetFileToString("preference/channel_preference_is_restricted_true.json")
+        )
+
+        val data = preferences.getPreferences().body
+        Assert.assertEquals(5, data?.sections?.size)
+        Assert.assertEquals(5, data?.channelPreferences?.size)
+
+        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() - 3000))
+        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
+
+        val errorLatch = CountDownLatch(1)
+        var errorMessage: String? = null
+        SuprSend.getInstance().emitter.on(Emitter.Event.preferencesError) { response ->
+            errorMessage = response?.error?.message
+            errorLatch.countDown()
+        }
+
+        var action = preferences.updateOverallChannelPreference(
+            channel = "androidpush",
+            preference = ChannelLevelPreferenceOptions.required
+        )
+        action.assertIsSuccess()
+        Assert.assertTrue(errorLatch.await(2, TimeUnit.SECONDS))
+        Assert.assertEquals("Your token is expired, retried 3 times still it failed", errorMessage)
+
+        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken()
+        action = preferences.updateOverallChannelPreference(
+            channel = "androidpush",
+            preference = ChannelLevelPreferenceOptions.required
+        )
+        // Already optimistically set to restricted; second call with same value is a no-op success
+        action.assertIsSuccess()
+    }
 }

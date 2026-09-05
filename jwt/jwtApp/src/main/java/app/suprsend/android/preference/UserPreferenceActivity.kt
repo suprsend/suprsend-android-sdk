@@ -2,6 +2,7 @@ package app.suprsend.android.preference
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.suprsend.Emitter
@@ -79,9 +80,24 @@ class UserPreferenceActivity : AppCompatActivity() {
         )
         binding.categoriesRV.adapter = adapter
 
+        binding.progressBar.visibility = View.VISIBLE
+        binding.categoriesRV.visibility = View.GONE
+        binding.errorTv.visibility = View.GONE
+
         coroutineScope.launch {
-            val data = SuprSend.getInstance().preferences.getPreferences(args = preferenceArgs).body ?: return@launch
-            showData(data)
+            val response = SuprSend.getInstance().preferences.getPreferences(args = preferenceArgs)
+            val data = response.body
+            withContext(Dispatchers.Main) {
+                binding.progressBar.visibility = View.GONE
+                if (data != null) {
+                    binding.categoriesRV.visibility = View.VISIBLE
+                    binding.errorTv.visibility = View.GONE
+                    showData(data)
+                } else {
+                    binding.categoriesRV.visibility = View.GONE
+                    binding.errorTv.visibility = View.VISIBLE
+                }
+            }
         }
 
         SuprSend.getInstance().emitter.on(Emitter.Event.preferencesUpdated) { response ->
@@ -96,10 +112,12 @@ class UserPreferenceActivity : AppCompatActivity() {
 
         binding.testButton.setOnClickListener {
             coroutineScope.launch {
-                var data = SuprSend.getInstance().preferences.getCategories(args = Preferences.CategoryArgs(
-                    tenantId = preferenceArgs.tenantId,
-                    showOptOutChannels = preferenceArgs.showOptOutChannels
-                )).body ?: return@launch
+                var data = SuprSend.getInstance().preferences.getCategories(
+                    args = Preferences.CategoryArgs(
+                        tenantId = preferenceArgs.tenantId,
+                        showOptOutChannels = preferenceArgs.showOptOutChannels
+                    )
+                ).body ?: return@launch
                 Log.i(AppConstants.TAG, data)
                 val category = org.json.JSONObject(data).optJSONArray("results")?.optJSONObject(0)?.optString("category") ?: ""
                 data = SuprSend.getInstance().preferences.getCategory(category, args = preferenceArgs).body ?: return@launch
@@ -134,6 +152,8 @@ class UserPreferenceActivity : AppCompatActivity() {
 
     private suspend fun showData(preferenceData: PreferenceData) {
         withContext(Dispatchers.Main) {
+            binding.categoriesRV.visibility = View.VISIBLE
+            binding.errorTv.visibility = View.GONE
             adapter.setItems(preferenceData.toUIItems())
         }
     }
@@ -141,19 +161,31 @@ class UserPreferenceActivity : AppCompatActivity() {
     private fun PreferenceData?.toUIItems(): List<RecyclerViewItem> {
         if (this == null) return listOf()
         val itemsList = arrayListOf<RecyclerViewItem>()
+        itemsList.add(RecyclerViewItem.TitleVo)
         sections?.forEachIndexed { _, section ->
             val sectionName = section.name
             if (!sectionName.isNullOrBlank()) {
-                itemsList.add(RecyclerViewItem.SectionVo(title = sectionName, description = section.description ?: ""))
+                itemsList.add(
+                    RecyclerViewItem.SectionVo(
+                        title = sectionName,
+                        description = section.description ?: ""
+                    )
+                )
             }
             val subcategories = section.subcategories ?: return@forEachIndexed
             subcategories.forEachIndexed { scIndex, subcategory ->
-                itemsList.add(RecyclerViewItem.CategoryVo(subcategory, subcategories.isLast(scIndex)))
+                itemsList.add(
+                    RecyclerViewItem.CategoryVo(
+                        subcategory,
+                        isLastInSection = subcategories.isLast(scIndex)
+                    )
+                )
             }
         }
         itemsList.add(
             RecyclerViewItem.SectionVo(
-                title = "What notifications to allow for channel?"
+                title = getString(app.suprsend.android.R.string.what_notifications_to_allow),
+                tightBottom = true
             )
         )
         channelPreferences?.forEach { channelPreference ->

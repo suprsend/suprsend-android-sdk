@@ -2,13 +2,19 @@ package app.suprsend.android.preference
 
 import app.suprsend.user.preference.Category
 import app.suprsend.user.preference.ChannelPreference
-import app.suprsend.user.preference.PreferenceOptions
 
 sealed class RecyclerViewItem(val viewType: Int, val id: String) {
+
+    object TitleVo : RecyclerViewItem(0, "TitleVo") {
+        const val VIEW_TYPE = 0
+    }
+
     data class SectionVo(
         val title: String,
-        val description: String = ""
-    ) : RecyclerViewItem(VIEW_TYPE,  "SectionVo:${title.hashCode()}") {
+        val description: String = "",
+        /** When true, no extra bottom margin (channel-level header uses VStack spacing via next item). */
+        val tightBottom: Boolean = false
+    ) : RecyclerViewItem(VIEW_TYPE, "SectionVo:${title.hashCode()}") {
         companion object {
             const val VIEW_TYPE = 1
         }
@@ -16,8 +22,8 @@ sealed class RecyclerViewItem(val viewType: Int, val id: String) {
 
     data class CategoryVo(
         val subCategory: Category,
-        val isLast: Boolean
-    ) : RecyclerViewItem(VIEW_TYPE, subCategory.name + "CategoryVo") {
+        val isLastInSection: Boolean
+    ) : RecyclerViewItem(VIEW_TYPE, subCategory.category + "CategoryVo") {
         companion object {
             const val VIEW_TYPE = 2
         }

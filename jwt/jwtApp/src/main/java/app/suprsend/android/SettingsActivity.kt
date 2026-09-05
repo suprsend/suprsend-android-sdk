@@ -2,14 +2,13 @@ package app.suprsend.android
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import app.suprsend.SuprSend
 import app.suprsend.android.databinding.ActivitySettingsBinding
 import app.suprsend.android.preference.UserPreferenceActivity
-import app.suprsend.inbox.SuprsendInbox
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -21,11 +20,12 @@ class SettingsActivity : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.tenantIdEt.setText(AppCreator.getTenantId()?:"")
+        binding.tenantIdEt.setText(AppCreator.getTenantId() ?: "")
         binding.tenantIdTv.clickWithThrottle {
             val tenantId = binding.tenantIdEt.text.toString()
             AppCreator.storeValue(AppConstants.PREF_TENANT_ID, tenantId)
             SuprSend.changeTenant(tenantId)
+            InboxViewModel.shared.reconnectAndRefresh()
         }
 
         binding.emailEt.setText(AppCreator.getValue("email", "nikhilesh@suprsend.com"))
@@ -92,35 +92,15 @@ class SettingsActivity : AppCompatActivity() {
             intent.putExtra("showOptOutChannels", binding.showOptOutChannelsCb.isChecked)
             startActivity(intent)
         }
-        binding.inboxSubscriberIdEt.setText(AppCreator.getValue(AppConstants.PREF_INBOX_SUBSCRIBER_ID, BuildConfig.SS_INBOX_SUBSCRIBER_ID))
-        binding.inboxSubscriberIdEt.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                AppCreator.storeValue(AppConstants.PREF_INBOX_SUBSCRIBER_ID, s?.toString() ?: "")
-            }
-        })
-
-        binding.inboxStoreJsonEt.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                AppCreator.storeValue(AppConstants.PREF_INBOX_STORE_JSON, s?.toString() ?: "")
-            }
-        })
-        binding.inboxStoreJsonEt.setText(AppCreator.getValue(AppConstants.PREF_INBOX_STORE_JSON, AppCreator.getInboxStoreJson(this)))
         binding.inbox.clickWithThrottle {
             CommonAnalyticsHandler.set("inbox_visit_at", System.currentTimeMillis().toString())
+            InboxViewModel.shared.resetBadge()
             AppCreator.startInboxActivity(this)
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        SuprsendInbox.getInstance().openConnection()
-    }
-
     private fun logout(unSubscribeNotification: Boolean) {
+        InboxViewModel.reset()
         CommonAnalyticsHandler.unset("choices")
         CommonAnalyticsHandler.reset(unSubscribeNotification)
         startActivity(Intent(this, WelcomeActivity::class.java))

@@ -1,0 +1,20 @@
+{
+  "n_id": "n-unread-1",
+  "n_category": "transactional",
+  "created_on": 1710000000000,
+  "seen_on": null,
+  "read_on": null,
+  "interacted_on": null,
+  "archived": false,
+  "tags": ["tab1"],
+  "expiry": null,
+  "is_expiry_visible": false,
+  "is_pinned": false,
+  "can_user_unpin": false,
+  "message": {
+    "header": "Unread header",
+    "schema": "1",
+    "text": "Unread body",
+    "url": "https://example.com"
+  }
+}

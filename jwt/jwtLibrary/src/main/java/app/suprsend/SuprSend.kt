@@ -7,6 +7,7 @@ import app.suprsend.base.ActionStatusCallback
 import app.suprsend.base.SSConstants
 import app.suprsend.base.sdkExecutorService
 import app.suprsend.event.EventFlushHandler
+import app.suprsend.feed.FeedsFactory
 import app.suprsend.log.LogLevel
 import app.suprsend.log.Logger
 import app.suprsend.log.LoggerCallback
@@ -23,9 +24,10 @@ import org.json.JSONObject
 
 class SuprSend private constructor() {
 
-    val emitter = Emitter()
     val user = User()
     val preferences get() = user.preferences
+    val feeds = FeedsFactory(this)
+    val emitter = Emitter()
 
     @WorkerThread
     fun identify(distinctId: String, userToken: String? = null, tenantId: String? = null, refreshUserToken: RefreshUserTokenCallback? = null): ApiResponse {
@@ -218,10 +220,6 @@ class SuprSend private constructor() {
             val info = SSInternal.suprSendData.clientInfo ?: return
             SSInternal.suprSendData.userAgent = ClientUserAgentBuilder.toUserAgentString(info)
             SSInternal.suprSendData.clientUserAgentJson = ClientUserAgentBuilder.toJson(info).toString()
-        }
-
-        fun setInboxBaseUrl(inboxBaseUrl: String) {
-            SSInternal.suprSendData.inboxBaseUrl = inboxBaseUrl
         }
 
         fun setRefreshUserToken(refreshUserToken: RefreshUserTokenCallback?) {

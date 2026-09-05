@@ -7,7 +7,6 @@ import android.os.Looper
 import android.os.Parcel
 import android.util.Patterns
 import app.suprsend.SSInternal
-import app.suprsend.inbox.SSInboxInternal
 import app.suprsend.log.Logger
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import org.json.JSONArray

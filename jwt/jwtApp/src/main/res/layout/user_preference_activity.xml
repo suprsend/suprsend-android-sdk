@@ -2,26 +2,50 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout
+    <!-- Matches iOS PreferenceScreen: white bg, 16 padding, title + list -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:background="@color/pref_screen_bg">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/categoriesRV"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingBottom="20dp" />
+            android:padding="16dp"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/section_item" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/errorTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="24dp"
+            android:text="@string/failed_to_load_preferences"
+            android:textColor="@color/pref_sub_text"
+            android:textSize="14sp"
+            android:visibility="gone"
+            tools:ignore="HardcodedText" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/testButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="16dp"
             android:text="Testing Other Apis Check logs"
             android:visibility="gone"
             tools:ignore="HardcodedText" />
 
-    </RelativeLayout>
+    </FrameLayout>
 </layout>
