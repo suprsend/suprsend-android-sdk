@@ -10,45 +10,36 @@
             type="app.suprsend.android.preference.RecyclerViewItem.SectionVo" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!-- Matches iOS SectionView header: 12 pad, #FAFAFA, radius 6, bottom 12 -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#F4F6F6"
-        android:orientation="vertical">
+        android:layout_marginBottom="@dimen/pref_section_bottom"
+        android:background="@drawable/pref_section_bg"
+        android:orientation="vertical"
+        android:padding="12dp">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/sectionNameTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="14dp"
+            android:fontFamily="@font/inter_semibold"
             android:text="@{obj.title}"
-            android:textColor="#3D3D3D"
-            android:textSize="14sp"
-            app:fontFamily="@font/inter_bold"
-            app:layout_constraintBottom_toTopOf="@id/sectionDescTv"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_goneMarginBottom="14dp"
+            android:textColor="@color/pref_title_text"
+            android:textSize="16sp"
             tools:text="Transactional Notifications" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/sectionDescTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="14dp"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/inter"
             android:text="@{obj.description}"
-            android:textColor="#6C727F"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:fontFamily="@font/inter"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/sectionNameTv"
-            tools:text="Non-marketing notifications related to authentication, activity updates, reminders etc." />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:textColor="@color/pref_sub_text"
+            android:textSize="13sp"
+            android:visibility="gone"
+            tools:text="Non-marketing notifications related to authentication, activity updates, reminders etc."
+            tools:visibility="visible" />
+    </LinearLayout>
 </layout>

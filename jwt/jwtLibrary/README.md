@@ -7,4 +7,4 @@ This library is used to integrate SuprSend features like WebPush, Preferences an
 | [Integration](docs/Integration.md) | SDK integration guide |
 | [Push](docs/Push.md)               | FCM push setup        |
 | Preferences                        | Coming soon           |
-| Inbox                              | Coming soon           |
+| [Inbox](docs/INBOX.md)             | Headless in-app feed  |

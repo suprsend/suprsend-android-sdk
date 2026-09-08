@@ -126,9 +126,6 @@ fun com.android.build.gradle.internal.dsl.BuildType.addBuildConfigFields() {
     buildConfigField("String", "SS_PUBLIC_API_KEY", "\"${Deps.SS_PUBLIC_API_KEY}\"")
 
     buildConfigField("String", "SS_INBOX_BASE_URL", "\"${Deps.SS_INBOX_BASE_URL}\"")
-//    buildConfigField("String", "INBOX_SECRET", "\"${Deps.INBOX_SECRET}\"")
-    buildConfigField("String", "SS_INBOX_SUBSCRIBER_ID", "\"${Deps.SS_INBOX_SUBSCRIBER_ID}\"")
-
     buildConfigField("String", "SS_INBOX_SOCKET_URL", "\"${Deps.SS_INBOX_SOCKET_URL}\"")
 
     buildConfigField("String", "MX_TOKEN", "\"${Deps.MX_TOKEN}\"")

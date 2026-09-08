@@ -60,8 +60,9 @@ class NetworkClient {
             }
 
             connection.useCaches = false
-            if (requestMethod.equals("POST", true))
+            if (requestJson != null) {
                 connection.doOutput = true
+            }
             connection.doInput = true
 
             //Send request
@@ -95,7 +96,7 @@ class NetworkClient {
         }
         val responseStr = response.toString()
         Logger.i(SSConstants.TAG_SUPRSEND, "API : $statusCode : $url")
-        Logger.i(SSConstants.TAG_SUPRSEND, "API Response : $responseStr")
+        Logger.v(SSConstants.TAG_SUPRSEND, "API Response : $responseStr")
 
         return ApiResponse(
             status = if (statusCode >= 400) ResponseStatus.ERROR else ResponseStatus.SUCCESS,

@@ -7,65 +7,83 @@
 
         <variable
             name="obj"
-            type="app.suprsend.user.preference.SubCategory" />
+            type="app.suprsend.user.preference.Category" />
     </data>
 
+    <!-- Matches iOS SubcategoryRow: name+desc left, toggle right, channel pills, divider -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="18dp">
 
-        <com.github.angads25.toggle.widget.LabeledSwitch
-            android:id="@+id/subCategoryCheckbox"
-            android:layout_width="36dp"
-            android:layout_height="20dp"
-            android:layout_gravity="end"
-            android:layout_marginTop="14dp"
-            android:layout_marginEnd="20dp"
-            android:textSize="14sp"
-            app:colorBorder="#386CBE"
-            app:colorOn="#386CBE"
-            app:on="false"
-            app:textOff=""
-            app:textOn="" />
-
-        <androidx.appcompat.widget.AppCompatTextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:text="@{obj.name}"
-            android:textColor="#3D3D3D"
-            android:textSize="14sp"
-            app:fontFamily="@font/inter_bold"
-            tools:text="Payment and history" />
+            android:gravity="top"
+            android:orientation="horizontal">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/subCategoryDescTv"
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/subCategoryNameTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_semibold"
+                    android:text="@{obj.name}"
+                    android:textColor="@color/pref_title_text"
+                    android:textSize="15sp"
+                    tools:text="Payment and history" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/subCategoryDescTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/inter"
+                    android:text="@{obj.description}"
+                    android:textColor="@color/pref_sub_text"
+                    android:textSize="13sp"
+                    tools:text="Send updates related to my payment history" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/subCategoryCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:minHeight="0dp"
+                app:thumbTint="@color/pref_switch_thumb"
+                app:trackTint="@color/pref_switch_track"
+                tools:checked="true" />
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/channelScroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="2dp"
-            android:text="@{obj.description}"
-            android:textColor="#6C727F"
-            android:textSize="12sp"
-            app:fontFamily="@font/inter"
-            tools:text="Send updates related to my payment history" />
+            android:layout_marginTop="12dp"
+            android:scrollbars="none">
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/channelChipGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            tools:background="#e4e4e4"
-            tools:layout_height="70dp" />
+            <LinearLayout
+                android:id="@+id/channelChipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
 
+        <!-- iOS: padding.bottom 12 then Divider at bottom edge -->
         <View
             android:id="@+id/subCategoryDivider"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginHorizontal="20dp"
-            android:background="#B3D9D9D9" />
+            android:layout_height="0.5dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/pref_divider" />
     </LinearLayout>
 </layout>

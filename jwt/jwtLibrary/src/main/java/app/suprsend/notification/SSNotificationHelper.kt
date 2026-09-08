@@ -176,13 +176,14 @@ object SSNotificationHelper {
                 groupNotification.setSubText(subText)
             }
 
-            notificationBasicVo.groupShowWhenTimeStamp?.let { showWhenTimeStamp ->
-                groupNotification.setShowWhen(showWhenTimeStamp)
+            notificationBasicVo.groupShowWhen?.let { groupShowWhen ->
+                groupNotification.setShowWhen(groupShowWhen)
             }
 
-            notificationBasicVo.groupWhenTimeStamp?.let { whenTimeStamp ->
-                groupNotification.setWhen(whenTimeStamp)
+            notificationBasicVo.groupWhen?.let { groupWhen ->
+                groupNotification.setWhen(groupWhen)
             }
+
             notificationManager
                 .notify(
                     notificationBasicVo.group.hashCode(),
@@ -298,12 +299,22 @@ object SSNotificationHelper {
             notificationBuilder.setSubText(subText)
         }
 
-        notificationBasicVo.showWhenTimeStamp?.let { showWhenTimeStamp ->
-            notificationBuilder.setShowWhen(showWhenTimeStamp)
+        notificationBasicVo.showWhen?.let { showWhen ->
+            notificationBuilder.setShowWhen(showWhen)
         }
 
-        notificationBasicVo.whenTimeStamp?.let { whenTimeStamp ->
-            notificationBuilder.setWhen(whenTimeStamp)
+        notificationBasicVo.`when`?.let { whenValue ->
+            notificationBuilder.setWhen(whenValue)
+        }
+
+        notificationBasicVo.usesChronometer?.let { usesChronometer ->
+            notificationBuilder.setUsesChronometer(usesChronometer)
+        }
+
+        notificationBasicVo.chronometerCountDown?.let { chronometerCountDown ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                notificationBuilder.setChronometerCountDown(chronometerCountDown)
+            }
         }
 
         // The duration of time after which the notification is automatically dismissed.
@@ -601,8 +612,8 @@ private fun String?.getRawNotification(): RawNotification {
 
         group = notificationPayloadJO.safeString("group"),
         groupSubText = notificationPayloadJO.safeString("groupSubText"),
-        groupShowWhenTimeStamp = notificationPayloadJO.safeBoolean("groupShowWhenTimeStamp"),
-        groupWhenTimeStamp = notificationPayloadJO.safeLong("groupWhenTimeStamp"),
+        groupShowWhen = notificationPayloadJO.safeBoolean("groupShowWhen") ?: notificationPayloadJO.safeBoolean("groupShowWhenTimeStamp"), // Deprecated groupShowWhenTimeStamp will remove in future
+        groupWhen = notificationPayloadJO.safeLong("groupWhen") ?: notificationPayloadJO.safeLong("groupWhenTimeStamp"), // Deprecated groupWhenTimeStamp will remove in future
         sortKey = notificationPayloadJO.safeString("sortKey"),
 
         onGoing = notificationPayloadJO.safeBoolean("onGoing"),
@@ -610,8 +621,10 @@ private fun String?.getRawNotification(): RawNotification {
 
         timeoutAfter = notificationPayloadJO.safeLong("timeoutAfter"),
 
-        showWhenTimeStamp = notificationPayloadJO.safeBoolean("showWhenTimeStamp"),
-        whenTimeStamp = notificationPayloadJO.safeLong("whenTimeStamp"),
+        showWhen = notificationPayloadJO.safeBoolean("showWhen") ?: notificationPayloadJO.safeBoolean("showWhenTimeStamp"), // Deprecated showWhenTimeStamp will remove in future
+        `when` = notificationPayloadJO.safeLong("when") ?: notificationPayloadJO.safeLong("whenTimeStamp"), // Deprecated whenTimeStamp will remove in future
+        usesChronometer = notificationPayloadJO.safeBoolean("usesChronometer"),
+        chronometerCountDown = notificationPayloadJO.safeBoolean("chronometerCountDown"),
 
         localOnly = notificationPayloadJO.safeBoolean("localOnly"),
 

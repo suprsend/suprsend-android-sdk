@@ -9,13 +9,11 @@ import app.suprsend.base.NetworkClient
 import app.suprsend.base.NetworkInfo
 import app.suprsend.base.SSConstants
 import app.suprsend.event.PayloadOfflineStore
-import app.suprsend.inbox.SSInboxInternal
 import app.suprsend.log.Logger
 import app.suprsend.log.LoggerCallback
 import app.suprsend.model.ApiResponse
 import app.suprsend.model.ErrorType
 import app.suprsend.model.ResponseStatus
-import app.suprsend.user.preference.SSPreferenceInternal
 import app.suprsend.utils.filterSSReservedKeys
 import com.auth0.android.jwt.JWT
 import org.json.JSONArray
@@ -329,8 +327,7 @@ internal object SSInternal {
     fun reset(unSubscribeNotification: Boolean) {
         if (unSubscribeNotification)
             removeNotificationToken()
-        SSPreferenceInternal.clearUserPreference()
-        SSInboxInternal.reset()
+        SuprSend.getInstance().feeds.removeAll()
         suprSendData.distinctId = null
         suprSendData.userToken = null
         suprSendData.tenantId = null
@@ -341,6 +338,10 @@ internal object SSInternal {
 
     fun getToken(): String? {
         return suprSendData.userToken
+    }
+
+    fun storeToken(token: String) {
+        suprSendData.userToken = token
     }
 
     fun getFcmPushProperties(token: String): JSONObject {

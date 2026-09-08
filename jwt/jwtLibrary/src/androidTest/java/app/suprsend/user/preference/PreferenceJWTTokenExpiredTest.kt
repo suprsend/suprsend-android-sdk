@@ -1,12 +1,12 @@
 package app.suprsend.user.preference
 
-import app.suprsend.SuprSend
+import app.suprsend.Emitter
 import app.suprsend.SSInternal
+import app.suprsend.SuprSend
 import app.suprsend.RefreshUserTokenCallback
 import app.suprsend.base.AssetHelper
 import app.suprsend.base.BaseTest
 import app.suprsend.base.NetworkClient
-import app.suprsend.base.Response
 import app.suprsend.base.TestConstants
 import app.suprsend.base.TokenGenerator
 import app.suprsend.base.assertIsFailure
@@ -18,6 +18,8 @@ import io.mockk.mockk
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class PreferenceJWTTokenExpiredTest : BaseTest() {
 
@@ -31,17 +33,16 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
         SSInternal.networkClient = networkClient
         SuprSend.initialize(
             context = context,
-            
             publicApiKey = TestConstants.PUBLIC_API_KEY,
-            host =  "https://collector-staging.suprsend.workers.dev"
+            host = TestConstants.SS_BASE_URL
         )
         SuprSend.setRefreshUserToken(refreshUserToken)
 
         suprSend = SuprSend.getInstance()
-        preferences = suprSend.user.getPreferences()
+        preferences = suprSend.preferences
         every {
             networkClient.httpCall(
-                url = "https://collector-staging.suprsend.workers.dev/v2/event",
+                url = "${TestConstants.SS_BASE_URL}/v2/event",
                 authorization = any(),
                 requestJson = any(),
                 headers = any()
@@ -51,17 +52,12 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
             statusCode = 200,
             body = AssetHelper.readAssetFileToString("event_and_operator_response.json")
         )
-
-        preferences.setPreferenceConfig(
-            tenantId = null,
-            showOptOutChannels = true
-        )
     }
 
     @Before
     fun setUp() {
+        Preferences.debounceDelayMs = 50L
         suprSend.reset(true)
-        //Need correct token for identify to succeed
         every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken()
 
         val action = suprSend.identify("U1")
@@ -70,15 +66,12 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
 
     @Test
     fun verifyTokenExpiredWhileFetchUserPreference() {
+        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() - 3000))
+        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
 
-        //Expiring token before fetch call
-        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() -3000))
-        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() -3000)
-
-        //Even fetch full_preference has 200 response,even though test should fail since expired token is mocked
         every {
             networkClient.httpCall(
-                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/full_preference?&show_opt_out_channels=true",
+                url = "${TestConstants.SS_BASE_URL}/v1/user/U1/preference/?show_opt_out_channels=true",
                 authorization = any(),
                 requestMethod = any(),
                 requestJson = any(),
@@ -90,24 +83,22 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
             body = AssetHelper.readAssetFileToString("preference/full_preference_1.json")
         )
 
-        val action = preferences.fetchUserPreference(fetchRemote = true)
+        val action = preferences.getPreferences()
         action.assertIsFailure()
-        Assert.assertEquals("Your token is expired, retried 3 times still it failed", (action as Response.Error).message)
+        Assert.assertEquals("Your token is expired, retried 3 times still it failed", action.error?.message)
 
-        //If correct token is sent then fetch preference success
         every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken()
-        val action2 = preferences.fetchUserPreference(fetchRemote = true)
+        val action2 = preferences.getPreferences()
         action2.assertIsSuccess()
-        Assert.assertEquals(5,action2.getData()?.sections?.size)
-        Assert.assertEquals(5,action2.getData()?.channelPreferences?.size)
+        Assert.assertEquals(5, action2.body?.sections?.size)
+        Assert.assertEquals(5, action2.body?.channelPreferences?.size)
     }
 
     @Test
     fun verifyTokenExpiredWhileCategoryPreferenceUpdate() {
-
         every {
             networkClient.httpCall(
-                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/full_preference?&show_opt_out_channels=true",
+                url = "${TestConstants.SS_BASE_URL}/v1/user/U1/preference/?show_opt_out_channels=true",
                 authorization = any(),
                 requestMethod = any(),
                 requestJson = any(),
@@ -121,10 +112,10 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
 
         every {
             networkClient.httpCall(
-                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
+                url = "${TestConstants.SS_BASE_URL}/v1/user/U1/preference/category/refund-promotion/?show_opt_out_channels=true",
                 authorization = any(),
                 requestMethod = any(),
-                requestJson = "{\"preference\":\"opt_in\"}",
+                requestJson = any(),
                 headers = any()
             )
         } returns ApiResponse(
@@ -133,41 +124,41 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
             body = AssetHelper.readAssetFileToString("preference/category_update_opt_in.json")
         )
 
-        val preferences = SuprSend.getInstance().user.getPreferences()
-        val data = preferences.fetchUserPreference(fetchRemote = true).getData()
-
+        val data = preferences.getPreferences().body
         Assert.assertEquals(5, data?.sections?.size)
         Assert.assertEquals(5, data?.channelPreferences?.size)
 
-        //Expiring token before update call
-        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() -3000))
-        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() -3000)
+        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() - 3000))
+        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
+
+        val errorLatch = CountDownLatch(1)
+        var errorMessage: String? = null
+        SuprSend.getInstance().emitter.on(Emitter.Event.preferencesError) { response ->
+            errorMessage = response?.error?.message
+            errorLatch.countDown()
+        }
 
         var action = preferences.updateCategoryPreference(
             category = "refund-promotion",
-            preference = PreferenceOptions.OPT_IN
+            preference = PreferenceOptions.optIn
         )
+        action.assertIsSuccess()
+        Assert.assertTrue(errorLatch.await(2, TimeUnit.SECONDS))
+        Assert.assertEquals("Your token is expired, retried 3 times still it failed", errorMessage)
 
-        action.assertIsFailure()
-        Assert.assertEquals("Your token is expired, retried 3 times still it failed", (action as Response.Error).message)
-
-
-        //If correct token is sent then update preference should success
         every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken()
         action = preferences.updateCategoryPreference(
             category = "refund-promotion",
-            preference = PreferenceOptions.OPT_IN
+            preference = PreferenceOptions.optIn
         )
         action.assertIsSuccess()
-
     }
 
     @Test
     fun verifyTokenExpiredWhileChannelPreferenceUpdate() {
-
         every {
             networkClient.httpCall(
-                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/full_preference?&show_opt_out_channels=true",
+                url = "${TestConstants.SS_BASE_URL}/v1/user/U1/preference/?show_opt_out_channels=true",
                 authorization = any(),
                 requestMethod = any(),
                 requestJson = any(),
@@ -181,10 +172,10 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
 
         every {
             networkClient.httpCall(
-                url = "https://collector-staging.suprsend.workers.dev/v2/subscriber/U1/category/refund-promotion?&show_opt_out_channels=true",
+                url = "${TestConstants.SS_BASE_URL}/v1/user/U1/preference/category/refund-promotion/?show_opt_out_channels=true",
                 authorization = any(),
                 requestMethod = any(),
-                requestJson = "{\"preference\":\"opt_in\",\"opt_out_channels\":[\"androidpush\",\"email\",\"webpush\",\"whatsapp\"]}",
+                requestJson = any(),
                 headers = any()
             )
         } returns ApiResponse(
@@ -193,34 +184,96 @@ class PreferenceJWTTokenExpiredTest : BaseTest() {
             body = AssetHelper.readAssetFileToString("preference/category_channel_whatsapp_update_opt_out.json")
         )
 
-        val preferences = SuprSend.getInstance().user.getPreferences()
-        val data = preferences.fetchUserPreference(fetchRemote = true).getData()
-
+        val data = preferences.getPreferences().body
         Assert.assertEquals(5, data?.sections?.size)
         Assert.assertEquals(5, data?.channelPreferences?.size)
 
-        //Expiring token before update call
-        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() -3000))
-        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() -3000)
+        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() - 3000))
+        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
+
+        val errorLatch = CountDownLatch(1)
+        var errorMessage: String? = null
+        SuprSend.getInstance().emitter.on(Emitter.Event.preferencesError) { response ->
+            errorMessage = response?.error?.message
+            errorLatch.countDown()
+        }
 
         var action = preferences.updateChannelPreferenceInCategory(
-            category = "refund-promotion",
-            preference = PreferenceOptions.OPT_IN,
-            channel = "whatsapp"
-        )
-
-        action.assertIsFailure()
-        Assert.assertEquals("Your token is expired, retried 3 times still it failed", (action as Response.Error).message)
-
-
-        //If correct token is sent then update preference should success
-        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken()
-        action = preferences.updateChannelPreferenceInCategory(
-            category = "refund-promotion",
-            preference = PreferenceOptions.OPT_IN,
-            channel = "whatsapp"
+            channel = "whatsapp",
+            preference = PreferenceOptions.optIn,
+            category = "refund-promotion"
         )
         action.assertIsSuccess()
+        Assert.assertTrue(errorLatch.await(2, TimeUnit.SECONDS))
+        Assert.assertEquals("Your token is expired, retried 3 times still it failed", errorMessage)
 
+        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken()
+        action = preferences.updateChannelPreferenceInCategory(
+            channel = "whatsapp",
+            preference = PreferenceOptions.optIn,
+            category = "refund-promotion"
+        )
+        action.assertIsSuccess()
+    }
+
+    @Test
+    fun verifyTokenExpiredWhileOverallChannelPreferenceUpdate() {
+        every {
+            networkClient.httpCall(
+                url = "${TestConstants.SS_BASE_URL}/v1/user/U1/preference/?show_opt_out_channels=true",
+                authorization = any(),
+                requestMethod = any(),
+                requestJson = any(),
+                headers = any()
+            )
+        } returns ApiResponse(
+            ResponseStatus.SUCCESS,
+            200,
+            body = AssetHelper.readAssetFileToString("preference/full_preference_1.json")
+        )
+
+        every {
+            networkClient.httpCall(
+                url = "${TestConstants.SS_BASE_URL}/v1/user/U1/preference/channel_preference/",
+                authorization = any(),
+                requestMethod = any(),
+                requestJson = any(),
+                headers = any()
+            )
+        } returns ApiResponse(
+            status = ResponseStatus.SUCCESS,
+            statusCode = 200,
+            body = AssetHelper.readAssetFileToString("preference/channel_preference_is_restricted_true.json")
+        )
+
+        val data = preferences.getPreferences().body
+        Assert.assertEquals(5, data?.sections?.size)
+        Assert.assertEquals(5, data?.channelPreferences?.size)
+
+        SSInternal.storeToken(TokenGenerator.generateToken(System.currentTimeMillis() - 3000))
+        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken(System.currentTimeMillis() - 3000)
+
+        val errorLatch = CountDownLatch(1)
+        var errorMessage: String? = null
+        SuprSend.getInstance().emitter.on(Emitter.Event.preferencesError) { response ->
+            errorMessage = response?.error?.message
+            errorLatch.countDown()
+        }
+
+        var action = preferences.updateOverallChannelPreference(
+            channel = "androidpush",
+            preference = ChannelLevelPreferenceOptions.required
+        )
+        action.assertIsSuccess()
+        Assert.assertTrue(errorLatch.await(2, TimeUnit.SECONDS))
+        Assert.assertEquals("Your token is expired, retried 3 times still it failed", errorMessage)
+
+        every { refreshUserToken.getToken(any()) } returns TokenGenerator.generateToken()
+        action = preferences.updateOverallChannelPreference(
+            channel = "androidpush",
+            preference = ChannelLevelPreferenceOptions.required
+        )
+        // Already optimistically set to restricted; second call with same value is a no-op success
+        action.assertIsSuccess()
     }
 }

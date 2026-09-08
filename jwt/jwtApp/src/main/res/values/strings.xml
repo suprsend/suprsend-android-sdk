@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SuprSend Android SDK Sample</string>
+    <string name="notification_preferences">Notification Preferences</string>
     <string name="allow_all_notifications">Allow all notifications</string>
-    <string name="mark_unread">Mark UnRead</string>
-    <string name="mark_read">Mark Read</string>
+    <string name="allow_required_notifications_only">Allow required notifications only</string>
+    <string name="what_notifications_to_allow">What notifications to allow for channel?</string>
+    <string name="channel_preferences_title">%1$s Preferences</string>
+    <string name="pref_all">All</string>
+    <string name="pref_required">Required</string>
+    <string name="pref_all_help">Allow All Notifications, except the ones that I have turned off</string>
+    <string name="pref_required_help">Allow only important notifications related to account and security settings</string>
+    <string name="failed_to_load_preferences">Failed to load preferences.</string>
+    <string name="mark_as_unread">Mark as unread</string>
+    <string name="mark_as_read">Mark as read</string>
+    <string name="mark_all_as_read">Mark all as read</string>
+    <string name="inbox_title">Inbox</string>
     <string name="click">Click</string>
-    <string name="expiry">Expires in</string>
-    <string name="createdOn">CreatedOn : </string>
     <string name="archive">Archive</string>
-    <string name="no_data_available">No data available</string>
+    <string name="no_notifications_yet">No notifications yet</string>
+    <string name="new_messages_will_appear_here">New messages will appear here.</string>
     <string name="no_internet">No internet connection available</string>
-    <string name="interacted">Interacted</string>
+    <string name="load_older_notifications">Load older notifications</string>
+    <string name="youre_all_caught_up">You\'re all caught up</string>
 </resources>

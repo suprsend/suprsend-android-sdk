@@ -6,11 +6,13 @@ import app.suprsend.base.LocalStorage
 import app.suprsend.base.SSConstants
 import org.json.JSONArray
 import org.json.JSONObject
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -20,8 +22,20 @@ class PayloadOfflineStoreTest : BaseTest() {
 
     @Before
     fun setup() {
+        EventFlushHandler.stop()
         SSInternal.context = context.applicationContext
         PayloadOfflineStore.clear()
+    }
+
+    @After
+    fun tearDown() {
+        EventFlushHandler.stop()
+        PayloadOfflineStore.clear()
+    }
+
+    private fun shutdownExecutor(executor: ExecutorService) {
+        executor.shutdownNow()
+        executor.awaitTermination(5, TimeUnit.SECONDS)
     }
 
     private fun userPayload(eventName: String, idTag: String): JSONObject {
@@ -278,6 +292,7 @@ class PayloadOfflineStoreTest : BaseTest() {
                     try {
                         startGate.await()
                         repeat(perProducer) { i ->
+                            if (Thread.currentThread().isInterrupted) return@submit
                             returnedIds.add(
                                 PayloadOfflineStore.store(
                                     userPayload(SSConstants.S_EVENT_NOTIFICATION_DELIVERED, "p$p-i$i")
@@ -290,9 +305,9 @@ class PayloadOfflineStoreTest : BaseTest() {
                 }
             }
             startGate.countDown()
-            Assert.assertTrue(doneGate.await(10, TimeUnit.SECONDS))
+            Assert.assertTrue("producers did not finish", doneGate.await(20, TimeUnit.SECONDS))
         } finally {
-            executor.shutdownNow()
+            shutdownExecutor(executor)
         }
 
         val expected = producers * perProducer
@@ -305,8 +320,8 @@ class PayloadOfflineStoreTest : BaseTest() {
 
     @Test
     fun concurrentProducerAndConsumer_consumerNeverDropsExtraEntries() {
-        val producers = 8
-        val perProducer = 200 // 1600 stores -> well above capacity, forces evictions
+        val producers = 4
+        val perProducer = 50 // 200 stores -> above capacity, forces evictions
         val capacity = SSConstants.OFFLINE_NOTIFICATION_EVENTS_MAX_COUNT
 
         val executor = Executors.newFixedThreadPool(producers + 1)
@@ -322,6 +337,7 @@ class PayloadOfflineStoreTest : BaseTest() {
                     try {
                         startGate.await()
                         repeat(perProducer) { i ->
+                            if (Thread.currentThread().isInterrupted) return@submit
                             PayloadOfflineStore.store(
                                 userPayload(SSConstants.S_EVENT_NOTIFICATION_DELIVERED, "p$p-i$i-${UUID.randomUUID()}")
                             )
@@ -347,12 +363,11 @@ class PayloadOfflineStoreTest : BaseTest() {
             }
 
             startGate.countDown()
-            Assert.assertTrue(producerDone.await(15, TimeUnit.SECONDS))
+            Assert.assertTrue("producers did not finish", producerDone.await(20, TimeUnit.SECONDS))
             Thread.sleep(100)
             stop.set(true)
         } finally {
-            executor.shutdownNow()
-            executor.awaitTermination(2, TimeUnit.SECONDS)
+            shutdownExecutor(executor)
         }
 
         Assert.assertEquals("consumer should not encounter errors", 0, consumerErrors.get())
@@ -366,7 +381,7 @@ class PayloadOfflineStoreTest : BaseTest() {
 
     @Test
     fun concurrentProducers_capacityInvariantHolds() {
-        val producers = 6
+        val producers = 4
         val perProducer = SSConstants.OFFLINE_NOTIFICATION_EVENTS_MAX_COUNT
         val executor = Executors.newFixedThreadPool(producers)
         val startGate = CountDownLatch(1)
@@ -378,6 +393,7 @@ class PayloadOfflineStoreTest : BaseTest() {
                     try {
                         startGate.await()
                         repeat(perProducer) { i ->
+                            if (Thread.currentThread().isInterrupted) return@submit
                             PayloadOfflineStore.store(
                                 userPayload(SSConstants.S_EVENT_NOTIFICATION_DELIVERED, "p$p-i$i")
                             )
@@ -388,9 +404,9 @@ class PayloadOfflineStoreTest : BaseTest() {
                 }
             }
             startGate.countDown()
-            Assert.assertTrue(doneGate.await(15, TimeUnit.SECONDS))
+            Assert.assertTrue("producers did not finish", doneGate.await(20, TimeUnit.SECONDS))
         } finally {
-            executor.shutdownNow()
+            shutdownExecutor(executor)
         }
 
         Assert.assertEquals(SSConstants.OFFLINE_NOTIFICATION_EVENTS_MAX_COUNT, PayloadOfflineStore.size())

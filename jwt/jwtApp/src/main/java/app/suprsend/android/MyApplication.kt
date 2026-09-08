@@ -1,7 +1,9 @@
 package app.suprsend.android
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import app.suprsend.AppInfo
 import app.suprsend.NotificationCallbackListener
@@ -12,8 +14,8 @@ import app.suprsend.log.LogLevel
 import app.suprsend.log.LoggerCallback
 import app.suprsend.notification.NotificationActionVo
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.json.JSONObject
 import java.net.URLEncoder
+import org.json.JSONObject
 
 class MyApplication : Application() {
 
@@ -40,6 +42,7 @@ class MyApplication : Application() {
 
         super.onCreate()
         AppCreator.context = this
+        registerActivityLifecycleCallbacks(inboxForegroundCallbacks)
 
         SuprSend.setLogger(object : LoggerCallback {
             override fun v(tag: String, message: String) {
@@ -56,7 +59,7 @@ class MyApplication : Application() {
         })
 
         SuprSend.setNotificationCallback(object : NotificationCallbackListener {
-            override fun onPushPayloadReceived(context: Context,data: Map<String, String>) {
+            override fun onPushPayloadReceived(context: Context, data: Map<String, String>) {
                 Log.i(AppConstants.TAG, "onPushPayloadReceived : $data")
             }
 
@@ -67,6 +70,36 @@ class MyApplication : Application() {
                 )
             }
         })
+    }
+
+    private var startedActivities = 0
+    private var wasBackgrounded = false
+
+    private val inboxForegroundCallbacks = object : Application.ActivityLifecycleCallbacks {
+        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+
+        override fun onActivityStarted(activity: Activity) {
+            if (startedActivities == 0 && wasBackgrounded) {
+                wasBackgrounded = false
+                InboxViewModel.sharedOrNull()?.reconnectAndRefresh()
+            }
+            startedActivities++
+        }
+
+        override fun onActivityResumed(activity: Activity) {}
+
+        override fun onActivityPaused(activity: Activity) {}
+
+        override fun onActivityStopped(activity: Activity) {
+            startedActivities--
+            if (startedActivities == 0) {
+                wasBackgrounded = true
+            }
+        }
+
+        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+
+        override fun onActivityDestroyed(activity: Activity) {}
     }
 }
 

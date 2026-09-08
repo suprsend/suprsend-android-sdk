@@ -1,86 +1,162 @@
 package app.suprsend.android
 
 import android.annotation.SuppressLint
+import android.graphics.Rect
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.PopupMenu
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import app.suprsend.android.databinding.InboxMessageItemBinding
-import app.suprsend.inbox.InboxNotification
-import app.suprsend.inbox.SuprsendInbox
-import app.suprsend.inbox.util.getReadableTime
-import app.suprsend.inbox.util.todayMidNightMilli
+import app.suprsend.feed.APIResponseStatus
+import app.suprsend.feed.IRemoteNotification
 
 internal class SSInboxMessageAdapter
 constructor(
     val inflater: LayoutInflater,
-    private var message: List<InboxNotification>
+    private val viewModel: InboxViewModel,
+    private var message: List<IRemoteNotification> = listOf(),
+    private var hasMore: Boolean = false,
+    private var apiStatus: APIResponseStatus = APIResponseStatus.INITIAL
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    var onLoadMoreClick: (() -> Unit)? = null
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            1 -> {
+            TYPE_ITEM -> {
                 val binding = InboxMessageItemBinding.inflate(inflater, viewGroup, false)
                 BaseViewHolder(binding)
             }
-
+            TYPE_FOOTER -> {
+                val view = inflater.inflate(R.layout.inbox_list_footer, viewGroup, false)
+                FooterViewHolder(view)
+            }
             else -> throw IllegalStateException("View type is unknown $viewType")
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return 1
+        return if (position < message.size) TYPE_ITEM else TYPE_FOOTER
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is FooterViewHolder) {
+            bindFooter(holder)
+            return
+        }
         holder as BaseViewHolder
         val binding = holder.binding as InboxMessageItemBinding
-        holder.binding.root.layoutParams = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT
-        )
-        val context = binding.titleTv.context
         val notification = message[position]
-        binding.obj = notification
+        val isUnread = notification.read_on == null
+        val header = notification.message.header.orEmpty()
+        val hasHeader = header.isNotEmpty()
 
-        binding.titleTv.setMarkDownText(notification.message.header)
-        binding.messageTv.setMarkDownText(notification.message.text)
-        binding.timeTv.text = context.getString(R.string.createdOn) + getReadableTime(notification.createdOn)
-        val expiry = notification.expiry
-        if (expiry != null)
-            binding.expiryTimeTv.text = context.getString(R.string.expiry) + " " + getReadableTime(expiry, todayMidNightMilli())
+        binding.unreadDot.setVisible(isUnread)
+        binding.cardRoot.setBackgroundResource(
+            if (isUnread) R.drawable.inbox_card_unread_bg else R.drawable.inbox_card_read_bg
+        )
 
-        binding.markUnreadTv.setOnClickListener {
-            SuprsendInbox.getInstance().markAsUnreadAsync(
-                notificationId = notification.id
-            )
+        val title = if (hasHeader) header else notification.message.text
+        binding.titleTv.text = title
+        binding.timeTv.text = formatRelative(notification.created_on)
+
+        if (hasHeader) {
+            binding.messageTv.setVisible(true)
+            binding.messageTv.text = notification.message.text
+        } else {
+            binding.messageTv.setVisible(false)
         }
-        binding.markReadTv.setOnClickListener {
-            SuprsendInbox.getInstance().markAsReadAsync(
-                notificationId = notification.id
-            )
+
+        val subtext = notification.message.subtext?.text.orEmpty()
+        if (subtext.isNotEmpty()) {
+            binding.subtextTv.setVisible(true)
+            binding.subtextTv.text = subtext
+        } else {
+            binding.subtextTv.setVisible(false)
         }
-        binding.archiveTv.setOnClickListener {
-            SuprsendInbox.getInstance().markAsArchivedAsync(
-                notificationId = notification.id
-            )
+
+        binding.cardRoot.setOnClickListener {
+            Log.i(AppConstants.TAG,"Inbox item card clicked ${notification.n_id}")
+            viewModel.onItemTap(notification)
         }
-        binding.interactedTv.setOnClickListener {
-            SuprsendInbox.getInstance().markAsInteractedAsync(
-                notificationId = notification.id
-            )
+        binding.menuBtn.setOnClickListener { view ->
+            showActionsMenu(view, notification, isUnread)
         }
     }
 
+    private fun bindFooter(holder: FooterViewHolder) {
+        val fetchingMore = apiStatus == APIResponseStatus.FETCHING_MORE
+        val showLoadMore = hasMore && !fetchingMore
+        val showCaughtUp = !hasMore && message.isNotEmpty() && !fetchingMore
+
+        holder.progress.setVisible(fetchingMore)
+        holder.loadMore.setVisible(showLoadMore)
+        holder.caughtUp.setVisible(showCaughtUp)
+        holder.loadMore.setOnClickListener { onLoadMoreClick?.invoke() }
+    }
+
+    private fun showActionsMenu(anchor: View, notification: IRemoteNotification, isUnread: Boolean) {
+        val popup = PopupMenu(anchor.context, anchor)
+        if (isUnread) {
+            popup.menu.add(0, MENU_MARK_READ, 0, R.string.mark_as_read)
+        } else {
+            popup.menu.add(0, MENU_MARK_UNREAD, 0, R.string.mark_as_unread)
+        }
+        popup.menu.add(0, MENU_ARCHIVE, 0, R.string.archive)
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                MENU_MARK_READ -> viewModel.markAsRead(notification)
+                MENU_MARK_UNREAD -> viewModel.markAsUnread(notification)
+                MENU_ARCHIVE -> viewModel.archive(notification)
+            }
+            true
+        }
+        popup.show()
+    }
+
     override fun getItemCount(): Int {
-        return message.size
+        return if (message.isEmpty()) 0 else message.size + 1
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun newList(
-        message: List<InboxNotification>
+        message: List<IRemoteNotification>,
+        hasMore: Boolean,
+        apiStatus: APIResponseStatus
     ) {
         this.message = message
+        this.hasMore = hasMore
+        this.apiStatus = apiStatus
         notifyDataSetChanged()
+    }
+
+    class FooterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val progress: ProgressBar = itemView.findViewById(R.id.footerProgress)
+        val loadMore: TextView = itemView.findViewById(R.id.footerLoadMoreTv)
+        val caughtUp: TextView = itemView.findViewById(R.id.footerCaughtUpTv)
+    }
+
+    /** 12dp spacing between cards, matching iOS LazyVStack(spacing: 12). */
+    class ItemSpacingDecoration(private val spacingPx: Int) : RecyclerView.ItemDecoration() {
+        override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+            val position = parent.getChildAdapterPosition(view)
+            if (position == RecyclerView.NO_POSITION) return
+            val adapter = parent.adapter ?: return
+            if (adapter.getItemViewType(position) == TYPE_ITEM) {
+                outRect.bottom = spacingPx
+            }
+        }
+    }
+
+    companion object {
+        const val TYPE_ITEM = 1
+        const val TYPE_FOOTER = 2
+        private const val MENU_MARK_READ = 1
+        private const val MENU_MARK_UNREAD = 2
+        private const val MENU_ARCHIVE = 3
     }
 }

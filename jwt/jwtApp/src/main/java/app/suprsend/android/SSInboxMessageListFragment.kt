@@ -3,21 +3,22 @@ package app.suprsend.android
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import app.suprsend.android.databinding.InboxMessageFragmentBinding
-import app.suprsend.inbox.InBoxErrorType
-import app.suprsend.inbox.InboxNotification
-import app.suprsend.inbox.InboxStore
-import app.suprsend.inbox.InboxStoreListener
-import app.suprsend.inbox.SuprsendInbox
-import app.suprsend.inbox.socket.ConnectionState
-import com.google.android.material.tabs.TabLayout
+import app.suprsend.feed.APIResponseStatus
+import app.suprsend.feed.IStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 internal class SSInboxMessageListFragment : Fragment() {
@@ -26,32 +27,16 @@ internal class SSInboxMessageListFragment : Fragment() {
 
     private lateinit var adapter: SSInboxMessageAdapter
 
-    private lateinit var inboxStoreListener: InboxStoreListener
+    private var unsubscribeInbox: (() -> Unit)? = null
 
-    private lateinit var inboxThemeConfig: InboxThemeConfig
-    private var activeStoreId = ""
-    private lateinit var suprsendInbox: SuprsendInbox
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
 
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        try {
-            inboxThemeConfig = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                arguments?.getParcelable("config", InboxThemeConfig::class.java) ?: InboxThemeConfig()
-            } else {
-                arguments?.getParcelable("config") ?: InboxThemeConfig()
-            }
-            suprsendInbox = SuprsendInbox.getInstance()
-        } catch (e: Exception) {
-            Log.e(AppConstants.TAG, "App: onCreate", e)
-        }
-    }
+    private val inboxViewModel = InboxViewModel.shared
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = InboxMessageFragmentBinding.inflate(inflater, container, false)
         try {
-            binding.inboxLL.setBackgroundColor(Color.parseColor(inboxThemeConfig.screenBgColor))
+            binding.inboxLL.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.inbox_screen_bg))
             initializeRecyclerView()
         } catch (e: Exception) {
             Log.e(AppConstants.TAG, "App: onCreateView", e)
@@ -60,143 +45,136 @@ internal class SSInboxMessageListFragment : Fragment() {
     }
 
     private fun initializeRecyclerView() {
+        binding.socketStatusIv.setVisible(false)
         binding.inboxRv.layoutManager = LinearLayoutManager(activity)
-        adapter = SSInboxMessageAdapter(inflater = layoutInflater, message = listOf())
+        adapter = SSInboxMessageAdapter(
+            inflater = layoutInflater,
+            viewModel = inboxViewModel
+        )
+        adapter.onLoadMoreClick = {
+            coroutineScope.launch { inboxViewModel.loadMore() }
+        }
         binding.inboxRv.adapter = adapter
+        val spacing = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            12f,
+            resources.displayMetrics
+        ).toInt()
+        binding.inboxRv.addItemDecoration(SSInboxMessageAdapter.ItemSpacingDecoration(spacing))
+        binding.inboxRv.addOnScrollListener(nextPageScrollListener())
 
-        updateConnectionState()
-        inboxStoreListener = object : InboxStoreListener {
-            override fun bellCount(bellCount: Int) {
-                Log.i(AppConstants.TAG, "App: Bell count :$bellCount")
-                updateTabTitles()
-            }
-
-            override fun loading(storeId: String, isLoading: Boolean) {
-                if (activeStoreId == storeId) {
-                    if (isLoading && suprsendInbox.getStore(activeStoreId).inboxMessagesList.isEmpty())
-                        showLoading(true)
-                }
-            }
-
-            override fun onUpdate(inboxStore: InboxStore) {
-                if (activeStoreId != inboxStore.storeId)
-                    return
-                Log.i(AppConstants.TAG, "App: ${inboxStore.storeId} : Store data is changed")
-                updateTabTitles()
-                updateList()
-            }
-
-            override fun onError(id: String, errorType: InBoxErrorType, message: String, e: Exception?) {
-                myToast("Socket : $id : $errorType : ${e?.message}")
-            }
-
-            override fun socket(connectionState: ConnectionState) {
-                updateConnectionState()
-            }
-
-            override fun newNotification(notificationModel: InboxNotification) {
-                myToast("New Notification : ${notificationModel.message.header}")
-            }
+        unsubscribeInbox = inboxViewModel.subscribe {
+            refreshStoreChips()
+            updateList()
         }
-        suprsendInbox.registerCallback(inboxStoreListener)
 
-        if (suprsendInbox.getStoreCount() == 0) {
-            binding.tabLayout.visibility = View.GONE
+        if (inboxViewModel.stores.isEmpty()) {
+            binding.storeTabsScroll.visibility = View.GONE
         } else {
-            binding.tabLayout.visibility = View.VISIBLE
-            initTabs()
-            coroutineScope.launch(Dispatchers.IO) {
-                suprsendInbox.fetchBellCount()
-                suprsendInbox.getStores().first().load()
+            binding.storeTabsScroll.visibility = View.VISIBLE
+            initStoreChips()
+        }
+
+        refreshStoreChips()
+        updateList()
+    }
+
+    private fun nextPageScrollListener(): RecyclerView.OnScrollListener {
+        return object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy <= 0) return
+                coroutineScope.launch { inboxViewModel.loadMore() }
             }
         }
     }
 
-    private fun updateConnectionState() {
-        val connectionState = suprsendInbox.getSocketConnectionState()
-        when (connectionState) {
-            ConnectionState.CONNECTING -> {
-                binding.socketStatusIv.setImageResource(R.drawable.ic_connecting)
+    private fun initStoreChips() {
+        binding.storeChipsLL.removeAllViews()
+        inboxViewModel.stores.forEach { store ->
+            val chip = layoutInflater.inflate(R.layout.inbox_store_chip, binding.storeChipsLL, false)
+            chip.tag = store.storeId
+            chip.setOnClickListener {
+                inboxViewModel.changeStore(store.storeId)
+                refreshStoreChips()
             }
+            binding.storeChipsLL.addView(chip)
+        }
+        refreshStoreChips()
+    }
 
-            ConnectionState.CONNECTED -> {
-                binding.socketStatusIv.setImageResource(R.drawable.ic_connected)
-            }
-
-            ConnectionState.DISCONNECTED -> {
-                binding.socketStatusIv.setImageResource(R.drawable.ic_disconnected)
-            }
-
-            ConnectionState.FAILED -> {
-                binding.socketStatusIv.setImageResource(R.drawable.ic_disconnected)
-            }
+    private fun refreshStoreChips() {
+        val activeStoreId = inboxViewModel.activeStoreId
+        for (i in 0 until binding.storeChipsLL.childCount) {
+            val chip = binding.storeChipsLL.getChildAt(i)
+            val storeId = chip.tag as? String ?: continue
+            val store = inboxViewModel.stores.firstOrNull { it.storeId == storeId } ?: continue
+            bindStoreChip(
+                chip = chip,
+                store = store,
+                count = inboxViewModel.storeBadges[storeId] ?: 0,
+                isActive = storeId == activeStoreId
+            )
         }
     }
 
-    private fun updateTabTitles() {
-        binding.tabLayout.forEachTab { tab ->
-            val storeId = tab.tag?.toString()
-            setTabTitle(tab, suprsendInbox.getStore(storeId))
+    private fun bindStoreChip(chip: View, store: IStore, count: Int, isActive: Boolean) {
+        val labelTv = chip.findViewById<TextView>(R.id.chipLabelTv)
+        val badgeTv = chip.findViewById<TextView>(R.id.chipBadgeTv)
+        labelTv.text = store.label
+
+        chip.setBackgroundResource(
+            if (isActive) R.drawable.inbox_chip_selected else R.drawable.inbox_chip_unselected
+        )
+        labelTv.setTextColor(
+            if (isActive) Color.WHITE else Color.BLACK
+        )
+
+        if (count > 0) {
+            badgeTv.visibility = View.VISIBLE
+            badgeTv.text = count.toString()
+            if (isActive) {
+                badgeTv.setBackgroundResource(R.drawable.inbox_badge_on_selected)
+                badgeTv.setTextColor(ContextCompat.getColor(chip.context, R.color.inbox_accent))
+            } else {
+                badgeTv.setBackgroundResource(R.drawable.inbox_badge_on_unselected)
+                badgeTv.setTextColor(Color.WHITE)
+            }
+        } else {
+            badgeTv.visibility = View.GONE
         }
-    }
 
-    private fun initTabs() {
-        activeStoreId = suprsendInbox.getStores().first().storeId
-        val storeList = suprsendInbox.getStores()
-        storeList.forEach { store ->
-            val tab = binding.tabLayout.newTab()
-            setTabTitle(tab, store)
-            tab.tag = store.storeId
-            binding.tabLayout.addTab(tab)
-            // On tab click fetch notification
-            binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                override fun onTabSelected(tab: TabLayout.Tab?) {
-                    val storeId = tab?.tag as String
-                    if (storeId == activeStoreId) {
-                        updateList()
-                        return
-                    }
-                    activeStoreId = storeId
-                    coroutineScope.launch(Dispatchers.IO) {
-                        suprsendInbox.getStore(storeId = storeId)?.apply {
-                            reset()
-                            suprsendInbox.fetchBellCount()
-                            load()
-                        }
-                    }
-                }
-
-                override fun onTabUnselected(tab: TabLayout.Tab?) {
-                }
-
-                override fun onTabReselected(tab: TabLayout.Tab?) {
-                }
-            })
-        }
-    }
-
-    private fun setTabTitle(tab: TabLayout.Tab, store: InboxStore) {
-        var tabText = "${store.label}"
-        if (store.unseenCount > 0) {
-            tabText += "(${store.unseenCount})"
-        }
-        tab.text = tabText
-        Log.i(AppConstants.TAG, "App: Tab Title : $tabText")
+        // Last chip should not reserve trailing 8dp gap beyond scroll padding.
+        val params = chip.layoutParams as LinearLayout.LayoutParams
+        val isLast = store.storeId == inboxViewModel.stores.lastOrNull()?.storeId
+        params.marginEnd = if (isLast) 0 else resources.getDimensionPixelSize(R.dimen.inbox_chip_spacing)
+        chip.layoutParams = params
     }
 
     private fun updateList() {
         try {
-            val inbox = suprsendInbox
-            val items = inbox.getStore(activeStoreId).inboxMessagesList.toMutableList()
-            if (items.isEmpty()) {
+            val isInitialLoading =
+                inboxViewModel.apiStatus == APIResponseStatus.LOADING && inboxViewModel.notifications.isEmpty()
+            showLoading(isInitialLoading)
+            if (isInitialLoading) {
+                return
+            }
+            if (inboxViewModel.notifications.isEmpty()) {
                 if (binding.emptyMessageTv.context.isConnected()) {
-                    showEmptyScreen(inboxThemeConfig.emptyScreenMessage)
+                    showEmptyScreen()
                 } else {
-                    showEmptyScreen(getString(R.string.no_internet))
+                    binding.emptyTitleTv.text = getString(R.string.no_internet)
+                    binding.emptySubtitleTv.setVisible(false)
+                    binding.emptyMessageTv.setVisible(true)
+                    binding.inboxRv.setVisible(false)
+                    binding.progressBar.setVisible(false)
                 }
             } else {
                 showDataScreen()
-                adapter.newList(items)
+                adapter.newList(
+                    message = inboxViewModel.notifications,
+                    hasMore = inboxViewModel.hasMore,
+                    apiStatus = inboxViewModel.apiStatus
+                )
             }
         } catch (e: Exception) {
             Log.e(AppConstants.TAG, "App: setRecyclerViewData", e)
@@ -205,18 +183,26 @@ internal class SSInboxMessageListFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        suprsendInbox.unRegisterCallback(inboxStoreListener)
+        unsubscribeInbox?.invoke()
+        unsubscribeInbox = null
+        coroutineScope.coroutineContext[Job]?.cancel()
     }
 
-    private fun showEmptyScreen(message: String) {
-        binding.emptyMessageTv.text = message
-        binding.emptyMessageTv.visibility = View.VISIBLE
-        binding.inboxRv.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
+    private fun showEmptyScreen() {
+        binding.emptyTitleTv.setText(R.string.no_notifications_yet)
+        binding.emptySubtitleTv.setText(R.string.new_messages_will_appear_here)
+        binding.emptySubtitleTv.setVisible(true)
+        binding.emptyMessageTv.setVisible(true)
+        binding.inboxRv.setVisible(false)
+        binding.progressBar.setVisible(false)
     }
 
     private fun showLoading(isLoading: Boolean) {
-        binding.progressBar.setVisible(isLoading)
+        if (!isLoading) {
+            binding.progressBar.setVisible(false)
+            return
+        }
+        binding.progressBar.setVisible(true)
         binding.emptyMessageTv.setVisible(false)
         binding.inboxRv.setVisible(false)
     }

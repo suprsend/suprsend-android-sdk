@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="margin_10">10dp</dimen>
+    <dimen name="inbox_chip_spacing">8dp</dimen>
+    <dimen name="pref_section_bottom">12dp</dimen>
+    <dimen name="pref_section_group_bottom">32dp</dimen>
 </resources>

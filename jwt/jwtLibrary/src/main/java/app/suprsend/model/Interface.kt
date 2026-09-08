@@ -28,6 +28,11 @@ enum class ResponseStatus {
     SUCCESS, ERROR
 }
 
+data class ResponseError(
+    val type: ErrorType? = null,
+    val message: String? = null
+)
+
 enum class ErrorType {
     VALIDATION_ERROR,
     NETWORK_ERROR,
@@ -35,4 +40,6 @@ enum class ErrorType {
     PERMISSION_DENIED,
     UNSUPPORTED_ACTION,
     NOT_FOUND,
+    TOKEN_INVALID,
+    TOKEN_EXPIRED,
 }
